@@ -1,0 +1,586 @@
+$i8_acs...........I8TRIGA2          $i8_asn...........I8TRIGA2
+$i8_at2...........I8TRIGA2          $i8_atn...........i8triga
+$i8_cos...........i8trig            $i8_ctn...........i8trig
+$i8_sin...........i8trig            $i8_tan...........i8trig
+ABSAD.............ABSAD             AD3718............ad3718
+AD3718A...........ad3718a           AD3718B...........ad3718b
+ADCL..............paa               ADCLP.............PAD
+ADINT.............ADINT             ADJW1.............adjw1
+ADJW12............ADJW12            ADJW2.............adjw2
+ADJWATER..........ADJWATER          ADJWATN...........adjwatn
+ATAN..............ATAN              C2PRINT2..........c2print2
+CDISK.............cdisk             CHENDATA..........chendata
+CHK1..............chk1              CLEACHMEM.........CLEACHMEM
+CLEACHW...........CLEACHW           CLEADROP..........CLEADROP
+CLEAMEM...........CLEAMEM           CLEAMIX...........cleamix
+CLEAOUT...........CLEAOUT           CLRFLG............CLRFLG
+CLS3718O..........CLS3718O          CLS3724O..........cls3724o
+COMINI............COMINI            COMINIT...........COMINIT
+COMM_INIT.........COM_INIT          COMREAD...........COMREAD
+COMSTS............COMSTS            COMWRITE..........comwrite
+COM_READ..........com_read          COM_STS...........com_sts
+COM_WRITE.........com_writ          COS...............COS
+DA................DA                DA726.............da726
+DIN...............DIN               DIN2..............din2
+DIN2N.............din2n             DINI..............DINI
+DINIS.............dinis             DINIS1............dinis1
+DINIS2............dinis2            DIO...............DIO
+DISK1.............disk              DISKREAD..........rddsk
+DIX...............DIX               DIXN..............DIXN
+DI_3718...........DI_3718           DI_3724...........di_3724
+DI_3724A..........di_3724a          DOG...............DOG
+DOUT..............dout              DOUT2.............dout2
+DOUT3.............DOUT3             DOUTA.............DOUTA
+DOUTA2............DOUTA2            DOUTA3............DOUTA3
+DOUTAL............doutal            DOUTFF1...........DOUTFF1
+DOUTFF2...........DOUTFF2           DOUTFF3...........DOUTFF3
+DO_3718...........DO_3718           DO_3724...........do_3724
+DSK_RDY...........DSK_RDY           DTS1..............DTS1
+GETFTTR...........getfttr           IAX_3724..........IAX_3724
+INI_3724..........ini_3724          IP_3724...........ip_3724
+I_3724............i_3724            LCD_CHAR..........lcd_char
+LCD_D15X24........lcd_15x2          LCD_D8X15.........LCD_8X15
+LCD_D_C...........lcd_d_c           LCD_D_G...........LCD_D_G
+LCD_D_GN..........LCD_D_GN          LCD_D_N...........lcd_d_n
+LCD_GRAP..........lcd_grap          LCD_LINE..........lcd_line
+LCD_T16...........LCD_T16           MIXA..............MIXA
+MOVCURS...........movcurs           NXOR..............nxor
+OAX_3724..........oax_3724          OP_3724...........OP_3724
+O_3724............o_3724            P04_CHAR..........p04_char
+P04_GRAP..........p04_grap          PCSET.............PCSET
+PLOTGRE...........PLOTGRE           PLOTRED...........PLOTRED
+PRC...............prc               PRINTON...........PRINTON
+PSC...............PSC               PSTS..............psts
+PWC...............PWC               PWC1..............PWC1
+PWC2..............PWC2              PWC3..............PWC3
+RAND..............rand              RDLPT.............RDLPT
+RDNB_DATA.........RDNB_DATA         RDN_DATA..........rdn_data
+RDOK1.............RDOK1             RDOK2.............RDOK2
+RDZEROK...........RDZEROK           RD_DO1............RD_DO1
+RD_DO2............RD_DO2            RD_DO3............RD_DO3
+RESTOUT...........RESTOUT           SER_READ..........ser_read
+SER_READY.........ser_rdy           SER_SEND..........ser_send
+SETCHDATA.........SETCHDATA         SETCURS...........setcurs
+SETDATE...........SETDATE           SETDLA............SETDLA
+SETDROP...........setdrop           SETFLG............SETFLG
+SETLZA............SETLZA            SETMEM............SETMEM
+SETMIX............SETMIX            SETOK.............SETOK
+SETOK1............SETOK1            SETOKN............SETOKN
+SETOUTC2..........SETOUTC2          SETOUTIME.........SETOUTIME
+SETRDTIME.........SETRDTIME         SETSTAR...........SETSTAR
+SETTOTW...........SETTOTW           SETW1.............SETW1
+SETW2.............SETW2             SETWANO...........setwano
+SETZER............SETZER            SETZEROK..........SETZEROK
+SETZERTM..........SETZERTM          SETZOKN...........SETZOKN
+SET_DB............SET_DB            SET_SVGA..........SET_SVGA
+SHIPGYRO..........SHIPGYRO          SHIPLOG...........SHIPLOG
+SIN...............sin               STKHQQ............chkstk
+S_POINT...........S_POINT           TST...............test
+WAITOUT...........WAITOUT           WDAT..............wdat
+WDATA.............wdata             WRITE_DATE........WRITE_DATE
+WRITE_TIME........WRITE_TIME        _acos.............CTRIGA
+_asin.............CTRIGA            _atan.............CTRIGA
+_atan2............CTRIGA            _cos..............ctrig
+_IN..............._IN               _int86............int86
+_OUT.............._OUT              _rand.............rand1
+_sin..............ctrig             _srand............rand1
+_tan..............ctrig             __aaltstkovr......chkstk
+__bios_disk.......b_disk            __chkstk..........chkstk
+__dosret0.........dosret            __dosretax........dosret
+__dosreturn.......dosret            __dos_getfileattr..d_gfile
+__maperror........dosret            
+
+I8TRIGA2          Offset: 00000010H  Code and data size: afH
+  $i8_acs           $i8_asn           $i8_at2         
+
+i8trig            Offset: 00000260H  Code and data size: 13aH
+  $i8_cos           $i8_ctn           $i8_sin           $i8_tan
+
+ABSAD             Offset: 00000600H  Code and data size: 3fH
+  ABSAD           
+
+PAD               Offset: 000006f0H  Code and data size: 14eH
+  ADCLP           
+
+ADJWATER          Offset: 000007d0H  Code and data size: 46H
+  ADJWATER        
+
+c2print2          Offset: 000008d0H  Code and data size: 2cH
+  C2PRINT2        
+
+chendata          Offset: 00000a10H  Code and data size: 37H
+  CHENDATA        
+
+CLEACHMEM         Offset: 00000b00H  Code and data size: 35H
+  CLEACHMEM       
+
+CLEADROP          Offset: 00000bf0H  Code and data size: 38H
+  CLEADROP        
+
+cleamix           Offset: 00000cd0H  Code and data size: 4aH
+  CLEAMIX         
+
+CLRFLG            Offset: 00000dc0H  Code and data size: 14eH
+  CLRFLG          
+
+COM_INIT          Offset: 00000eb0H  Code and data size: e2H
+  COMM_INIT       
+
+com_read          Offset: 000010c0H  Code and data size: 60H
+  COM_READ        
+
+com_writ          Offset: 00001230H  Code and data size: 9eH
+  COM_WRITE       
+
+DA                Offset: 00001400H  Code and data size: 4aH
+  DA              
+
+DINI              Offset: 000014f0H  Code and data size: 1bH
+  DINI            
+
+dinis1            Offset: 000015b0H  Code and data size: 33H
+  DINIS1          
+
+DIO               Offset: 00001690H  Code and data size: 2aH
+  DIO             
+
+rddsk             Offset: 00001750H  Code and data size: 24cH
+  DISKREAD        
+
+dout2             Offset: 00001860H  Code and data size: 77H
+  DOUT2           
+
+DOUTA             Offset: 00001980H  Code and data size: 71H
+  DOUTA           
+
+DOUTA3            Offset: 00001aa0H  Code and data size: 71H
+  DOUTA3          
+
+DOUTFF2           Offset: 00001bc0H  Code and data size: 39H
+  DOUTFF2         
+
+DTS1              Offset: 00001cb0H  Code and data size: 5fH
+  DTS1            
+
+MIXA              Offset: 00001dc0H  Code and data size: 29H
+  MIXA            
+
+PCSET             Offset: 00001e80H  Code and data size: 3bH
+  PCSET           
+
+PLOTRED           Offset: 00001f60H  Code and data size: fbH
+  PLOTRED         
+
+PRINTON           Offset: 00002130H  Code and data size: 46H
+  PRINTON         
+
+PWC1              Offset: 00002220H  Code and data size: f2H
+  PWC1            
+
+PWC3              Offset: 000023c0H  Code and data size: f2H
+  PWC3            
+
+RDLPT             Offset: 00002560H  Code and data size: 30H
+  RDLPT           
+
+RDOK2             Offset: 00002640H  Code and data size: 3aH
+  RDOK2           
+
+ser_rdy           Offset: 00002720H  Code and data size: 38H
+  SER_READY       
+
+SETCHDATA         Offset: 00002860H  Code and data size: 41H
+  SETCHDATA       
+
+SETDATE           Offset: 00002960H  Code and data size: 41H
+  SETDATE         
+
+SETLZA            Offset: 00002a60H  Code and data size: 41H
+  SETLZA          
+
+SETOK1            Offset: 00002b50H  Code and data size: 32H
+  SETOK1          
+
+SETRDTIME         Offset: 00002c30H  Code and data size: 41H
+  SETRDTIME       
+
+SETTOTW           Offset: 00002d30H  Code and data size: 30H
+  SETTOTW         
+
+SETW2             Offset: 00002e10H  Code and data size: 41H
+  SETW2           
+
+SETZER            Offset: 00002f00H  Code and data size: 41H
+  SETZER          
+
+SETZERTM          Offset: 00002ff0H  Code and data size: 46H
+  SETZERTM        
+
+SHIPLOG           Offset: 000030f0H  Code and data size: 5fH
+  SHIPLOG         
+
+chkstk            Offset: 00003210H  Code and data size: 2aH
+  STKHQQ            __aaltstkovr      __chkstk        
+
+wdat              Offset: 00003320H  Code and data size: 34H
+  WDAT            
+
+CTRIGA            Offset: 00003400H  Code and data size: 3dH
+  _acos             _asin             _atan             _atan2
+
+ctrig             Offset: 000035a0H  Code and data size: 2aH
+  _cos              _sin              _tan            
+
+rand1             Offset: 000036f0H  Code and data size: 3eH
+  _rand             _srand          
+
+dosret            Offset: 00003850H  Code and data size: 68H
+  __dosret0         __dosretax        __dosreturn       __maperror
+
+d_gfile           Offset: 000039c0H  Code and data size: 18H
+  __dos_getfileattr                 
+
+i8triga           Offset: 00003a80H  Code and data size: 124H
+  $i8_atn         
+
+paa               Offset: 00003d90H  Code and data size: 152H
+  ADCL            
+
+ADINT             Offset: 00003e80H  Code and data size: 12eH
+  ADINT           
+
+ATAN              Offset: 00003f40H  Code and data size: b2H
+  ATAN            
+
+cdisk             Offset: 00004150H  Code and data size: 60H
+  CDISK           
+
+chk1              Offset: 000042e0H  Code and data size: 23H
+  CHK1            
+
+CLEACHW           Offset: 000043a0H  Code and data size: 35H
+  CLEACHW         
+
+CLEAMEM           Offset: 00004480H  Code and data size: 1deH
+  CLEAMEM         
+
+CLEAOUT           Offset: 00004700H  Code and data size: 39H
+  CLEAOUT         
+
+COMREAD           Offset: 000047e0H  Code and data size: 2cH
+  COMREAD         
+
+comwrite          Offset: 000048c0H  Code and data size: 2fH
+  COMWRITE        
+
+com_sts           Offset: 000049a0H  Code and data size: 96H
+  COM_STS         
+
+COS               Offset: 00004b50H  Code and data size: b2H
+  COS             
+
+DIN               Offset: 00004d60H  Code and data size: 48H
+  DIN             
+
+dinis             Offset: 00004e50H  Code and data size: 2cH
+  DINIS           
+
+dinis2            Offset: 00004f20H  Code and data size: 29H
+  DINIS2          
+
+disk              Offset: 00004ff0H  Code and data size: 46H
+  DISK1           
+
+DIXN              Offset: 00005140H  Code and data size: 2bH
+  DIXN            
+
+dout              Offset: 00005210H  Code and data size: 77H
+  DOUT            
+
+DOUT3             Offset: 00005330H  Code and data size: 77H
+  DOUT3           
+
+DOUTA2            Offset: 00005450H  Code and data size: 71H
+  DOUTA2          
+
+DOUTFF1           Offset: 00005570H  Code and data size: 39H
+  DOUTFF1         
+
+DOUTFF3           Offset: 00005660H  Code and data size: 39H
+  DOUTFF3         
+
+getfttr           Offset: 00005750H  Code and data size: 36H
+  GETFTTR         
+
+movcurs           Offset: 000058a0H  Code and data size: 4cH
+  MOVCURS         
+
+PLOTGRE           Offset: 00005a10H  Code and data size: fbH
+  PLOTGRE         
+
+PSC               Offset: 00005be0H  Code and data size: 81H
+  PSC             
+
+PWC2              Offset: 00005d00H  Code and data size: f2H
+  PWC2            
+
+rand              Offset: 00005ea0H  Code and data size: 18H
+  RAND            
+
+RDOK1             Offset: 00005fb0H  Code and data size: 3aH
+  RDOK1           
+
+RDZEROK           Offset: 00006090H  Code and data size: 3aH
+  RDZEROK         
+
+ser_read          Offset: 00006180H  Code and data size: 4aH
+  SER_READ        
+
+ser_send          Offset: 000062e0H  Code and data size: 4aH
+  SER_SEND        
+
+setcurs           Offset: 00006440H  Code and data size: 48H
+  SETCURS         
+
+SETDLA            Offset: 000065a0H  Code and data size: 44H
+  SETDLA          
+
+SETFLG            Offset: 00006690H  Code and data size: 14eH
+  SETFLG          
+
+SETMEM            Offset: 00006780H  Code and data size: 3dH
+  SETMEM          
+
+SETOK             Offset: 00006870H  Code and data size: 38H
+  SETOK           
+
+SETOUTIME         Offset: 00006950H  Code and data size: 41H
+  SETOUTIME       
+
+SETSTAR           Offset: 00006a50H  Code and data size: 30H
+  SETSTAR         
+
+SETW1             Offset: 00006b30H  Code and data size: 41H
+  SETW1           
+
+setwano           Offset: 00006c20H  Code and data size: 3fH
+  SETWANO         
+
+SETZEROK          Offset: 00006d10H  Code and data size: 32H
+  SETZEROK        
+
+SHIPGYRO          Offset: 00006df0H  Code and data size: adH
+  SHIPGYRO        
+
+sin               Offset: 00006f70H  Code and data size: b2H
+  SIN             
+
+wdata             Offset: 00007180H  Code and data size: 38H
+  WDATA           
+
+int86             Offset: 00007260H  Code and data size: 88H
+  _int86          
+
+b_disk            Offset: 00007380H  Code and data size: 2eH
+  __bios_disk     
+
+prc               Offset: 00007440H  Code and data size: c0H
+  PRC             
+
+PWC               Offset: 000075b0H  Code and data size: c8H
+  PWC             
+
+psts              Offset: 00007730H  Code and data size: 64H
+  PSTS            
+
+DOG               Offset: 00007840H  Code and data size: 32H
+  DOG             
+
+WRITE_DATE        Offset: 00007910H  Code and data size: 66H
+  WRITE_DATE      
+
+WRITE_TIME        Offset: 00007aa0H  Code and data size: 74H
+  WRITE_TIME      
+
+DSK_RDY           Offset: 00007c40H  Code and data size: 15aH
+  DSK_RDY         
+
+test              Offset: 00007d40H  Code and data size: 88H
+  TST             
+
+di_3724a          Offset: 00007ee0H  Code and data size: 8cH
+  DI_3724A        
+
+DO_3718           Offset: 00008090H  Code and data size: a1H
+  DO_3718         
+
+CLS3718O          Offset: 00008230H  Code and data size: 5dH
+  CLS3718O        
+
+i_3724            Offset: 00008380H  Code and data size: c6H
+  I_3724          
+
+di_3724           Offset: 00008590H  Code and data size: a7H
+  DI_3724         
+
+DI_3718           Offset: 00008750H  Code and data size: 87H
+  DI_3718         
+
+o_3724            Offset: 000088d0H  Code and data size: c6H
+  O_3724          
+
+cls3724o          Offset: 00008ae0H  Code and data size: 6aH
+  CLS3724O        
+
+do_3724           Offset: 00008c40H  Code and data size: b0H
+  DO_3724         
+
+ad3718            Offset: 00008e00H  Code and data size: adH
+  AD3718          
+
+ad3718a           Offset: 00008fa0H  Code and data size: 57H
+  AD3718A         
+
+ad3718b           Offset: 000090c0H  Code and data size: 5aH
+  AD3718B         
+
+lcd_15x2          Offset: 000091e0H  Code and data size: b3eH
+  LCD_D15X24      
+
+lcd_d_n           Offset: 00009ee0H  Code and data size: 1d1H
+  LCD_D_N         
+
+lcd_line          Offset: 0000a2b0H  Code and data size: 122H
+  LCD_LINE        
+
+lcd_grap          Offset: 0000a570H  Code and data size: 16fH
+  LCD_GRAP        
+
+p04_grap          Offset: 0000a850H  Code and data size: 11eH
+  P04_GRAP        
+
+COMINIT           Offset: 0000aac0H  Code and data size: 25H
+  COMINIT         
+
+LCD_D_GN          Offset: 0000ab90H  Code and data size: 485H
+  LCD_D_GN        
+
+din2              Offset: 0000b200H  Code and data size: 47H
+  DIN2            
+
+LCD_D_G           Offset: 0000b2f0H  Code and data size: bd5H
+  LCD_D_G         
+
+SET_SVGA          Offset: 0000c090H  Code and data size: 25H
+  SET_SVGA        
+
+S_POINT           Offset: 0000c170H  Code and data size: 8dH
+  S_POINT         
+
+LCD_8X15          Offset: 0000c300H  Code and data size: 57cH
+  LCD_D8X15       
+
+ip_3724           Offset: 0000ca80H  Code and data size: 49H
+  IP_3724         
+
+oax_3724          Offset: 0000cbb0H  Code and data size: 49H
+  OAX_3724        
+
+OP_3724           Offset: 0000cce0H  Code and data size: 3dH
+  OP_3724         
+
+IAX_3724          Offset: 0000ce00H  Code and data size: 40H
+  IAX_3724        
+
+ini_3724          Offset: 0000cf30H  Code and data size: c6H
+  INI_3724        
+
+LCD_T16           Offset: 0000d150H  Code and data size: b9fH
+  LCD_T16         
+
+lcd_char          Offset: 0000dec0H  Code and data size: 12bH
+  LCD_CHAR        
+
+p04_char          Offset: 0000e140H  Code and data size: 112H
+  P04_CHAR        
+
+lcd_d_c           Offset: 0000e390H  Code and data size: 12eH
+  LCD_D_C         
+
+_IN               Offset: 0000e650H  Code and data size: 29H
+  _IN             
+
+COMINI            Offset: 0000e720H  Code and data size: 89H
+  COMINI          
+
+COMSTS            Offset: 0000e8e0H  Code and data size: 30H
+  COMSTS          
+
+din2n             Offset: 0000e9c0H  Code and data size: 47H
+  DIN2N           
+
+nxor              Offset: 0000eab0H  Code and data size: 35H
+  NXOR            
+
+_OUT              Offset: 0000eb90H  Code and data size: 30H
+  _OUT            
+
+adjwatn           Offset: 0000ec70H  Code and data size: 46H
+  ADJWATN         
+
+SETOKN            Offset: 0000ed70H  Code and data size: 44H
+  SETOKN          
+
+ADJW12            Offset: 0000ee60H  Code and data size: 46H
+  ADJW12          
+
+RD_DO2            Offset: 0000ef50H  Code and data size: 50H
+  RD_DO2          
+
+RD_DO1            Offset: 0000f050H  Code and data size: 50H
+  RD_DO1          
+
+rdn_data          Offset: 0000f150H  Code and data size: 34H
+  RDN_DATA        
+
+SET_DB            Offset: 0000f230H  Code and data size: 3dH
+  SET_DB          
+
+da726             Offset: 0000f320H  Code and data size: 36H
+  DA726           
+
+RD_DO3            Offset: 0000f400H  Code and data size: 50H
+  RD_DO3          
+
+RDNB_DATA         Offset: 0000f500H  Code and data size: 37H
+  RDNB_DATA       
+
+WAITOUT           Offset: 0000f5f0H  Code and data size: 38H
+  WAITOUT         
+
+RESTOUT           Offset: 0000f6d0H  Code and data size: 44H
+  RESTOUT         
+
+SETZOKN           Offset: 0000f7b0H  Code and data size: 3fH
+  SETZOKN         
+
+doutal            Offset: 0000f8a0H  Code and data size: 3cH
+  DOUTAL          
+
+setdrop           Offset: 0000f980H  Code and data size: 26H
+  SETDROP         
+
+SETMIX            Offset: 0000fa40H  Code and data size: 26H
+  SETMIX          
+
+SETOUTC2          Offset: 0000fb00H  Code and data size: 3fH
+  SETOUTC2        
+
+DIX               Offset: 0000fbf0H  Code and data size: 3bH
+  DIX             
+
+adjw1             Offset: 0000fcd0H  Code and data size: 41H
+  ADJW1           
+
+adjw2             Offset: 0000fdc0H  Code and data size: 41H
+  ADJW2           

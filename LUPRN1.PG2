@@ -1,0 +1,603 @@
+
+
+#INCLUDE "alu16.h"
+* SAD1 ,SAD2  IS CHANGE  WITH ST1 ,ST2
+pnt_std=1
+if (lchtype=14	.and.  uchtype=13  .and.  pnt_water=0 )
+*   pnt_std=0
+endif
+SELECT 4
+GOTO TOP
+DO WHILE  .NOT.  EOF()
+  IF COUNT=0  .OR. empty(alltrim(RATNO))=.t. .or.  alltrim(RATNO)="0"
+    DELE
+  ENDIF
+  SKIP
+ENDDO
+PACK
+GOTO TOP
+STOR 0 TO TXP1,TXP2,TXP3,TXP4,TXP5,TXP6,TXP7,TXP8,TXP9,TXP10,TXP11,TXP12,TXP13,TXP14,TXP15,TXP16,TOTTXP
+PNST=1
+LPT1_E=0
+LPT2_E=0
+   IF  VAL(APORT)=1
+     if pnt0_en=1
+       LPT1_E=pnt1_ok()
+     endif
+     IF COM_E=1
+       LPT2_E=pnt2_ok()
+     ELSE
+       LPT2_E=0
+     ENDIF
+   ELSE
+     if pnt0_en=1
+       LPT1_E=pnt2_ok()
+     endif
+     IF COM_E=1
+       LPT2_E=pnt1_ok()
+     ELSE
+       LPT2_E=0
+     ENDIF
+   ENDIF
+DO WHILE .NOT. EOF()
+  PCOUNT=0
+  XDATE=CDATE
+  XHOUR=CHOUR
+  XMIN=CMIN
+  XSEC=CSEC
+  XRATNO=RATNO
+  xscano=scano
+  XCARNO = CARNO
+  XXTANDO=PTANDO
+  XCOUNT=COUNT
+  VUSE=COUNT
+  TEST=MOD(COUNT,RATVOL)
+  IF TEST=0
+    XCOUNT=INT(COUNT/RATVOL)
+    XVOL1=RATVOL
+  ELSE
+   XCOUNT=INT(COUNT/RATVOL)+1
+   XVOL1=MOD(COUNT,RATVOL)
+  ENDIF
+  XVOL=RATVOL
+  TOTSEC=(XHOUR*3600)+(XMIN*60)+XSEC
+  PNST=1
+  IF LPT1_E=1
+    X_LPT1=pnt1_ok()
+    IF	VAL(APORT)=1
+      X_LPT1=pnt1_ok()
+    ELSE
+      X_LPT1=pnt2_ok()
+    ENDIF
+
+  ELSE
+    X_LPT1=0
+  ENDIF
+  if	pnt0_en=0
+    X_LPT1=0
+  endif
+  IF  X_LPT1=1
+    *SET DEVI TO SCRE
+    *SET COLOR TO &C5 +/ &C1
+    *clea
+    *@ 22,2 SAY "   車次      資料列印中      <車次 = 0  者不列印,列印後資料自動取消> "
+    *SET COLOR TO &C7 +/ &C1
+    *@ 22,10  SAY CARNO  PICT "9999"
+
+    IF (RDLPT(val(aport)-1)=144)  .and. ( pnt0_en=1)
+      SET CONS On
+      do case
+      case aport="1"
+	set print to lpt1
+	? chr(27) + "sp1;"
+      case aport="2"
+	set print to lpt2
+	? chr(27) + "sp2;"
+      case aport="3"
+	set print to lpt3
+	? chr(27) + "sp3;"
+      endcase
+      SET CONS On
+      SET DEVI TO PRINT
+
+    ENDIF
+    DO PNT_TIT_0
+  ENDIF
+  SELECT 2
+  XRATNO=FSUBSTR(XRATNO,Len_ratno_dbf," ")
+  LOCA FOR RATNO=XRATNO
+  PNST=1
+  IF .NOT. EOF()
+    NO=1
+    IF AUTOR =0
+      DO MP1_A
+    ELSE
+      DO MP1_B
+    ENDIF
+    DO	ADJWATER
+    DO CASE
+    CASE LCHTYPE=13
+      X=1
+      PN=A_PRESS_N0[1,X,1,5]
+      WHILE PN >0
+	X2=PWATER * PN /RATVOL
+	A_PRESS_N0[1,X,5,2]=X2
+	if pnt_func=0
+	  A_PRESS_N0[1,X,5,1]=A_PRESS_N0[1,X,5,1]+ X2
+	endif
+	X3=A_PRESS_N0[1,X,3,1] + A_PRESS_N0[1,X,4,1]
+	if pnt_func=0
+	  A_PRESS_N0[1,X,3,1]=A_PRESS_N0[1,X,3,1] -(X2 *  A_PRESS_N0[1,X,3,1]/X3)
+	  A_PRESS_N0[1,X,4,1]=A_PRESS_N0[1,X,4,1] -(X2 *  A_PRESS_N0[1,X,4,1]/X3)
+	else
+	  A_PRESS_N0[1,X,3,2]= -(X2 *  A_PRESS_N0[1,X,3,1]/X3)
+	  A_PRESS_N0[1,X,4,2]= -(X2 *  A_PRESS_N0[1,X,4,1]/X3)
+	endif
+
+	X=X+1
+	PN=A_PRESS_N0[1,X,1,5]
+      ENDDO
+    ENDCASE
+    SELECT 2
+
+    STOR 0 TO TXP1,TXP2,TXP3,TXP4,TXP5,TXP6,TXP7,TXP8,TXP9,TXP10,TXP11,TXP12,TXP13,TXP14,TXP15,TXP16,TOTTXP
+    XNT=1
+    DO WHILE (A_PRESS_N0[1,XNT,1,5]>0).AND.(A_PRESS_N0[1,XNT,1,5] <=A_PRESS_N0[1,XNT,1,6] )
+      XH=INT(TOTSEC/3600)
+      XAA=MOD(TOTSEC,3600)
+      XM=INT(XAA/60)
+      XS=MOD(XAA,60)
+      PNTTIME=	STR(XH,2,0)+":"+SUBSTR("00"+ALLTRIM(STR(XM,2,0)),-2,2)+":"+SUBSTR("00"+ALLTRIM(STR(XS,2,0)),-2,2)
+      IF x_lpt1=1
+	@ PROW(),6  SAY  NO  PICT "99"
+	@ PROW(),10    SAY   PNTTIME
+	@ PROW(),18    SAY  A_PRESS_N0[1,XNT,1,5]  PICT "99.9"
+	@ PROW(),25    SAY  A_PRESS_N0[1,XNT,1,6]  PICT "99.9"
+	if pnt_func=1
+	  @ PROW(),35	 SAY  A_PRESS_N0[1,XNT,5,2]  PICT "9999"
+	endif
+	@ PROW()+1,1  SAY  " "
+      endif
+      if  (save_file=1)
+	 SELE 1
+	 APPE  BLANK
+	 REPL	RATNO	WITH XRATNO,LUDATE  WITH  XDATE,CARNO  WITH  XCARNO,SCANO  WITH   XSCANO ,lagno1  WITH	 XSCANO
+	 REPL  PAN_NO  WITH  NO,LUTIME WITH PNTTIME,TVUSE  WITH A_PRESS_N0[1,XNT,1,5] ,LAG_VUSE  WITH A_PRESS_N0[1,XNT,1,6]
+	 SELE 2
+      ENDIF
+	XTW=0
+	FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	  XMC_F=A_M_NAME[X,3]
+	  XTW=XTW+A_PRESS_N0[1,XNT,X,1]  &&+A_PRESS_N0[1,XNT,X,2]
+	  IF (x_lpt1=1	.and. pnt_std=1)
+	    @ PROW(),6*(X-1)+2	SAY   A_PRESS_N0[1,XNT,X,1]  PICT "&XMC_F"      &&+A_PRESS_N0[2,XNT,X,2]   PICT "&XMC_F"
+	  endif
+	  if  (save_file=1)
+	    SELE 1
+	       XC=ALLTRIM(STR(X,2,0))
+	       REPL   TM&XC  WITH  A_PRESS_N0[1,XNT,X,1]
+	    SELE 2
+	  ENDIF
+	NEXT
+	if  (save_file=1)
+	  SELE 1
+	  APPE	BLANK
+	  REPL	 LUDATE  WITH  XDATE,lagno1  WITH   XSCANO,LUTIME WITH PNTTIME
+	  SELE 2
+	ENDIF
+	IF (x_lpt1=1  .and.  pnt_std=1)
+	  @ PROW(),6*(X-1)+2  SAY   XTW  PICT "99999"
+	  @ PROW()+1,1	SAY  " "
+	  IF ((ERRPNT_E=1) .AND.  UCHTYPE=16)  .or. ( pnt_water=1)
+	    @ PROW(),2	SAY   G1_WATER	 PICT "99.9"
+	    @ PROW(),8	SAY   G2_WATER	 PICT  "99.9"
+	    @ PROW(),14 SAY   S1_WATER	 PICT  "99.9"
+	    @ PROW(),20 SAY   S2_WATER	 PICT  "99.9"
+	    @ PROW(),85  SAY   "含水率％"
+	    @ PROW()+1,1  SAY  " "
+	  ENDIF
+	endif
+	XTW=0
+	FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	  XCN=ALLTRIM(STR(X,2))
+	  XP&XCN=0
+	NEXT
+	FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	  XCN=ALLTRIM(STR(X,2))
+	  XMC_F=A_M_NAME[X,3]
+	  X_ERR=STANDW1_ERR[X]
+	  IF X_ERR=0
+	    if STANDW3_ERR[X] >0
+	       X_ERR=A_PRESS_N0[1,XNT,X,1]
+	       X_ERR =X_ERR *  STANDW3_ERR[X]
+	    ELSE
+	      X_ERR=35
+	    ENDIF
+	  ENDIF
+	  XW_N=0
+	  IF A_PRESS_N0[1,XNT,X,1]>0
+	    XRAND=int(RAND() *	SECONDS())
+	    IF (VAL(A_M_NAME[X,3])- INT( VAL(A_M_NAME[X,3]))) >0 && 99.99
+	      X_ERR=INT(X_ERR  * 100)
+	      XER =( -X_ERR + MOD(XRAND,2*X_ERR)) /100
+	    ELSE
+	      XER=INT(X_ERR)
+	      XER = -X_ERR + MOD(XRAND,2*X_ERR)
+	    ENDIF
+	      *XW_N=A_PRESS_N0[1,XNT,X,1] +A_PRESS_N0[1,XNT,X,2] + XER
+	      XW_N=A_PRESS_N0[1,XNT,X,1]  + XER
+	      A_PRESS_N0[1,XNT,X,4]=XW_N
+	  ENDIF
+	  IF x_lpt1=1
+	    @ PROW(),6*(X-1)+2	SAY   XW_N  PICT "&XMC_F"      &&+A_PRESS_N0[2,XNT,X,2]   PICT "&XMC_F"
+	  endif
+	  if  (save_file=1)
+	    SELE 1
+	       XC=ALLTRIM(STR(X,2,0))
+	       REPL   TM&XC  WITH  XW_N
+	    SELE 2
+	  ENDIF
+	  XP&XCN=XW_N
+	  XTW=XTW+XW_N
+	NEXT
+	TOTTXP=TOTTXP+XTW
+	IF x_lpt1=1
+	  @ PROW(),6*(X-1)+2  SAY   XTW  PICT "99999"
+	  @ PROW()+1,1	SAY  " "
+	endif
+	IF ERRPNT_E=1
+	  FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	    xperc= (A_PRESS_N0[1,XNT,X,4]- A_PRESS_N0[1,XNT,X,1] ) * 100 /A_PRESS_N0[1,XNT,X,1]
+	    IF x_lpt1=1
+	      @ PROW(),6*(X-1)+1  SAY	xperc  PICT "999.99"
+	    endif
+	  NEXT
+	  IF x_lpt1=1
+	    @ PROW(),6*(X-1)+2	SAY   "誤差率％"
+	    @ PROW()+1,1  SAY  " "
+	  endif
+	ENDIF
+      XNT=XNT+1
+      TOTXP=0
+      FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	XCN=ALLTRIM(STR(X,2))
+	TXP&XCN=TXP&XCN +XP&XCN
+	*TOTTXP=TOTTXP+TXP&XCN
+      NEXT
+      RNDX=SECONDS()  * RAND()
+      TOTSEC=TOTSEC+PMIXTM+5+MOD(RNDX,11 )
+      IF TOTSEC > 86399
+	TOTSEC=TOTSEC- 86399
+      ENDIF
+      NO=NO+1
+      XCOUNT=XCOUNT-1
+    ENDDO
+    IF x_lpt1=1
+      @ PROW(),1 SAY   "------------------------------------------------------------------------------------------------------"
+      @ PROW()+1,1  SAY  " "
+    ENDIF
+      IF (SAVE_FILE=1)
+	  SELE 7
+	  APPE	BLANK
+	  SELE 2
+      ENDIF
+      FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	XCN=ALLTRIM(STR(X,2))
+	XMC_F="9"+A_M_NAME[X,3]
+	IF (SAVE_FILE=1)
+	  SELE 7
+	  REPL	TOTM&XCN   WITH   TXP&XCN
+	  SELE 2
+	ENDIF
+	IF x_lpt1=1
+	  @ PROW(),6*(X-1)+1  SAY   TXP&XCN  PICT "&XMC_F"      &&+A_PRESS_N0[2,XNT,X,2]   PICT "&XMC_F"
+	ENDIF
+      NEXT
+      IF x_lpt1=1
+	@ PROW(),6*(X-1)+1   SAY   TOTTXP  PICT "999999"
+	@ PROW()+1,1 SAY  " "
+	@ PROW()+1,1  SAY  " "
+      ENDIF
+      SET DEVI TO SCRE
+  ELSE
+    PNST=0
+    SET DEVI TO SCRE
+    @ 22,1 SAY "     <<<  配比錯誤             按任一鍵開始    ESC 鍵停止列印 >>>          "
+    *  SET CONS ON
+    *  ? CHR(7)
+    *  ? CHR(7)
+    *  ? CHR(7)
+    SET CONS OFF
+    WAIT
+    SET CONS On
+    PRLSK=INKEY()
+    IF PRLSK=27
+      RETU
+    ELSE
+      SET DEVI TO  PRINT
+    ENDIF
+  ENDIF
+  xpast=1
+  IF (RDLPT(val(bport)-1)=144  .AND. PNST=1  .AND. LPT2_E=1)  .or. (xpast=1)
+    DO CASE
+    CASE (VAL(C_PRT_REP) = 1 )
+    CASE (VAL(C_PRT_REP) = 2)  .or.  (VAL(C_PRT_REP) =61) .or.	(VAL(C_PRT_REP) =77)
+      SELEC 4
+      &&車號		ACARNO
+      &&空重		ACARW
+      &&配比NO		ARATNO
+      &&米數		AVUSE
+      &&坍度		ATANDO
+      &&客戶NO		AUS2
+      &&DRIVER NAME	ACARDRV
+      &&累計米數	AUS3=XU
+      &&累計車次	ATOT_CAR
+      &&客戶名稱	AUS2_1
+      &&送貨地址	AUS2_2
+      X=_TOT_D_A[20,4]
+      IF  X =1
+	  _TOT_D_A[20,4] :=2
+      ELSE
+	  _TOT_D_A[20,4] :=1
+      ENDIF
+      X=_TOT_D_A[20,4] +2
+      _TOT_D_A[1,X] :=XDATE
+     *IF  C_MINK=0
+     *	_TOT_D_A[1,X] :=XDATE
+     *ELSE
+     *	_TOT_D_A[1,X] := SUBSTR(STR(YEAR(XDATE)-1911,4,0),3,2)	+"   "+ SUBSTR(DTOC(XDATE),1,2)+"   " +SUBSTR(DTOC(XDATE),4,2)
+     *ENDIF
+
+
+      _TOT_D_A[2,X] :=SCANO
+      _TOT_D_A[19,X] :=SCANO
+      _TOT_D_A[3,X]  :=US2_1
+      _TOT_D_A[4,X]  :=US2_2
+      _TOT_D_A[5,X]  :=TOTTXP + CCARW
+      _TOT_D_A[6,X]  :=CCARW
+      _TOT_D_A[7,X]  :=TOTTXP
+      _TOT_D_A[8,X]  :=SUBSTR("00" +alltrim(STR(XH,2,0)),-2,2) + ":" + SUBSTR("00" +alltrim(STR(XM,2,0)),-2,2) + ":" + SUBSTR("00" +alltrim(STR(XS,2,0)),-2,2)
+      _TOT_D_A[9,X]  :=LAG_CAR
+      _TOT_D_A[10,X] :=COUNT
+      _TOT_D_A[11,X] :=LAG_LAG
+      _TOT_D_A[17,X] :=SCANO
+      SELE 2
+      _TOT_D_A[12,X] :=S_STRO
+      _TOT_D_A[14,X] :=S_TANDO
+      _TOT_D_A[17,X] :=S_MAX
+      SELE 4
+      _TOT_D_A[13,X] :=CARNO
+      IF PTANDO <> 0
+	_TOT_D_A[14,X] :=PTANDO
+      ENDIF
+      _TOT_D_A[15,X] :=CCARDRV
+      _TOT_D_A[16,X] :=US2
+      _TOT_D_A[18,X] :=XRATNO
+      if  (LPT2_E=1)
+	SET CONS On
+	do case
+	case bport="1"
+	  set print to lpt1
+	  ? chr(27) + "sp1;"
+	case bport="2"
+	  set print to lpt2
+	  ? chr(27) + "sp2;"
+	case bport="3"
+	  set print to lpt3
+	  ? chr(27) + "sp3;"
+	endcase
+	SET CONS On
+	SET DEVI TO PRINT
+	SetPntWx("5")
+	DO REP_&C_PRT_REP
+     endif
+	SET DEVI TO SCRE
+    ENDCASE
+  endif
+  SELEC 4
+  DELET
+  SKIP
+  STOR 0 TO TXP1,TXP2,TXP3,TXP4,TXP5,TXP6,TXP7,TXP8,txp11
+   PWDSPN=SECONDS()
+   waits=SECONDS()
+   t=1
+   while  t=1
+     if     abs(seconds() -waits) > 10
+       t=0
+     endif
+     GG=INKEY()
+     IF  GG=27
+	T=0
+     ENDIF
+     iF  (WATER_INPUT=0) .AND. (SECONDS()- PWDSPN > 0.5)
+       @ 1,11 SAY  PWATER  PICT "9999"
+       @ 1,18 SAY  SCANO  PICT "XXXXXXXXXXXXXX"
+       PWATER=INT((WDATA(15)-2048)*WATER_ADJ/2048)
+       PWDSPN=SECONDS()
+     ENDIF
+  ENDDO
+
+ENDDO
+
+	SET DEVI TO SCRE
+**-----------------------------------------------------------------------------
+PROCEDURE  pnt_tit_0
+PARAMETERS  P1,P2,P3
+IF RDLPT(val(aport)-1)=144
+  SET CONS On
+  SET DEVI TO PRINT
+  SetPntWx("5")
+  @ PROW()+2,2 SAY   " 日期 :    年    月    日                                               "
+  X=_Tot_d_a[20,4] +2
+  @  PROW(),9	SAY  YEAR(XDATE)       PICT  "9999"
+  @ PROW(),17 SAY  SUBSTR(DTOC(XDATE),1,2)
+  @ PROW(),23 SAY  SUBSTR(DTOC(XDATE),4,2)
+  @ PROW(),34 SAY  "車號:"
+  @ PROW(),41  SAY  UPPER(CARNO)
+  @ PROW(),51 SAY  "配比:"
+  @ PROW(),56 SAY  RATNO
+  IF  EMPTY(ALLTRIM(SCANO))<>.T.
+    @ PROW(),66 SAY  "序號:"
+    @ PROW(),72 SAY  SCANO  PICT "XXXXXXXXXXXXXX"
+  ENDIF
+  IF  (COM_E=0)  .AND.	((EMPTY(ALLTRIM(SCANO))<>.T. )	.OR. (PTANDO  <> 0))
+      *@ PROW()+1,1 SAY  " "
+    @ PROW()+1,1 SAY  " "
+    IF	PTANDO	<> 0
+      @ PROW(),66 SAY  "坍度:"
+      @ PROW(),71  SAY	PTANDO	 PICT "9999"
+    ENDIF
+  ENDIF
+  @ PROW()+1,1 SAY   "------------------------------------------------------------------------------------------------------"
+  if pnt_func=0
+    @ PROW()+1,1 SAY   "      NO.  時間  米數  累計(米)        設定重量/實際重量 (Kg)"
+  else
+    @ PROW()+1,1 SAY   "      NO.  時間  米數  累計(米)  含水量  設定重量/實際重量 (Kg)"
+  endif
+  @ PROW()+1,1 SAY   " "
+  FOR X=1 TO  (GS_TOT+UWC_TOT)
+    @  PROW(),6 *(X-1)+1  SAY  A_M_NAME[X,1]
+  NEXT
+  @ PROW(),6 *(X-1)+1  SAY   "總重"
+  @ PROW()+1,1 SAY   "------------------------------------------------------------------------------------------------------"
+  @ PROW()+1,1 SAY  " "
+endif
+RETU
+
+
+**-----------------------------------------------------------------------------
+PROCEDURE  MP1_A
+PARAMETERS  P1,P2,P3
+  MX="1"
+  MLA_LAG=0
+  XSTP=INT((VUSE+RATVOL-0.1)/RATVOL)
+  DO WHILE MLA_LAG < VUSE
+    IF VAL(MX) < XSTP
+      MLA_LAG=MLA_LAG+RATVOL
+      SELE 2
+      XM_PLUS=0
+      FOR XNP=1  TO  kind
+	XNPC=LTRIM(STR(INT(XNP),2,0))
+	A_PRESS_N0[1,VAL(MX),XNP,1] :=M&XNPC * RATVOL
+	A_PRESS_N0[1,VAL(MX),XNP,2] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,3] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,5] := RATVOL
+	A_PRESS_N0[1,VAL(MX),XNP,6] := MLA_LAG
+      NEXT
+      SELE 2
+    ELSE
+      LVUSE=VUSE -MLA_LAG
+      MLA_LAG=VUSE
+      XM_PLUS=0
+      SELE 2
+      FOR XNP=1  TO  kind
+	XNPC=LTRIM(STR(INT(XNP),2,0))
+	A_PRESS_N0[1,VAL(MX),XNP,1] :=M&XNPC * LVUSE
+	A_PRESS_N0[1,VAL(MX),XNP,2] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,3] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,5] := LVUSE
+	A_PRESS_N0[1,VAL(MX),XNP,6] := MLA_LAG
+      NEXT
+      SELE 2
+    ENDIF
+    MX=LTRIM(STR(INT(VAL(MX)+1),2,0))
+  ENDDO
+  A_PRESS_N0[1,VAL(MX),1,5] := 0
+  A_PRESS_N0[1,VAL(MX),1,6] := 0
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  MP1_B
+PARAMETERS  P1,P2,P3
+SELE 8
+MX=INT((VUSE+0.4)*2)*.5
+LOCA FOR (MLAV=RATVOL) .AND.(MLMV=MX)
+IF   .NOT. EOF()
+  MX="1"
+  MLA_LAG=0
+  DO WHILE MLA&MX >0
+    IF MLMV_1 > MLA_LAG
+      X_MLA=MLA&MX
+      MLA_LAG=MLA_LAG+X_MLA
+      XM_PLUS=0
+      SELE 2
+      FOR XNP=1  TO  kind
+	XNPC=LTRIM(STR(INT(XNP),2,0))
+	A_PRESS_N0[1,VAL(MX),XNP,1] :=M&XNPC * X_MLA
+	A_PRESS_N0[1,VAL(MX),XNP,2] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,3] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,5] := X_MLA
+	A_PRESS_N0[1,VAL(MX),XNP,6] := MLA_LAG
+      NEXT
+      SELE 8
+    ELSE
+      LVUSE=VUSE -MLMV_1
+      MLA_LAG=MLA_LAG+LVUSE
+      XM_PLUS=0
+      SELE 2
+      FOR XNP=1  TO  kind
+	XNPC=LTRIM(STR(INT(XNP),2,0))
+	A_PRESS_N0[1,VAL(MX),XNP,1] :=M&XNPC * LVUSE
+	A_PRESS_N0[1,VAL(MX),XNP,2] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,3] := 0
+	A_PRESS_N0[1,VAL(MX),XNP,5] := LVUSE
+	A_PRESS_N0[1,VAL(MX),XNP,6] := MLA_LAG
+      NEXT
+      SELE 8
+    ENDIF
+    MX=LTRIM(STR(INT(VAL(MX)+1),2,0))
+  ENDDO
+  A_PRESS_N0[1,VAL(MX),1,5] := 0
+  A_PRESS_N0[1,VAL(MX),1,6] := 0
+ELSE
+  DO MP1_A
+ENDIF
+RETU
+**------------------------------------------------------------------------------------------------------------
+PROCEDURE  ADJWATER
+PARAMETERS  P1,P2,P3
+IF WATER_INPUT=1
+     FOR XLOOP5=1  TO  20
+       IF  INT(A_PRESS_N0[1,XLOOP5,1,5]) >0
+	 XPN=0
+	 XP1=INT(A_PRESS_N0[1,XLOOP5,1,1]  *  G1_WATER/100)
+	 XP2=INT(A_PRESS_N0[1,XLOOP5,2,1]  *  G2_WATER/100)
+	 XP3=INT(A_PRESS_N0[1,XLOOP5,3,1]  *  S1_WATER/100)
+	 XP4=INT(A_PRESS_N0[1,XLOOP5,4,1]  *  S2_WATER/100)
+	 DO CASE
+	 CASE LCHTYPE=16
+	   XP5=INT(A_PRESS_N0[1,XLOOP5,10,1])
+	   XP6=INT(A_PRESS_N0[1,XLOOP5,11,1] )
+	   XP7=INT(A_PRESS_N0[1,XLOOP5,12,1])
+	 OTHERWISE
+	   XP5=0
+	   XP6=0
+	   XP7=0
+	 ENDCASE
+	 A_PRESS_N0[1,XLOOP5,1,1] = A_PRESS_N0[1,XLOOP5,1,1] + XP1
+	 A_PRESS_N0[1,XLOOP5,2,1] = A_PRESS_N0[1,XLOOP5,2,1] + XP2
+	 A_PRESS_N0[1,XLOOP5,3,1] = A_PRESS_N0[1,XLOOP5,3,1] + XP3
+	 A_PRESS_N0[1,XLOOP5,4,1] = A_PRESS_N0[1,XLOOP5,4,1] + XP4
+	 xtmpmw=xp1+XP2+XP3+XP4 +XP5 +XP6 +XP7
+	 do  case
+	 case  (lchtype=14  .and.  uchtype=13  .and.  pnt_water=0 )
+	     ADJWN=- XTMPMW
+	     A_PRESS_N0[1,XLOOP5,5,1] = A_PRESS_N0[1,XLOOP5,5,1] +ADJWN
+	 case  lchtype=13  .and.  uchtype=13
+	     ADJWN=- XTMPMW
+	     A_PRESS_N0[1,XLOOP5,5,1] = A_PRESS_N0[1,XLOOP5,5,1] +ADJWN
+	 otherwise
+	   xtmpw=A_PRESS_N0[1,XLOOP5,5,1] +A_PRESS_N0[1,XLOOP5,6,1]
+	   IF  XTMPW  > 0
+	     ADJWN=-A_PRESS_N0[1,XLOOP5,5,1]  * XTMPMW /XTMPW
+	     A_PRESS_N0[1,XLOOP5,5,1] = A_PRESS_N0[1,XLOOP5,5,1] +ADJWN
+	     ADJWN=-A_PRESS_N0[1,XLOOP5,6,1]  * XTMPMW /XTMPW
+	     A_PRESS_N0[1,XLOOP5,6,1] = A_PRESS_N0[1,XLOOP5,6,1] +ADJWN
+	   ENDIF
+	 endcase
+	ELSE
+	  RETU
+	ENDIF
+     NEXT
+ENDIF
+RETU
+

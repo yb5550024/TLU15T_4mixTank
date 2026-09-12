@@ -1,0 +1,582 @@
+
+
+#INCLUDE "alu16.h"
+SELE 3
+public	XSCANO, XCARNO ,XRATNO,XVUSE,XCALW_REP,CHRN,XTANDO,XPOSITION
+set cons on
+SET DELE OFF
+RECALL	 ALL
+DO WHILE .NOT. EOF()
+  IF SCANO=0 .OR. VUSE=0
+    DELE
+  ENDIF
+  SKIP
+ENDDO
+D_LONG=4
+PACK
+GOTO TOP
+DELE
+LUDBF="3"
+XX1=6
+SCRCC=1
+YY1=23
+SCRNO=23
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+SET COLOR TO &C6 / &C1
+@ 24,0 SAY "∥ <<出車>>           Esc-取消訂單   Ctl-End 結束 ↑上一筆  ↑↑插單  ↓下一筆∥"
+SET COLOR TO  gr +/ &C1
+@ 24,5	SAY "出車"
+@ 24,22 SAY "Esc"
+@ 24,37 SAY "Ctl-End"
+@ 24,50 SAY "↑"
+@ 24,60 SAY "↑↑"
+@ 24,70 SAY "↓"
+SET COLOR TO &C7 +/ &C1
+@ SCRNO,13  SAY ASCANO	  PICT "99999"
+@ SCRNO,25  SAY ACARNO	  PICT "XXXXXXX"
+@ SCRNO,37  SAY ARATNO	  PICT "XXXXXXXXX"
+@ SCRNO,52  SAY AVUSE	  PICT "99.9"
+@ SCRNO,61  SAY ATANDO	  PICT "9999"
+IF WASTE=1
+  @ SCRNO,71  SAY APOSITION
+ELSE
+  @ SCRNO,75  SAY ACALW_REP PICT "99"
+ENDIF
+datatype :={"9","X","X","9","9","X"}
+T2=1
+T=0
+DO WHILE  T2<>0
+  *IF T=5 .OR.	T=24  .OR. T=27
+  IF T=5 .OR.  T=24
+    IF BOF()
+      IF EMPTY(XSCANO)
+	XSCANO=LAG_REPNO
+      ENDIF
+      IF EMPTY(XCARNO)
+	XCARNO="       "
+      ENDIF
+      IF EMPTY(XRATNO)
+	XRATNO=0
+      ENDIF
+      IF EMPTY(XVUSE)
+	XVUSE=0
+      ENDIF
+      IF EMPTY(XTANDO)
+	XTANDO=0
+      ENDIF
+      IF EMPTY(XCALW_REP)
+	XCALW_REP=1
+      ENDIF
+      IF XCALW_REP=0
+	XCALW_REP=1
+      ENDIF
+    ELSE
+      XSCANO= SCANO
+      XCARNO= CARNO
+      XRATNO= RATNO
+      XVUSE= VUSE
+      XTANDO=TANDO
+      XCALW_REP=1
+    ENDIF
+  ELSE
+    XSCANO=ASCANO
+    XCARNO=ACARNO
+    XRATNO=ARATNO
+    XVUSE=AVUSE
+    XTANDO=ATANDO
+    XCALW_REP=ACALW_REP
+  ENDIF
+  XPOSITION=APOSITION
+  SET COLOR TO &C1 / &C7 +
+  @ SCRNO,13  SAY xSCANO    PICT "99999"
+  @ SCRNO,25  SAY XCARNO    PICT "XXXXXXX"
+  @ SCRNO,37  SAY XRATNO    PICT "XXXXXXXXX"
+  @ SCRNO,52  SAY XVUSE     PICT "99.9"
+  @ SCRNO,61  SAY XTANDO    PICT "9999"
+  IF WASTE=1
+    @ SCRNO,71	SAY XPOSITION
+  ELSE
+    @ SCRNO,75	SAY XCALW_REP PICT "99"
+  ENDIF
+  SET COLOR TO &C7 +/ &C1
+  CHRN=STR(XSCANO,5)
+  ph_xn=13
+  XP=0
+  FGETNO=1
+  Y1=SCRNO
+  YY1=Y1
+  GETNO=1
+  DO WHILE   GETNO<=6
+    t=0
+    *CURSER2(ph_xn,Y1,XP)
+    set colo to &c1  /&c7 +
+    @ y1,ph_xn say  chrn
+    set colo to gr + * /bl
+    @ y1,ph_xn say  substr(chrn,XP+1,1)
+    set colo to &c7 + /&c1
+    XX1=ph_xn+XP
+    YY1=Y1
+    T1=0
+    TN1=0
+    DO WHILE T1<>233
+      T=0
+      LURECNO=RECNO()
+      DO WHILE T=0
+	T=INKEY( )
+	DO DSP2
+	DO LUSTP
+      ENDDO
+      SELE &LUDBF
+      GOTO LURECNO
+      DO CASE
+      case  T=19
+	IF XP>=1
+	  XP=XP-1
+	  *CURSER0(XX1,YY1)
+	  *CURSER2(ph_xn,Y1,XP)
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  XX1=ph_xn+XP
+	  YY1=Y1
+	ENDIF
+      CASE  T=4
+	IF GETNO=2
+	  LANPA=5
+	ELSE
+	  IF GETNO=1
+	    LANPA=3
+	  ELSE
+	    LANPA=2
+	  ENDIF
+	ENDIF
+	IF XP<=LANPA
+	  XP=XP+1
+	  *CURSER0(XX1,YY1)
+	  *CURSER2(ph_xn,Y1,XP)
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  XX1=ph_xn+XP
+	  YY1=Y1
+	ENDIF
+      CASE   (t>=45  .and. T<=90 )  .OR. (T=32 )  .OR. (T>=97  .AND. T<=122 .AND. datatype[GETNO]="X")
+	XP=XP+1
+	d_long=len(chrn)
+	IF TN1=0 .AND. XP=1
+	  TN1=1
+	  *CHRN="       "
+	  CHRN=space(d_long)
+	ENDIF
+	IF XP<D_LONG
+	  CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,D_LONG-XP)
+	  SET COLOR TO &C1 / &C7 +
+	  @ SCRNO,ph_xn  SAY CHRN
+	  SET COLOR TO &C7 +/ &C1
+	  *CURSER0(XX1,YY1)
+	  *CURSER2(ph_xn,Y1,XP)
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  XX1=ph_xn+XP
+	  YY1=Y1
+	ELSE
+	  CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+	  SET COLOR TO 0/7
+	  SET COLOR TO &C1 / &C7 +
+	  @ SCRNO,ph_xn  SAY CHRN
+	  SET COLOR TO &C7 +/ &C1
+	  *CURSER2(ph_xn,Y1,XP)
+	  XP=d_long -1
+	  XX1=ph_xn+XP
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  YY1=Y1
+	ENDIF
+      CASE   T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+	XP=XP+1
+	d_long=len(chrn)
+	IF TN1=0 .AND. XP=1
+	  TN1=1
+	  CHRN=space(d_long)
+	  IF GETNO=6
+	    IF WASTE <>1
+	      CHRN="1 "
+	    ENDIF
+	  ENDIF
+	ENDIF
+	*IF GETNO=6
+	*  IF WASTE <>1
+	*    D_LONG=2
+	*   ENDIF
+	*ELSE
+	*  D_LONG=4
+	*ENDIF
+	*d_long=len(chrn)
+	IF XP<D_LONG
+	  CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,D_LONG-XP)
+	  SET COLOR TO &C1 / &C7 +
+	  @ SCRNO,ph_xn  SAY CHRN
+	  SET COLOR TO &C7 +/ &C1
+	  *CURSER0(XX1,YY1)
+	  *CURSER2(ph_xn,Y1,XP)
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  XX1=ph_xn+XP
+	  YY1=Y1
+	ELSE
+	  CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+	  SET COLOR TO &C1 / &C7 +
+	  @ SCRNO,ph_xn  SAY CHRN
+	  SET COLOR TO &C7 +/ &C1
+	  XP=XP-1
+	  *CURSER2(ph_xn,Y1,XP)
+	  set colo to &c1  /&c7 +
+	  @ y1,ph_xn say  chrn
+	  set colo to gr + * /bl
+	  @ y1,ph_xn+xp say  substr(chrn,xp+1,1)
+	  set colo to &c7 + /&c1
+	  XP=3
+	  XX1=ph_xn+XP
+	  YY1=Y1
+	  if getno=6
+	    IF WASTE <>1
+	      XP=1
+	    ENDIF
+	  endif
+	ENDIF
+      CASE T=13
+	FGETNO=GETNO+1
+	T1=233
+      CASE T=5
+	IF GETNO>1
+	  FGETNO=GETNO-1
+	  T1=233
+	ELSE
+	  FGETNO=7
+	  T1=233
+	ENDIF
+      CASE T=27
+	t=0
+	SCRMA=savescreen(15,0,22,39)
+	@ 15,11 clea to  22,39
+	@ 15,13  say "   << 按任一鍵繼續 >>"
+	@ 16,13  say "1. " +  LAGcno1
+	@ 17,13  say "2. " +  LAGcno2
+	@ 18,13  say "3. " +  LAGcno3
+	@ 19,13  say "4. " +  LAGcno4
+	@ 20,13  say "5. " +  LAGcno5
+	DO WHILE T=0
+	  T=INKEY( )
+	  DO DSP2
+	  DO LUSTP
+	ENDDO
+	t=0
+	restscreen(15,0,22,39,scrma)
+	*    T1=233
+	*    GETNO=6
+      CASE T=23
+	T1=233
+	T2=0
+	FGETNO=7
+      CASE T=24
+	T1=233
+	FGETNO=7
+      ENDCASE
+    ENDDO
+    SET COLOR TO &C1 / &C7 +
+    DO CASE
+    CASE GETNO=1
+      XSCANO=INT(VAL(CHRN))
+      @ SCRNO,13  SAY XSCANO	PICT "99999"
+    CASE GETNO=2
+      XCARNO=UPPER(CHRN)
+      @ SCRNO,25  SAY XCARNO	  PICT "XXXXXXX"
+    CASE GETNO=3
+      XRATNO=ALLTRIM(UPPER(CHRN))
+      XN2=LEN(XRATNO)
+      IF (XN2<9)
+	 XRATNO =XRATNO +SUBSTR("         ",1,9-XN2)
+      ENDIF
+      @ SCRNO,37  SAY XRATNO	PICT "XXXXXXXXX"
+    CASE GETNO=4
+      SET DECIM TO 1
+      XVUSE=VAL(CHRN)
+      IF XVUSE>pcs_max
+	XVUSE=0
+	FGETNO=4
+      ENDIF
+      @ SCRNO,52  SAY XVUSE	PICT "99.9"
+    CASE GETNO=5
+      XTANDO=INT(VAL(CHRN))
+      @ SCRNO,61  SAY XTANDO	PICT "9999"
+    CASE GETNO=6
+      SET DECIM TO 0
+      IF WASTE=1
+	XPOSITION =upper(CHRN)
+	@ SCRNO,71  SAY XPOSITION
+      ELSE
+	XCALW_REP=VAL(CHRN)
+	@ SCRNO,75  SAY XCALW_REP     PICT "99"
+      ENDIF
+    ENDCASE
+
+    SET COLOR TO &C7 +/ &C1
+    DO CASE
+    CASE FGETNO=1
+      CHRN=STR(XSCANO,5)
+      ph_xn=13
+      XP=0
+      FGETNO=0
+      GETNO=1
+    CASE FGETNO=2
+
+      GETNO=2
+      CHRN=XCARNO
+      ph_xn=25
+      XP=0
+      FGETNO=0
+    CASE FGETNO=3
+      GETNO=3
+      CHRN=SUBSTR(XRATNO,1,9)
+      ph_xn=37
+      XP=0
+      FGETNO=0
+    CASE FGETNO=4
+      GETNO=4
+      CHRN=STR(XVUSE,4,1)
+      ph_xn=52
+      XP=0
+      FGETNO=0
+    CASE FGETNO=5
+      GETNO=5
+      CHRN=STR(XTANDO,4)
+      ph_xn=61
+      XP=0
+      FGETNO=0
+    CASE FGETNO=6
+      GETNO=6
+      IF  WASTE=1
+	CHRN=XPOSITION
+	ph_xn=71
+      ELSE
+	CHRN=STR(XCALW_REP,2,0)
+	ph_xn=75
+      ENDIF
+      XP=0
+      FGETNO=0
+    CASE FGETNO=7
+      ASCANO =	XSCANO
+      ACARNO =	XCARNO
+      ARATNO =	XRATNO
+      AVUSE =	XVUSE
+      ATANDO=XTANDO
+      IF  WASTE=1
+	 APOSITION=XPOSITION
+      ELSE
+	ACALW_REP=XCALW_REP
+      ENDIF
+      FGETNO=0
+      GETNO=7
+      @ SCRNO,13  SAY ASCANO	PICT "99999"
+      @ SCRNO,25  SAY ACARNO   PICT "XXXXXXX"
+      @ SCRNO,37  SAY ARATNO	PICT "XXXXXXXXX"
+      @ SCRNO,52  SAY AVUSE	PICT "99.9"
+      @ SCRNO,61  SAY ATANDO	PICT "9999"
+      IF  WASTE=1
+	@ SCRNO,71  SAY APOSITION
+      ELSE
+	@ SCRNO,75  SAY ACALW_REP PICT "99"
+      ENDIF
+      IF T=13
+	T=23
+	T2=0
+      ENDIF
+    ENDCASE
+  ENDDO
+  DO CASE
+  CASE	T=13
+    XP=0
+  CASE	T=24
+    XP=0
+    RECA
+    SKIP
+    IF EOF()
+      GOTO BOTT
+    ENDIF
+    DELE
+  CASE T=5
+    RECA
+    SKIP (-1)
+    XP=0
+    IF	.NOT. BOF()
+      GOTO TOP
+	DELE
+      ELSE
+    ENDIF
+    *  CASE T=27
+    *	 SET DELE OFF
+    *	   PACK
+    *	   XP=0
+    *	   GOTO TOP
+    *	   IF .NOT. BOF()
+    *	   DELE
+    *	   ENDIF
+    *	   T=5
+  ENDCASE
+  @ SCRNO,13  SAY ASCANO    PICT "99999"
+  @ SCRNO,25  SAY ACARNO    PICT "XXXXXXX"
+  @ SCRNO,37  SAY ARATNO    PICT "XXXXXXXXX"
+  @ SCRNO,52  SAY AVUSE     PICT "99.9"
+  @ SCRNO,61  SAY ATANDO    PICT "9999"
+  IF  WASTE=1
+    @ SCRNO,71	SAY APOSITION
+    ACALW_REP =1
+  ELSE
+    @ SCRNO,75	SAY ACALW_REP PICT "99"
+  ENDIF
+ENDDO
+T=0
+&&-----------------------------------------------------------------------------
+PROCEDURE  NPAH1_DSP2
+PARAMETERS  P1,P2,P3
+SET COLOR TO &C7 +/ &C1
+SET COLOR TO &C1 / &C7 +
+DO CASE
+CASE GETNO=1
+  XSCANO=INT(VAL(CHRN))
+  @ SCRNO,13  SAY XSCANO    PICT "99999"
+CASE GETNO=2
+  XCARNO=UPPER(CHRN)
+  @ SCRNO,25  SAY XCARNO      PICT "XXXXXXX"
+CASE GETNO=3
+  XRATNO=INT(VAL(CHRN))
+  @ SCRNO,42  SAY XRATNO    PICT "9999"
+CASE GETNO=4
+  SET DECIM TO 1
+  XVUSE=VAL(CHRN)
+  IF XVUSE>pcs_max
+    XVUSE=0
+    FGETNO=4
+  ENDIF
+  @ SCRNO,52  SAY XVUSE     PICT "99.9"
+CASE GETNO=5
+  XTANDO=INT(VAL(CHRN))
+  @ SCRNO,61  SAY XTANDO    PICT "9999"
+CASE GETNO=6
+  IF  WASTE=1
+    XPOSITION=CHRN
+    @ SCRNO,71	SAY XPOSITION
+  ELSE
+    XCALW_REP=INT(VAL(CHRN))
+    @ SCRNO,75	SAY XCALW_REP	 PICT "99"
+  ENDIF
+ENDCASE
+SET COLOR TO &C7 +/ &C1
+DO CASE
+CASE FGETNO=1
+  CHRN=STR(XSCANO,5)
+  ph_xn=13
+  XP=0
+  FGETNO=0
+  GETNO=1
+CASE FGETNO=2
+  GETNO=2
+  CHRN=XCARNO
+  ph_xn=25
+  XP=0
+  FGETNO=0
+CASE FGETNO=3
+  GETNO=3
+  CHRN=STR(XRATNO,4)
+  ph_xn=42
+  XP=0
+  FGETNO=0
+CASE FGETNO=4
+  GETNO=4
+  CHRN=STR(XVUSE,4,1)
+  ph_xn=52
+  XP=0
+  FGETNO=0
+CASE FGETNO=5
+  GETNO=5
+  CHRN=STR(XTANDO,4)
+  ph_xn=61
+  XP=0
+  FGETNO=0
+CASE FGETNO=6
+  GETNO=6
+  IF  WASTE=1
+    CHRN=XPOSITION
+    ph_xn=71
+  ELSE
+    CHRN=STR(XCALW_REP,2,0)
+    ph_xn=75
+  ENDIF
+  XP=0
+  FGETNO=0
+CASE FGETNO=7
+  ASCANO =  XSCANO
+  ACARNO =  XCARNO
+  ARATNO =  XRATNO
+  AVUSE =   XVUSE
+  ATANDO=XTANDO
+  IF  WASTE=1
+    APOSITION=XPOSITION
+  ELSE
+    ACALW_REP=XCALW_REP
+  ENDIF
+  FGETNO=0
+  GETNO=7
+  F3_N=0
+  F3_RUN=0
+  @ SCRNO,13  SAY ASCANO    PICT "99999"
+  @ SCRNO,25  SAY ACARNO   PICT "XXXXXXX"
+  @ SCRNO,42  SAY ARATNO    PICT "9999"
+  @ SCRNO,52  SAY AVUSE     PICT "99.9"
+  @ SCRNO,61  SAY ATANDO    PICT "9999"
+  IF  WASTE=1
+    @ SCRNO,71	SAY APOSITION
+    ACALW_REP=1
+  ELSE
+    @ SCRNO,75	SAY ACALW_REP	 PICT "99"
+  ENDIF
+  IF T=13
+    T=23
+    T2=0
+  ENDIF
+  DO FUN_KEY
+ENDCASE
+IF   GETNO<=6
+  t=0
+  set colo to &c1  /&c7 +
+  @ y1,ph_xn say  chrn
+  set colo to gr + * /bl
+  @ y1,ph_xn say  substr(chrn,XP+1,1)
+  set colo to &c7 + /&c1
+  XX1=ph_xn+XP
+  YY1=Y1
+  T1=0
+  TN1=0
+  T=0
+ENDIF
+T1=0
+retu
+&&-----------------------------------------------------------------------------
+

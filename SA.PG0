@@ -1,0 +1,1361 @@
+
+#INCLUDE "T15_COM.H"
+CLEA
+SET TALK OFF
+SET CURS ON
+SET ESCA ON
+SET CONF OFF
+pnt_std=1
+if (lchtype=14	.and.  uchtype=13  .and.  pnt_water=0 )
+*  pnt_std=0
+endif
+ENGL=0
+manu_f=0
+DBFPN=0
+DBFDN=0
+sa_manu_m(manu_f)
+LSK="7"
+SET COLOR TO &C5 +/ &C1
+RAR1=0
+pnt_fst1=0
+pnt_fst2=0
+TXP_TOT=ARRAY(kind +4)
+TXPTN=ARRAY(kind +4)
+A_TOTW=ARRAY(kind+4)
+DO WHILE  RAR1<>23
+  LSK="7 "
+  DLA_DSP=0
+  SELE 9
+  USE
+  SET TALK OFF
+  SET CURS ON
+  SET ESCA ON
+  SET CONF OFF
+  SET COLOR TO &C5 +/ &C1
+  XRANG="99"
+  IF LU_COUNT=1
+    XRANG="99"
+  ENDIF
+  IF  STORAB=1
+    XRANG="XX"
+  ENDIF
+  @ 20,28 GET LSK  PICT  "&XRANG"
+  READ
+
+  IF  LSK="NW"  .OR. LSK="nw"
+
+    for XLOOP=3 to   4
+
+      DO CASE
+      CASE XLOOP <3
+
+	IF XLOOP=1
+	  sele	1
+	ELSE
+	  sele 19
+	ENDIF
+	goto   top
+	loca   for ludate=ctod("10/27/2021")
+	xsno="10722110270001"
+	XLAGNO1=LAGNO1
+	DO  WHILE  .NOT.  EOF()
+	  IF XLAGNO1 <>LAGNO1
+	    xsno=STR(VAL(XSNO)+1,14,0)
+	    XLAGNO1=LAGNO1
+	  ENDIF
+	  IF  ALLTRIM(SCANO)="107"   .AND. PAN_NO >0
+	     REPL  SCANO  WITH	XSNO
+	  ENDIF
+
+	  SKIP
+	ENDDO
+
+      CASE XLOOP >2
+	 IF XLOOP=3
+	   sele 7
+	 ELSE
+	   sele 18
+	 ENDIF
+	 GOTO	TOP
+	 && DELE  FOR	ALLTRIM(SCANO)="107"
+	 DELE  FOR   ludate=ctod("10/27/2021")
+	 PACK
+
+	 XSARECNO=0
+	 IF XLOOP=3
+	   sele 7
+	   GOTO BOTT
+	   XSARECNO=RECNO()
+
+	   sele 1
+	 ELSE
+	   sele 18
+	   XSARECNO=RECNO()
+	   sele 19
+	 ENDIF
+	 loca	for ludate=ctod("10/27/2021")
+	 xSCANO=SCANO
+	 XLAGNO1="-1"
+	 XSAINDEX=0
+	 DO  WHILE  .NOT.  EOF()
+	   IF XLAGNO1 <> LAGNO1   .AND.  PAN_NO =1
+	     XSAINDEX=XSAINDEX +1
+
+	     xSCANO=SCANO
+	     XLAGNO1=LAGNO1
+	     XCARNO=CARNO
+	     XLUDATE=LUDATE
+	     XLUTIME=LUTIME
+	     XLAG_VUSE=LAG_VUSE
+	     XPAN_NO=PAN_NO
+	     XSIGN=SIGN
+	     XMIX_SEC=MIX_SEC
+	     XRATNO=RATNO
+
+	     XTOTM1=0
+	     XTOTM2=0
+	     XTOTM3=0
+	     XTOTM4=0
+	     XTOTM5=0
+	     XTOTM7=0
+	     XTOTM8=0
+	     XTOTM9=0
+	     XTOTM10=0
+	     XTOTM11=0
+	     XTOTM12=0
+	     XTOTM13=0
+
+
+	     IF XLOOP=3
+	       sele 7
+	     ELSE
+	       sele 18
+	     ENDIF
+	     GOTO  BOTT
+	     APPE  BLANK
+	     REPL  SCANO  WITH XSCANO
+	     REPL LAGNO1  WITH XLAGNO1
+	     REPL CARNO WITH XCARNO
+	     REPL LUDATE WITH XLUDATE
+	     REPL LUTIME WITH XLUTIME
+	     REPL TOTVUSE WITH XLAG_VUSE
+	     REPL RATNO WITH XRATNO
+	   ELSE
+	     IF PAN_NO >0
+		XLUDATE=LUDATE
+		XLUTIME=LUTIME
+		XLAG_VUSE=LAG_VUSE
+		IF XLOOP=3
+		  sele 7
+		ELSE
+		  sele 18
+		ENDIF
+		REPL LUDATE WITH XLUDATE
+		REPL LUTIME WITH XLUTIME
+		REPL TOTVUSE WITH XLAG_VUSE
+	     ELSE
+	       XACTW=0
+	       IF XLOOP=3
+		 IF SIGN="3"
+		   XACTW=1
+		 ENDIF
+	       ELSE
+		 XACTW=1
+	       ENDIF
+	       IF XACTW=1
+
+		  XTOTM1 =XTOTM1  + TM1
+		  XTOTM2 =XTOTM2  + TM2
+		  XTOTM3 =XTOTM3  + TM3
+		  XTOTM4 =XTOTM4  + TM4
+		  XTOTM5 =XTOTM5  + TM5
+		  XTOTM6 =XTOTM6  + TM6
+		  XTOTM7 =XTOTM7  + TM7
+		  XTOTM8 =XTOTM8  + TM8
+		  XTOTM9 =XTOTM9  + TM9
+		  XTOTM10=XTOTM10 + TM10
+		  XTOTM11=XTOTM11 + TM11
+		  XTOTM12=XTOTM12 + TM12
+		  XTOTM13=XTOTM13 + TM13
+
+		  IF XLOOP=3
+		    sele 7
+		  ELSE
+		    sele 18
+		  ENDIF
+
+		  REPL	TOTM1  WITH XTOTM1
+		  REPL	TOTM2  WITH XTOTM2
+		  REPL	TOTM3  WITH XTOTM3
+		  REPL	TOTM4  WITH XTOTM4
+		  REPL	TOTM5  WITH XTOTM5
+		  REPL	TOTM6  WITH XTOTM6
+		  REPL	TOTM7  WITH XTOTM7
+		  REPL	TOTM8  WITH XTOTM8
+		  REPL	TOTM9  WITH XTOTM9
+		  REPL	TOTM10 WITH XTOTM10
+		  REPL	TOTM11 WITH XTOTM11
+		  REPL	TOTM12 WITH XTOTM12
+		  REPL	TOTM13 WITH XTOTM13
+
+	       ENDIF
+
+
+	     ENDIF
+
+	   ENDIF
+
+
+	   IF XLOOP=3
+	     sele 1
+	   ELSE
+	     sele 19
+	   ENDIF
+
+	   SKIP
+	 ENDDO
+
+
+
+
+
+
+      ENDCASE
+
+
+
+    NEXT
+
+
+    retu
+
+  endif
+  IF  LSK="AB"  .OR. LSK="ab"
+    manu_f=mod((manu_f +1),2)
+    sa_manu_m(manu_f)
+    DBFPN=0
+    DBFDN=0
+    IF	MANU_F=1
+      DBFPN=11
+      DBFDN=18
+    ENDIF
+    lsk="99"
+  endif
+  lsk=val(lsk)
+  IF  LSK=8  .AND. X_MONI=77
+    SET COLOR TO &C1 / &C1 , &C1 / &C1
+    SET CURS ON
+    @ 20,28 GET LSK  PICT "999"
+    READ
+    SET COLOR TO &C5 +/ &C1 ,N	 / W
+  ENDIF
+
+  DO CASE
+  CASE LSK=0 .OR.  LSK=1 .OR. LSK=2 .OR. LSK=3 .OR. LSK=881  .OR. LSK=9   .OR. LSK=11
+    @ 4,4  CLEA TO 20,76
+    SET CURS ON
+    && SET COLOR TO W+	/ &C1
+    SET COLOR TO &C5 / &C1 , W+ / B
+    if	engl=0
+      do CASE
+      CASE   LSK=0 .AND. COM_E=1
+	@ 6,21 SAY  "用料統計列印(依廠商)"
+	@ 6,36 SAY  SUBSTR(_F3TXT_A[2],1,4)
+      CASE   LSK=1  .OR. LSK=881
+	@ 6,21 SAY  "用料統計列印(依骨材)"
+	@ 11,10 SAY  "列印選擇: 1 (1)每日詳細 (2)只列印總數 "
+
+
+      CASE   LSK=2
+	@ 6,21 SAY  "用料統計列印(依配比)"
+      CASE   LSK=3
+	@ 6,21 SAY  "用料統計列印(依車號)"
+      ENDCASE
+      @ 8,10 SAY "統計日期 : 從西元     年  月  日    起"
+      @ 9,10 SAY "         : 至西元     年  月  日    止"
+      Xratno=space(10)
+
+
+
+      IF LSK=9
+	EDATE=DATE()-VAL(SUBSTR(DTOC(DATE()),4,2))
+	SDATE=EDATE-VAL(SUBSTR(DTOC(EDATE),4,2))+1
+      ELSE
+	EDATE = DATE()
+	SDATE = DATE()
+      ENDIF
+      SX1=VAL(SUBSTR(DTOC(SDATE),1,2))
+      SX2=VAL(SUBSTR(DTOC(SDATE),4,2))
+      SX3=VAL(SUBSTR(DTOC(SDATE),7,4))
+      EX1=VAL(SUBSTR(DTOC(EDATE),1,2))
+      EX2=VAL(SUBSTR(DTOC(EDATE),4,2))
+      EX3=VAL(SUBSTR(DTOC(EDATE),7,4))
+      @ 8,28 GET SX3 PICT "9999"
+      @ 8,34 GET SX1 PICT "99"  RANG  1,12
+      @ 8,38 GET SX2 PICT "99"  RANG  1,31
+      @ 9,28 GET EX3 PICT "9999"
+      @ 9,34 GET EX1 PICT "99"  RANG  1,12
+      @ 9,38 GET EX2 PICT "99"  RANG  1,31
+
+      DO CASE
+      CASE   LSK=1
+	&&@ 11,10 SAY  "列印選擇: 1 (1)每日詳細 (2)只列印總數 "
+	PNTTYPE=1
+	@ 11,20   get  PNTTYPE	PICT "9" RANG  1,2
+      CASE   LSK=2
+	&&if lsk=2
+	@ 11,10 SAY "配比代號 : "   get  Xratno  PICT "@!"
+	&&endif
+      endcase
+    else
+      do CASE
+      CASE   LSK=1
+	@ 6,21 SAY  "According  To Aggregate"
+      CASE   LSK=2
+	@ 6,21 SAY  "According  To Proportioning"
+      CASE   LSK=3
+	@ 6,21 SAY  "According  To Car No."
+      ENDCASE
+      @ 8,10 SAY "Date Of Statistic :From   ／  ／     << Mon/Day/Year >>"
+      @ 9,10 SAY "                  :To     ／  ／     << Mon/Day/Year >>"
+      SX1=VAL(SUBSTR(DTOC(DATE()),1,2))
+      SX2=VAL(SUBSTR(DTOC(DATE()),4,2))
+      SX3=VAL(SUBSTR(DTOC(DATE()),7,4))
+      EX1=VAL(SUBSTR(DTOC(DATE()),1,2))
+      EX2=VAL(SUBSTR(DTOC(DATE()),4,2))
+      EX3=VAL(SUBSTR(DTOC(DATE()),7,4))
+      @ 8,34 GET SX1 PICT "99"  RANG  1,12
+      @ 8,38 GET SX2 PICT "99"  RANG  1,31
+      @ 8,42 GET SX3 PICT "9999"
+      @ 9,34 GET EX1 PICT "99"  RANG  1,12
+      @ 9,38 GET EX2 PICT "99"  RANG  1,31
+      @ 9,42 GET EX3 PICT "9999"
+    endif
+    READ
+    SDATE=CTOD(STR(SX1)+"/"+STR(SX2)+"/"+STR(SX3))
+    EDATE=CTOD(STR(EX1)+"/"+STR(EX2)+"/"+STR(EX3))
+    IF	LSK=9 .AND.  LU_COUNT=1
+       SET KEY 28  TO  FIN_MAKER
+       XMAKER="    "
+       XMAKER_2="                              "
+       XMAKER_3=SPACE(11)
+       RET_X1="    "
+       @ 11,10	SAY  " <<<按 F1 查詢 >>>"
+       @ 13,10	SAY  "輸入客戶代號:       "
+       @ 13,23	GET  XMAKER PICT "!!!!"
+       READ
+       SET KEY 28  TO
+       IF EMPTY(RET_X1) =.F.
+	 X_P1501=RET_X1
+       ELSE
+	X_P1501= XMAKER
+       ENDIF
+       IF EMPTY(X_P1501)=.F.
+	 SELE 11
+	 LOCA	FOR  P1501=X_P1501
+	 IF  .NOT.  EOF()
+	   XMAKER_2=SUBSTR(LTRIM(P1502),1,22)
+	   XMAKER_3=P1503
+	 ELSE
+	   XMAKER_2="????                  "
+	 ENDIF
+       ENDIF
+    ENDIF
+    IF	LSK=881
+      SELE 6
+    ELSE
+      SELE (7 +DBFPN)
+    ENDIF
+    IF RDLPT(val(aport)-1)=144
+      pnt1_ok=1
+      SET CONS Off
+      do case
+      case aport="1"
+	set print to lpt1
+	? chr(27) + "SP1;"
+      case aport="2"
+	set print to lpt2
+	? chr(27) + "SP2;"
+      case aport="3"
+	set print to lpt3
+	? chr(27) + "SP3;"
+      endcase
+  SET CONS On
+      SET DEVI TO PRINT
+      @ PROW(),0 SAY "~X1;"
+    ENDIF
+       && 2015/8/2    caculate double
+      DELE FILE  C:\TEST1.DBF
+      if eMpty(alltrim(xratno))=.f.
+	COPY TO  C:\TEST1   FOR  (ALLTRIM(RATNO)==ALLTRIM(XRATNO) ).AND.  (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE )
+      ELSE
+	COPY TO  C:\TEST1   FOR   (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE )
+      ENDIF
+      && 2015/8/2    caculate double
+      && SELE  9
+      && USE
+      && USE  C:\TOT
+      && ZAP
+      && commit
+      && APPE  FROM  C:\TEST1
+      && DELE FILE  C:\TEST1.DBF
+      && SORT ON  LUDATE, lutime    TO	TEST1
+      && ZAP
+      && APPE  FROM  \TEST1
+
+
+      && 2015/8/2    caculate double {
+      SELE  9
+      USE    C:\TEST1
+      index   on dtoc(ludate) + lutime	 to  C:\TMP_DX	unique
+      DELE FILE  C:\TEST2.DBF
+      COPY  TO	 C:\TEST2.DBF
+      USE  C:\TOT
+      ZAP
+      commit
+      APPE  FROM  C:\TEST2
+      DELE FILE  C:\TEST1.DBF
+	&&SORT ON  LUDATE  TO  TEST1
+      SORT ON  LUDATE  TO  c:\TEST1
+      ZAP
+	&&APPE	FROM  \TEST1
+      APPE  FROM  c:\TEST1
+      && 2015/8/2    caculate double }
+
+
+
+      IF MAX_PNT >100
+	GOTO  TOP
+	DO  WHILE  .NOT.  EOF()
+	  CHK_DATE=LUDATE
+	  CHK_TTVUSE=0
+	  DO WHILE CHK_DATE=LUDATE
+	    CHK_TTVUSE=CHK_TTVUSE+TOTVUSE
+	    IF	CHK_TTVUSE > MAX_PNT
+	      DELE
+	    ENDIF
+	    SKIP
+	  ENDDO
+	ENDDO
+	PACK
+      ENDIF
+      IF LSK=881
+	DO MONI_PRT
+      ELSE
+	DO  SA_F1
+      ENDIF
+    *ENDIF
+    LSK=7
+    SET DEVI TO SCRE
+  CASE	LSK=4
+    PNT1_OK=0
+    XMAKER=space(8)
+    @ 4,4  CLEA TO 23,76
+    @ 6,31 SAY	"補印報表"
+    @ 8,10 SAY "補印日期 : 從西元     年  月  日  時  分 起"
+    @ 9,10   SAY "         : 至西元     年  月  日  時  分 止"
+    if	  COM_E=1
+      @ 10,10 SAY "客戶代號 :"
+    endif
+    @ 11,10 SAY "配    比 :"
+    @ 12,10 SAY "車    號 :"
+    @ 13,10 SAY "報表單號 :"
+    IF (WASTE=1)
+      @ 15,10 SAY "工    地 :"
+    ENDIF
+    SX1=VAL(SUBSTR(DTOC(DATE()),1,2))
+    SX2=VAL(SUBSTR(DTOC(DATE()),4,2))
+    SX3=VAL(SUBSTR(DTOC(DATE()),7,4))
+    SX4=0
+    SX5=0
+    EX1=VAL(SUBSTR(DTOC(DATE()),1,2))
+    EX2=VAL(SUBSTR(DTOC(DATE()),4,2))
+    EX3=VAL(SUBSTR(DTOC(DATE()),7,4))
+    EX4=24
+    EX5=0
+    X6="       "
+    Xratno=space(10)
+    X7=SPACE(14)
+    XPOSI="    "
+    @ 8,28 GET SX3 PICT "9999"
+    @ 8,34 GET SX1 PICT "99"  RANG  1,12
+    @ 8,38 GET SX2 PICT "99"  RANG  1,31
+    @ 8,42 GET SX4 PICT "99"  RANG  0,23
+    @ 8,46 GET SX5 PICT "99"  RANG  0,59
+    @ 9,28 GET EX3 PICT "9999"
+    @ 9,34 GET EX1 PICT "99"  RANG  1,12
+    @ 9,38 GET EX2 PICT "99"  RANG  1,31
+    @ 9,42 GET EX4 PICT "99"  RANG  0,23
+    @ 9,46 GET EX5 PICT "99"  RANG  0,59
+    if	  COM_E=1
+      @ 10,22 GET  Xmaker  PICT "@!"
+    endif
+    @ 11,22 GET  Xratno  PICT "@!"
+    @ 12,22 GET  X6 PICT "@!"
+    @ 13,22 GET  X7 PICT "XXXXXXXXXXXXXX"
+    IF (WASTE=1)
+      @ 15,22 GET  XPOSI PICT "9999"
+    ENDIF
+    SET CURS  ON
+    READ
+    SDATE=CTOD(STR(SX1)+"/"+STR(SX2)+"/"+STR(SX3))
+    STIME=SUBSTR("0"+ALLTRIM(STR(SX4,2,0)),-2,2)+":" +SUBSTR("0"+ALLTRIM(STR(SX5,2,0)),-2,2)+":00"
+    EDATE=CTOD(STR(EX1)+"/"+STR(EX2)+"/"+STR(EX3))
+    ETIME=SUBSTR("0"+ALLTRIM(STR(EX4,2,0)),-2,2)+":" +SUBSTR("0"+ALLTRIM(STR(EX5,2,0)),-2,2)+":00"
+    *sele 1
+    *SELE (1 +DBFDN)
+    SELE (7 +DBFPN)
+    IF WASTE=1 .AND. XPOSI <> "    "
+      LOCA FOR	 ALLTRIM(P1701)=ALLTRIM(XPOSI) .AND. ((LUDATE=SDATE .AND. VAL(LUTIME)>=SX4) .OR. LUDATE>SDATE) .AND. ((LUDATE=EDATE .AND. VAL(LUTIME)<=EX4) .OR. LUDATE<EDATE)	.AND. EMPTY(ALLTRIM(SCANO))<>.T.
+    ELSE
+	CF=""
+	IF (empty(Xmaker)<>.t.) .or. (empty(XRATNO)<>.t.) .or. (empty(X6)<>.t.) .or.  (empty(X7) <>.T.)
+	  IF (empty(XRATNO)=.F.)
+	     CF="ALLTRIM(XRATNO)==ALLTRIM(RATNO)"
+	  ENDIF
+	  IF (empty(Xmaker)=.F.)
+	     IF EMPTY(CF)=.F.
+		CF= CF + " .AND. "
+	     ENDIF
+	     CF=CF + "ALLTRIM(Xmaker)==ALLTRIM(us2) "
+	  ENDIF
+	  IF (empty(X6)=.F.)
+	     IF EMPTY(CF)=.F.
+		CF= CF + " .AND. "
+	     ENDIF
+	     CF=CF + "ALLTRIM(X6)==ALLTRIM(CARNO) "
+	  ENDIF
+	  IF (empty(X7)=.F.)
+	     IF EMPTY(CF)=.F.
+		CF=CF + " .AND. "
+	     ENDIF
+	     CF=CF + "ALLTRIM(X7)==ALLTRIM(SCANO) "
+	  ENDIF
+	  IF EMPTY(CF)=.F.
+	    CF=CF + " .AND. "
+	  ENDIF
+	  CF= CF + " ((LUDATE=SDATE .AND. VAL(LUTIME)>=SX4) .OR. LUDATE>SDATE) .AND. ((LUDATE=EDATE .AND. VAL(LUTIME)<=EX4) .OR. LUDATE<EDATE)  "
+	  SET	FILT  TO &CF
+	  *sele 20
+	  *use \sat
+	  *appe  from  \sa    for      &cf
+	ELSE
+	  SET FILT TO	((LUDATE=SDATE .AND. LUTIME>=STIME) .OR. LUDATE>SDATE) .AND. ((LUDATE=EDATE .AND. LUTIME<=ETIME) .OR. LUDATE<EDATE)
+	ENDIF
+    ENDIF
+    SET COLOR TO W+  / &CF
+    @ 24,0 SAY "∥Esc -中止列印     按任一鍵繼續                                              ∥"
+    SET COLOR TO  gr +/ &CF
+    Y=1
+    PNT1_OK=99
+    GOTO  TOP
+    p_rec=recno()
+    DO WHILE .NOT. EOF()
+      DO PNT_CARDATA
+      @ 24,0 SAY "∥Esc -中止列印     按任一鍵繼續                                              ∥"
+      INKEY(5)
+      t=inkey()
+      if  t=27
+	exit
+      endif
+      SELE (7 +DBFPN)
+      goto p_rec
+      SKIP
+      p_rec=recno()
+    ENDDO
+    SET FILT  TO
+    *? CHR(27) + "SP1;"
+    *SET PRINT TO Lpt1
+    SET DEVI TO SCRE
+
+  CASE	LSK=5
+    set  curs on
+    SET  CONS ON
+    DO LUPRN
+    RAR1=23
+    LSK=7
+  CASE	LSK=6
+
+    X_OK=0
+    IF DEL_KEY =77
+      DEL_OK=SER_OK_DEL()
+    ELSE
+      DEL_OK=1
+    ENDIF
+    X_OKX=1
+    IF X_OKX=1
+      IF  ENGL=0
+	D_C1="  *****  出車資料刪除  *****  "
+	D_C2="  刪除日期: 月/日/年          "
+	D_C3="  西    元:                   "
+      ELSE
+	D_C1="Delete Delivery Sheet "
+	D_C2="Input Date  MM/DD/YYYY"
+	D_C3="      Date:           "
+      ENDIF
+      XPNT_ER=SAVESCREEN(10,0,14,79)
+      txt_echo(10,30,D_C1,D_C2,D_C3,1)
+      dl_date=date()
+      @ 13,44 get dl_date
+      read
+      RESTSCREEN(10,0,14,79,XPNT_ER)
+      IF  ENGL=0
+	D_C1="出車資料刪除(Y/N) ?"
+	D_C2="確定按 Y 鍵"
+	D_C3="取消按 N 或 Esc 鍵"
+      ELSE
+	D_C1="Delete Delivery Sheet(Y/N) ?"
+	D_C2="Press Y to Exection"
+	D_C3="Press N OR Esc to Exit"
+      ENDIF
+      dl_ok=0
+      DL_OK=OK_ECHO(10,30,D_C1,D_C2,D_C3)
+      IF  ((DL_OK=1) .AND.  (DEL_OK=1) )
+	*SELE 1
+	SELE (1 +DBFDN)
+	dele for ludate  < dl_date
+	pack
+	SELE 7
+	dele for ludate  < dl_date
+	pack
+	if storab=1
+	  SELE 18
+	  dele for ludate  < dl_date
+	  pack
+	  SELE 19
+	  dele for ludate  < dl_date
+	  pack
+	endif
+      ENDIF
+    ENDIF
+
+  CASE	LSK=10 .AND.  LU_COUNT=1
+     SET DEVI  TO SCRE
+    F7_FUNC="CHKBIL_PNT"
+    DLA_DSP=0
+     sele  15
+     set filt to
+     goto top
+     IF  EOF()
+       APPE  BLANK
+     ENDIF
+     DO CHK_BILL
+    DLA_DSP=1
+    F7_FUNC=" "
+  CASE	LSK=87
+    RAR1=23
+    @ 0,5  say "wait"
+    sele 2
+    goto top
+    do	 while	eof()=.f.
+       xratno=substr(space(15)+alltrim(ratno),-ratno_wid,ratno_wid)
+       replace	 ratno	 with  xratno
+       skip
+    enddo
+    sele 17
+    goto top
+    do	 while	eof()=.f.
+       xratno=substr(space(15)+alltrim(ratno),-ratno_wid,ratno_wid)
+       replace	 ratno	 with  xratno
+       skip
+    enddo
+    commit
+
+
+  CASE	LSK=7
+    RAR1=23
+  ENDCASE
+  IF RAR1<>23
+    sa_manu_m(manu_f)
+    LSK=7
+  ENDIF
+ENDDO
+&&-----------------------------------------------------------------------------
+PROCEDURE  sa_manu_m
+PARAMETERS  P1,P2,P3
+SET COLOR TO &C5 +/ &C1
+@ 0,2 SAY " 日期 :    年    月    日   時間 :                                          "
+@ 1,2  SAY "                                                                           "
+@ 2,2 SAY  "┌────────────────────────────────────┐"
+@ 3,2  SAY "│                                                                        │"
+@ 4,2  SAY "│                                                                        │"
+IF COM_E=1
+@ 5,2  SAY "│                       ０. 用料統計列印(依廠商)                         │"
+@ 5,46 SAY  SUBSTR(_F3TXT_A[2],1,4)
+ELSE
+@ 5,2  SAY "│                                                                        │"
+ENDIF
+@ 6,2 SAY  "│                       １. 用料統計列印(依骨材)                         │"
+@ 7,2 SAY  "│                       ２. 用料統計列印(依配比)                         │"
+@  8,2 SAY "│                       ３. 用料統計列印(依車號)                         │"
+if P1=1
+  SET COLOR TO GR+/ &C1
+  @ 6,27 SAY  "１. 用料統計列印(依骨材)"
+  @ 7,27 SAY  "２. 用料統計列印(依配比)"
+  @  8,27 SAY "３. 用料統計列印(依車號)"
+  SET COLOR TO &C5 +/ &C1
+ENDIF
+@  9,2 SAY "│                       ４. 補印報表                                     │"
+@ 10,2 SAY "│                       ５. 報表列印                                     │"
+@ 11,2 SAY "│                       ６. 出車資料刪除                                 │"
+@ 12,2 SAY "│                     １１．出料記錄                                     │"
+@ 13,2 SAY "│                                                                        │"
+@ 14,2 SAY "│                       ７. 結    束                                     │"
+IF  LU_COUNT=1
+@ 12,2 SAY "│                       ９. 請款明細表                                   │"
+@ 13,2 SAY "│                     １０. 預收金額與上期結欠輸入                       │"
+ENDIF
+@ 15,2 SAY "│                                                                        │"
+@ 16,2 SAY "│                                                                        │"
+@ 17,2 SAY "│                                                                        │"
+@ 18,2 SAY "│                                                                        │"
+@ 19,2 SAY "│                                                                        │"
+@ 20,2 SAY "│                           請輸入選擇項號碼                             │"
+@ 21,2 SAY "└────────────────────────────────────┘"
+@ 22,2 SAY "                                                                            "
+@ 23,2 SAY "                                                                            "
+@ 24,2 SAY "                                                                            "
+SET COLOR TO &C7 +/ &C1
+@ 0,8  SAY  SUBSTR(DTOC(DATE()),7,4)
+@ 0,17 SAY  SUBSTR(DTOC(DATE()),1,2)
+@ 0,23 SAY  SUBSTR(DTOC(DATE()),4,2)
+@ 0,37 SAY  TIME()
+retu
+* -----------------------------------------------------------------------------
+PROCEDURE  SA_F1
+PARAMETERS  P1,P2,P3
+FOR I=1 TO kind +4
+  TXP_TOT[I] :=0
+  TXPTN[I] :=0
+  A_TOTW[I] :=0
+NEXT
+DO CASE
+CASE LSK=1
+  IF  CDSK=0
+    INDE ON LUDATE TO C:\TMP_DX
+  ELSE
+    INDE ON LUDATE TO D:\TMP_DX
+  ENDIF
+  DELE FILE  C:\TMP_DBF
+  TOTAL ON LUDATE TO C:\TMP_DBF FIELD TOTM1,TOTM2,TOTM3,TOTM4,TOTM5,TOTM6,TOTM7,TOTM8,TOTM9,TOTM10,TOTM11,TOTM12,TOTM13,TOTM14,TOTM15,TOTM16,TOTVUSE,TOTW
+  USE
+  sele 9
+  USE
+  USE C:\TMP_DBF
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+7,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	  @ PROW(),22 SAY SX3 PICT "9999"
+	  @ PROW(),28 SAY SX1 PICT "99"
+	  @ PROW(),32 SAY SX2 PICT "99"
+	  @ PROW(),47 SAY EX3 PICT "9999"
+	  @ PROW(),53 SAY EX1 PICT "99"
+	  @ PROW(),57 SAY EX2 PICT "99"
+	  @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	  IF  LSK=1  .AND.  PNTTYPE=2
+	    @ PROW()+1,15 SAY "總重"
+	  ELSE
+	    @ PROW()+1,74 SAY "總重"
+	  ENDIF
+	 ENDIF
+	 *STOR 0 TO  TXPT1,TXPT2,TXPT3,TXPT4,TXPT5,TXPT6,TXPT7,TXPT8,TXPT9,TXPT10,TXPT11,TXPT12,TXPT13,TXPT14,TXPTVUSE
+	 GOTO  TOP
+	  TXPTN[2]=0
+	  TXPTN[kind+3]=0
+	 DO WHILE .NOT. EOF()
+	   IF TOTVUSE<>0
+	     xtotwn=0
+	     for ixa=1	to  kind
+		 ixac=alltrim(str(ixa,2))
+		 TXPTN[ixa+2]=TXPTN[ixa+2]+totm&IXAC
+		 XTOTWN=XTOTWN + totm&IXAC
+	     next
+	     TXPTN[2]=TXPTN[2]+TOTVUSE
+	     TXPTN[kind+3]=TXPTN[kind+3]+xtotwn
+	   ENDIF
+	   SKIP
+	 ENDDO
+	 A_TOTW[1] :=" "
+	 A_TOTW[2] :=TXPTN[2]
+	 A_TOTW[kind+3] :=TXPTN[kind+3]
+	 *A_TOTW[3] :=TXPT1
+	 XTOTWN=0
+	 for ixa=1  to	kind
+	     a_totw[ixa+2]=TXPTn[ixa+2]
+	     XTOTWN=XTOTWN + TXPTn[ixa+2]
+	 next
+	 A_TOTW[kind+3] :=xtotwn
+	 && IF !(LSK=1	.AND. PNTTYPE=2)
+	   DO  DSPTTP
+	 && ENDIF
+	  IF RDLPT(val(aport)-1)=144
+	    @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	    @ PROW()+1,6  SAY " "
+	    @ PROW()+1,6  SAY " "
+	    @ PROW()+1,6  SAY " "
+	    @ PROW()+1,6  SAY " "
+	    @ PROW()+1,6  SAY " "
+	   ENDIF
+
+    @  PROW(),0  SAY  "~I;"
+	   SET DEVI TO SCRE
+	   @ 2,1 CLEA TO   23,79
+	   @ 2,7 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	   @ 2,25 SAY SX3 PICT "9999"
+	   @ 2,31 SAY SX1 PICT "99"
+	   @ 2,35 SAY SX2 PICT "99"
+	   @ 2,50 SAY EX3 PICT "9999"
+	   @ 2,56 SAY EX1 PICT "99"
+	   @ 2,60 SAY EX2 PICT "99"
+	   @ 4,85 SAY "總重"
+	   Y=5
+	   @ Y,69 SAY A_TOTW[2] PICT "9999999.9"
+	    Y=Y+1
+	    FOR I=1 TO GS_TOT+UWC_TOT
+	      IC_X=ALLTRIM(STR(I,2,0))
+	      XMC_F=ALLTRIM(A_M_NAME[I,3])
+	      XMC_F="9999" +XMC_F
+	      @  Y,69  SAY a_totw[i+2] PICT  "&XMC_F"
+	      Y=Y+1
+	    NEXT
+	   *@  Y,69  SAY (TXPT1 +TXPT2+TXPT3 +TXPT4 +TXPT5 +TXPT6 +TXPT7 +TXPT8 +TXPT9 +TXPT10 +TXPT11+TXPT12+TXPT13+TXPT14 ) PICT  "99999999"
+	   @  Y,66  SAY a_totw[kind+3] pict  "999999999.99"
+	   && IF !(LSK=1  .AND. PNTTYPE=2)
+	     DO  DSPTT
+	   && ENDIF
+CASE LSK=2
+	STOR 0 TO  TXPT1,TXPT2,TXPT3,TXPT4,TXPT5,TXPT6,TXPT7,TXPT8,TXPT9,TXPT10,TXPT11,TXPT12,TXPT13,TXPT14,TXPT15,TXPT16,TXPTVUSE
+	IF  CDSK=0
+	  INDE ON DTOC(LUDATE)+RATNO  TO C:\TMP_DX
+	ELSE
+	  INDE ON DTOC(LUDATE)+RATNO TO D:\TMP_DX
+	ENDIF
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+7,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	  @ PROW(),22 SAY SX3 PICT "9999"
+	  @ PROW(),28 SAY SX1 PICT "99"
+	  @ PROW(),32 SAY SX2 PICT "99"
+	  @ PROW(),47 SAY EX3 PICT "9999"
+	  @ PROW(),53 SAY EX1 PICT "99"
+	  @ PROW(),57 SAY EX2 PICT "99"
+	  @ PROW()+1,0 SAY     "─────────────────────────────────────────────────────────"
+	  @ PROW()+1,85 SAY "總重"
+	ENDIF
+	DELE FILE  C:\TMP_DBF
+	TOTAL ON DTOC(LUDATE)+RATNO   TO C:\TMP_DBF FIELD TOTM1,TOTM2,TOTM3,TOTM4,TOTM5,TOTM6,TOTM7,TOTM8,TOTM9,TOTM10,TOTM11,TOTM12,TOTM13,TOTM14,TOTM15,TOTM16,TOTVUSE,TOTW
+	USE
+	USE C:\TMP_DBF
+	GOTO TOP
+	 TXPTN[3]=0
+	 TXPTN[kind+3]=0
+	 xtotwn=0
+	DO WHILE .NOT. EOF()
+	  IF TOTVUSE<>0
+	    xtotwn=0
+	    for ixa=1  to  kind
+		ixac=alltrim(str(ixa,2))
+		TXPTN[ixa+3]=TXPTN[ixa+3]+totm&IXAC
+		XTOTWN=XTOTWN + totm&IXAC
+	    next
+	    TXPTN[3]=TXPTN[3]+TOTVUSE
+	    TXPTN[kind+4]=TXPTN[kind+4]+xtotwn
+	  ENDIF
+	  SKIP
+	ENDDO
+	A_TOTW[1] := " "
+	A_TOTW[2] := " "
+	A_TOTW[3] :=TXPTN[3]
+	A_TOTW[kind+4] :=TXPTN[kind+4]
+	for ixa=1  to  kind
+	    a_totw[ixa+3]=TXPTn[ixa+3]
+	    XTOTWN=XTOTWN + TXPTn[ixa+4]
+	next
+	IF RDLPT(val(aport)-1)=144
+	  DO  DSPTVP
+	  @ PROW()+5,68 SAY "      "
+	  @ PROW()+1,6 SAY " "
+	  SET DEVI TO SCRE
+	ENDIF
+	@ 4,0 CLEA TO	14,79
+	@ 4,7 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	@ 4,25 SAY SX3 PICT "9999"
+	@ 4,31 SAY SX1 PICT "99"
+	@ 4,35 SAY SX2 PICT "99"
+	@ 4,50 SAY EX3 PICT "9999"
+	@ 4,56 SAY EX1 PICT "99"
+	@ 4,60 SAY EX2 PICT "99"
+	@ 4,85 SAY "總重"
+	Y=6
+	@ Y,69 SAY A_TOTW[3] PICT "9999999.9"
+	 Y=Y+1
+	 FOR I=1 TO GS_TOT+UWC_TOT
+	   IC_X=ALLTRIM(STR(I,2,0))
+	   XMC_F=ALLTRIM(A_M_NAME[I,3])
+	   XMC_F="9999" +XMC_F
+	   @  Y,69  SAY a_totw[i+3] PICT  "&XMC_F"
+	   Y=Y+1
+	 NEXT
+	&&@ Y,69  SAY a_totw[kind+4] pict  "999999999"
+	 @  Y,66  SAY a_totw[kind+4] pict  "999999999.99"
+	DO  DSPTV
+CASE LSK=0  .AND. COM_E=1
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+7,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	  @ PROW(),22 SAY SX3 PICT "9999"
+	  @ PROW(),28 SAY SX1 PICT "99"
+	  @ PROW(),32 SAY SX2 PICT "99"
+	  @ PROW(),47 SAY EX3 PICT "9999"
+	  @ PROW(),53 SAY EX1 PICT "99"
+	  @ PROW(),57 SAY EX2 PICT "99"
+	ENDIF
+	A_PX :=ARRAY(6) && PRINT @Y,X,DATA1,DATA2
+	A_PX :={0,11,26,49,57,75}
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	  @ PROW()+1,1	SAY  _F3TXT_A[1]
+	  @ PROW(),11 SAY  _F3TXT_A[2]
+	  @ PROW(),26 SAY  _F3TXT_A[4]
+	  *@ PROW()+1,0 SAY	  " 廠商代號  廠商名稱       送貨第址               配比     米數       "
+	  @  PROW(),49 SAY							   "配比     米數       "
+	  @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	ENDIF
+	USE
+	USE C:\TOT
+	ZAP
+	APPE FROM C:\TEST1
+	IF  CDSK=0
+	  INDE ON US2+P1702 +RATNO  TO C:\INRATNO
+	ELSE
+	  INDE ON US2+P1702+RATNO  TO D:\INRATNO
+	ENDIF
+	TOTAL ON  (US2+P1702+RATNO) TO	  C:\TESTRATNO FIELD TOTVUSE
+	USE
+	USE C:\TESTRATNO
+	GOTO TOP
+	STOR 0 TO  TT_W
+	DO WHILE .NOT. EOF()
+	  TXP_W=TOTVUSE
+	  IF TOTVUSE<>0
+	    @ PROW()+1,A_PX[1]	SAY  US2
+	    X=US2
+	    SELE 11
+	    LOCA FOR P1501=X
+	    IF RDLPT(val(aport)-1)=144
+	      @ PROW(),A_PX[2]	SAY  SUBSTR(P1502,1,14)
+	    ENDIF
+	    SELE 9
+	    IF RDLPT(val(aport)-1)=144
+	      @ PROW(),A_PX[3]	SAY  P1702
+	      @ PROW(),A_PX[4]	SAY  RATNO
+	      @ PROW(),A_PX[5]	SAY  TOTVUSE	PICT "9999999.9"
+	    ENDIF
+	    TT_W=TT_W + TOTVUSE
+	  ENDIF
+	  SKIP
+	ENDDO
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+1,0 SAY     "─────────────────────────────────────────────────────────"
+	  @ PROW()+1,A_PX[5]  SAY  TT_W    PICT "9999999.9"
+	  @ PROW()+5,68 SAY "  "
+	  SET DEVI TO SCRE
+	ENDIF
+CASE LSK=3
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+7,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+	  @ PROW(),22 SAY SX3 PICT "9999"
+	  @ PROW(),28 SAY SX1 PICT "99"
+	  @ PROW(),32 SAY SX2 PICT "99"
+	  @ PROW(),47 SAY EX3 PICT "9999"
+	  @ PROW(),53 SAY EX1 PICT "99"
+	  @ PROW(),57 SAY EX2 PICT "99"
+	ENDIF
+	A_PX :=ARRAY(6) && PRINT @Y,X,DATA1,DATA2
+	A_PX :={0,11,26}
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	  @ PROW()+1,0 SAY	 "  車 號   姓   名     米數       "
+	  @ PROW()+1,0 SAY	 "─────────────────────────────────────────────────────────"
+	ENDIF
+	IF  CDSK=0
+	  INDE ON CARNO  TO C:\TMP_DX
+	ELSE
+	  INDE ON CARNO  TO D:\TMP_DX
+	ENDIF
+	DELE FILE  C:\TMP_DBF
+	TOTAL ON  CARNO  TO   C:\TMP_DBF   FIELD TOTVUSE
+	USE
+	USE C:\TMP_DBF
+	GOTO TOP
+	STOR 0 TO  TT_W
+	DO WHILE .NOT. EOF()
+	  TXP_W=TOTVUSE
+	  IF TOTVUSE<>0
+	    IF RDLPT(val(aport)-1)=144
+	      @ PROW()+1,A_PX[1]  SAY  CARNO
+	    ENDIF
+	    X=CARNO
+	    IF COM_E=1
+	    SELE 10
+	      LOCA FOR P12100=X
+	      IF RDLPT(val(aport)-1)=144
+		@ PROW(),A_PX[2]  SAY  P12102
+	      ENDIF
+	    ENDIF
+	    SELE 9
+	    IF RDLPT(val(aport)-1)=144
+	      @ PROW(),A_PX[3]	SAY  TOTVUSE	PICT "9999999.9"
+	    ENDIF
+	    TT_W=TT_W + TOTVUSE
+	  ENDIF
+	  SKIP
+	ENDDO
+	IF RDLPT(val(aport)-1)=144
+	  @ PROW()+1,0 SAY     "─────────────────────────────────────────────────────────"
+	  @ PROW()+1,A_PX[3]  SAY  TT_W    PICT "9999999.9"
+	  @ PROW()+5,68 SAY " "
+	ENDIF
+CASE LSK=9 .AND.  LU_COUNT=1
+  SET DEVI  TO SCRE
+  DLA_DSP=0
+  F7_FUNC="CHKREP_PNT"
+  F8_FUNC="CHKREPALL_PNT"
+  SELE 15
+  SUM PRE_GET TO  XN_PREGET  FOR (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. US2=XMAKER
+  SUM LST_BILL TO  XN_LSTBIL  FOR (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. US2=XMAKER
+  SELE 7
+  SELE (7 +DBFPN)
+  SET FILT  TO	((LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. (US2=XMAKER	.OR.  TTVUSE=0 ))  .OR.  LUDATE=CTOD("  /  /  ")
+  GOTO	TOP
+  IF EOF()
+    APPEND  BLANK
+  ENDIF
+  DLA_DSP=0
+  DO CHK_PNT
+  DLA_DSP=1
+  SET FILT  TO
+  SELE 9
+  USE
+  DELE FILE  C:\TEST2.DBF
+    DLA_DSP=1
+  F7_FUNC=" "
+  F8_FUNC=" "
+CASE LSK=11
+  DO  DSPALLDATA
+ENDCASE
+RETU
+* -----------------------------------------------------------------------------
+PROCEDURE  MONI_PRT
+PARAMETERS  P1,P2,P3
+SET DEVI TO SCRE
+LSK=2
+@ 1,1  CLEA TO 23,79
+@ 14,2 SAY "│                       １. 詳細資料                                     │"
+@ 15,2 SAY "│                                                                        │"
+@ 16,2 SAY "│                       ２. 每日統計                                     │"
+@ 17,2 SAY "│                                                                        │"
+@ 18,2 SAY "│                       ３. 存檔資料刪除                                 │"
+@ 19,2 SAY "│                                                                        │"
+@ 20,2 SAY "│                           請輸入選擇項號碼 １～３                      │"
+@ 21,2 SAY "└────────────────────────────────────┘"
+@ 20,28 GET LSK  PICT "9"
+READ
+SET DEVI TO print
+DO CASE
+CASE LSK=1
+  IF RDLPT(val(aport)-1)=144
+    @ PROW()+6,4 SAY   "       *** 手動出料計錄 ***"
+    @ PROW()+1,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+    @ PROW(),22 SAY SX3 PICT "9999"
+    @ PROW(),28 SAY SX1 PICT "99"
+    @ PROW(),32 SAY SX2 PICT "99"
+    @ PROW(),47 SAY EX3 PICT "9999"
+    @ PROW(),53 SAY EX1 PICT "99"
+    @ PROW(),57 SAY EX2 PICT "99"
+    @ PROW()+1,0 SAY		 "────────────────────────────────"
+    @ PROW()+1,0 SAY		 " 日期             時間     水泥1     水泥2    　水泥3       總重"
+    @ PROW()+1,0 SAY		 "────────────────────────────────"
+  ENDIF
+  STOR 0  TO TXPT1,TXPT2,TXPT3,TXPTA,TXPTT
+  GOTO TOP
+  XDATE=DATE()-1000
+  DO WHILE .NOT.  EOF()
+    TXPTA=TCO1+TCO2+TCO3
+    TXPT1=TXPT1+TCO1
+    TXPT2=TXPT2+TCO2
+    TXPT3=TXPT3+TCO3
+    TXPTT=TXPTT+TXPTA
+    IF TXPTA<>0
+      IF RDLPT(val(aport)-1)=144
+	@ PROW()+1,1   SAY "  "
+	IF LUDATE <> XDATE
+	  @ PROW(),1   SAY LUDATE
+	  XDATE=LUDATE
+	ENDIF
+	@ PROW(),14  SAY LUTIME
+	@ PROW(),24  SAY TCO1 PICT  "999999999"
+	@ PROW(),34  SAY TCO2 PICT  "999999999"
+	@ PROW(),44  SAY TCO3 PICT  "999999999"
+	@ PROW(),54  SAY TXPTA PICT  "99999999999"
+      ENDIF
+    ENDIF
+    SKIP
+  ENDDO
+  IF RDLPT(val(aport)-1)=144
+    @ PROW()+1,0 SAY  "────────────────────────────────"
+    @ PROW()+1,24  SAY TXPT1 PICT  "999999999"
+    @ PROW(),34  SAY TXPT2 PICT  "999999999"
+    @ PROW(),44  SAY TXPT3 PICT  "999999999"
+    @ PROW(),54  SAY TXPTT PICT  "99999999999"
+    @ PROW()+5,68 SAY " "
+  ENDIF
+  SET DEVI TO SCRE
+  @ 2,1 CLEA TO   22,79
+  @ 3,7 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+  @ 3,25 SAY SX3 PICT "9999"
+  @ 3,31 SAY SX1 PICT "99"
+  @ 3,35 SAY SX2 PICT "99"
+  @ 3,50 SAY EX3 PICT "9999"
+  @ 3,56 SAY EX1 PICT "99"
+  @ 4,0 SAY		"────────────────────────────────"
+  @ 5,0 SAY		" 日期             時間     水泥1     水泥2    　水泥3       總重   "
+  @ 6,0 SAY		"────────────────────────────────"
+  STOR 0  TO TXPT1,TXPT2,TXPT3,TXPTA,TXPTT
+  GOTO TOP
+  PROW=6
+  XDATE=DATE()-1000
+  DO WHILE .NOT.  EOF()
+    TXPTA=TCO1+TCO2+TCO3
+    TXPT1=TXPT1+TCO1
+    TXPT2=TXPT2+TCO2
+    TXPT3=TXPT3+TCO3
+    TXPTT=TXPTT+TXPTA
+    IF TXPTA<>0
+      PROW=PROW+1
+      IF XDATE<>LUDATE
+	@ PROW,1   SAY LUDATE
+	XDATE=LUDATE
+      ENDIF
+      @ PROW,14  SAY LUTIME
+      @ PROW,24  SAY TCO1 PICT	"999999999"
+      @ PROW,34  SAY TCO2 PICT	"999999999"
+      @ PROW,44  SAY TCO3 PICT	"999999999"
+      @ PROW,54  SAY TXPTA PICT  "99999999999"
+    ENDIF
+    IF PROW >= 20
+      @ 21,10 SAY "按任一鍵繼續"
+      INKEY(0)
+      CLEA
+      PROW=6
+    ENDIF
+    SKIP
+  ENDDO
+  PROW=PROW+1
+  @ PROW,0 SAY	   "────────────────────────────────"
+  PROW=PROW+1
+  @ PROW,24  SAY TXPT1 PICT  "999999999"
+  @ PROW,34  SAY TXPT2 PICT  "999999999"
+  @ PROW,44  SAY TXPT3 PICT  "999999999"
+  @ PROW,54  SAY TXPTT PICT  "99999999999"
+  INKEY(0)
+CASE LSK=2
+  USE
+  USE C:\TOT
+  zAP
+  APPE FROM C:\TEST1
+  TOTAL ON LUDATE  TO C:\TESTRATNO FIELD TCO1,TCO2,TCO3
+  USE
+  USE C:\TESTRATNO
+  IF RDLPT(val(aport)-1)=144
+    @ PROW()+6,4 SAY   "       *** 手動出料計錄 ***"
+    @ PROW()+1,4 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 "
+    @ PROW(),22 SAY SX3 PICT "9999"
+    @ PROW(),28 SAY SX1 PICT "99"
+    @ PROW(),32 SAY SX2 PICT "99"
+    @ PROW(),47 SAY EX3 PICT "9999"
+    @ PROW(),53 SAY EX1 PICT "99"
+    @ PROW(),57 SAY EX2 PICT "99"
+    @ PROW()+1,0 SAY		 "────────────────────────────"
+    @ PROW()+1,0 SAY		 " 日期             水泥1     水泥2    　水泥3     總重     "
+    @ PROW()+1,0 SAY		 "────────────────────────────"
+  ENDIF
+  STOR 0  TO TXPT1,TXPT2,TXPT3,TXPTA,TXPTT
+  GOTO TOP
+  XDATE=DATE()-1000
+  DO WHILE .NOT.  EOF()
+    TXPTA=TCO1+TCO2+TCO3
+    TXPT1=TXPT1+TCO1
+    TXPT2=TXPT2+TCO2
+    TXPT3=TXPT3+TCO3
+    TXPTT=TXPTT+TXPTA
+    IF TXPTA<>0
+      IF RDLPT(val(aport)-1)=144
+	@ PROW()+1,1   SAY "    "
+	IF RDLPT(val(aport)-1)=144
+	  IF LUDATE <> XDATE
+	    @ PROW(),1	 SAY LUDATE
+	    XDATE=LUDATE
+	  ENDIF
+	  @ PROW(),13  SAY TCO1 PICT  "999999999"
+	  @ PROW(),23  SAY TCO2 PICT  "999999999"
+	  @ PROW(),33  SAY TCO3 PICT  "999999999"
+	  @ PROW(),43  SAY TXPTA PICT  "99999999999"
+	ENDIF
+      ENDIF
+    ENDIF
+    SKIP
+  ENDDO
+  IF RDLPT(val(aport)-1)=144
+    @ PROW()+1,0 SAY	  "────────────────────────────"
+    @ PROW()+1,13  SAY TXPT1 PICT  "999999999"
+    @ PROW(),23  SAY TXPT2 PICT  "999999999"
+    @ PROW(),33  SAY TXPT3 PICT  "999999999"
+    @ PROW(),43  SAY TXPTT PICT  "99999999999"
+    @ PROW()+5,68 SAY "  "
+  ENDIF
+  SET DEVI TO SCRE
+  @ 2,1 CLEA TO   22,79
+  @ 3,7 SAY   "統計日期 : 從西元     年  月  日 起至 西元     年  月  日 止"
+  @ 3,25 SAY SX3 PICT "9999"
+  @ 3,31 SAY SX1 PICT "99"
+  @ 3,35 SAY SX2 PICT "99"
+  @ 3,50 SAY EX3 PICT "9999"
+  @ 3,56 SAY EX1 PICT "99"
+  @ 4,0 SAY		"────────────────────────────"
+  @ 5,0 SAY		" 日期             水泥1     水泥2    　水泥3     總重     "
+  @ 6,0 SAY		"────────────────────────────"
+  STOR 0  TO TXPT1,TXPT2,TXPT3,TXPTA,TXPTT
+  GOTO TOP
+  PROW=6
+  XDATE=DATE()-1000
+  DO WHILE .NOT.  EOF()
+    TXPTA=TCO1+TCO2+TCO3
+    TXPT1=TXPT1+TCO1
+    TXPT2=TXPT2+TCO2
+    TXPT3=TXPT3+TCO3
+    TXPTT=TXPTT+TXPTA
+    IF TXPTA<>0
+      PROW=PROW+1
+      IF LUDATE <> XDATE
+	@ PROW,1   SAY LUDATE
+	XDATE=LUDATE
+      ENDIF
+      @ PROW,13  SAY TCO1 PICT	"999999999"
+      @ PROW,23  SAY TCO2 PICT	"999999999"
+      @ PROW,33  SAY TCO3 PICT	"999999999"
+      @ PROW,43  SAY TXPTA PICT  "99999999999"
+    ENDIF
+    IF PROW >= 20
+      @ 21,10 SAY "按任一鍵繼續"
+      XDATE=DATE()-1000
+      INKEY(0)
+      CLEA
+      PROW=6
+    ENDIF
+    SKIP
+  ENDDO
+  prow=PROW+1
+  @ PROW,0 SAY	   "─────────────────────────────"
+  prow=PROW+1
+  @ PROW,13  SAY TXPT1 PICT  "999999999"
+  @ PROW,23  SAY TXPT2 PICT  "999999999"
+  @ PROW,33  SAY TXPT3 PICT  "999999999"
+  @ PROW,43  SAY TXPTT PICT  "99999999999"
+  INKEY(0)
+CASE LSK=3
+  IF  ENGL=0
+    D_C1="  *****  存檔資料刪除  *****  "
+    D_C2="  刪除日期: 月/日/年          "
+    D_C3="  西    元:                   "
+  ELSE
+    D_C1="Delete Delivery Sheet "
+    D_C2="Input Date  MM/DD/YYYY"
+    D_C3="      Date:           "
+  ENDIF
+  XPNT_ER=SAVESCREEN(10,0,14,79)
+  txt_echo(10,30,D_C1,D_C2,D_C3,1)
+  dl_date=date()
+  @ 13,44 get dl_date
+  read
+  RESTSCREEN(10,0,14,79,XPNT_ER)
+  IF  ENGL=0
+    D_C1="出車資料刪除(Y/N) ?"
+    D_C2="確定按 Y 鍵"
+    D_C3="取消按 N 或 Esc 鍵"
+  ELSE
+    D_C1="Delete Delivery Sheet(Y/N) ?"
+    D_C2="Press Y to Exection"
+    D_C3="Press N OR Esc to Exit"
+  ENDIF
+  dl_ok=0
+  DL_OK=OK_ECHO(10,30,D_C1,D_C2,D_C3)
+  IF  DL_OK=1
+    SELE 6
+    dele for ludate  < dl_date
+    pack
+  ENDIF
+ENDCASE
+SET DEVI TO SCRE
+DLA_DSP=1
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  pnt_DATA1
+PARAMETERS  P1,P2,P3
+if PNT1_OK=0
+  SET COLO  TO W+ /&C1
+ENDIF
+TMPWN := ARRAY(kind+3,2)
+@ Y,6  SAY  PAN_NO  PICT "99"
+@ Y,10	  SAY  LUTIME
+@ Y,18	  SAY  TVUSE  PICT "99.9"
+@ Y,25	  SAY  LAG_VUSE  PICT "99.9"
+@ Y,1  SAY  " "
+XTW=0
+Y=Y+1
+FOR  X=1 TO GS_TOT + UWC_TOT
+  XMC_F=A_M_NAME[X,3]
+  IC_X=ALLTRIM(STR(X,2,0))
+  XTW=XTW + TM&IC_X
+  if  pnt_std=1
+    @ Y,6*(X-1)+2  SAY	TM&IC_X     PICT "&XMC_F"
+  endif
+  TMPWN[X,1] :=TM&IC_X
+NEXT
+if  pnt_std=1
+  @ Y,86  SAY	XTW  PICT "99999"
+  Y=Y+1
+endif
+IF ((ERRPNT_E=1) .AND.	UCHTYPE=16)  .or. (pnt_water=1)
+  @ Y,2  SAY   adjtm1	   PICT "99.9"
+  @ Y,8  SAY   adjtm2	     PICT  "99.9"
+  @ Y,14 SAY   adjtm3	     PICT  "99.9"
+  @ Y,20 SAY   adjtm4	     PICT  "99.9"
+  @ Y,85  SAY	"含水率％"
+  Y=Y+1
+ENDIF
+*@ Y,1	SAY  " "
+SKIP
+XTW=0
+if PNT1_OK=0
+  SET COLO  TO gr+  /&C1
+ENDIF
+FOR  X=1 TO GS_TOT + UWC_TOT
+  XMC_F=A_M_NAME[X,3]
+  IC_X=ALLTRIM(STR(X,2,0))
+  XTW=XTW + TM&IC_X
+  @ Y,6*(X-1)+2  SAY  TM&IC_X	  PICT "&XMC_F"
+  TMPWN[X,2] :=TM&IC_X
+  TXP_TOT[X]=TXP_TOT[X]+TM&IC_X
+NEXT
+TXP_TOT[kind+1]=TXP_TOT[kind+1]+XTW
+@ Y,86	SAY   XTW  PICT "99999"
+Y=Y+1
+IF ERRPNT_E=1
+  FOR  X=1 TO  (GS_TOT+UWC_TOT)
+    xperc= (TMPWN[X,2]-TMPWN[X,1] ) * 100 /TMPWN[X,1]
+    @ Y,6*(X-1)+1  SAY	 xperc	PICT "999.99"
+  NEXT
+  @ Y,75  SAY	"誤差率％"
+  Y=Y+1
+ENDIF
+SKIP
+*@ Y,1	SAY  " "
+

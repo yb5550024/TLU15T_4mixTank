@@ -1,0 +1,68 @@
+SELE 5
+GOTO 1
+     SET COLOR TO &C6 / &C1
+ @ 24,0 SAY "¡ü      << ¸¨®t­×¥¿ >>    Esc- «ì´_­ì­È,  Enter- ¿é¤J,    Ctl-End  µ²§ô       ¡ü"
+     SET COLOR TO  gr +/ &C1
+       @ 24,11 SAY "¸¨®t­×¥¿"
+       @ 24,26 SAY "Esc"
+       @ 24,42 SAY "Enter"
+       @ 24,58 SAY "Ctl-End"
+ SET COLOR TO &C7 +/ &C1
+ TN1=0
+ TNSTP=1
+ DO WHILE TN1<>233  .AND. TNSTP <=9
+    DO CASE
+    CASE TNSTP=1
+	  TNSTP=READ2(PFLOR1,7,22,1,4)
+	  SELE 5
+	  GOTO 1
+	 PFLOR1=PA1
+    CASE TNSTP=2
+	  TNSTP=READ2(PFLOR2,15,22,2,4)
+	  SELE 5
+	  GOTO 1
+	 PFLOR2=PA2
+    CASE TNSTP=3
+	  TNSTP=READ2(PFLOR3,23,22,3,4)
+	 SELE 5
+	 GOTO 1
+	PFLOR3=PA3
+    CASE TNSTP=4
+	  TNSTP=READ2(PFLOR4,31,22,4,4)
+	 SELE 5
+	 GOTO 1
+	PFLOR4=PA4
+    CASE TNSTP=5
+	  TNSTP=READ2(PFLOR5,41,22,5,4)
+	 SELE 5
+	 GOTO 1
+	PFLOR5=PA5
+    CASE TNSTP=6
+	  TNSTP=READ2(PFLOR6,47,22,6,4)
+	 SELE 5
+	 GOTO 1
+	PFLOR6=PA6
+    CASE TNSTP=7
+	  TNSTP=READ2(PFLOR7,57,22,7,4)
+	 SELE 5
+	 GOTO 1
+	PFLOR7=PA7
+    CASE TNSTP=8
+	  TNSTP=READ2(PFLOR9,65,22,8,4)
+	 SELE 5
+	 GOTO 18
+	PFLOR9=PA1
+	goto 1
+    CASE TNSTP=9
+	  TNSTP=READ2(PFLOR8,73,22,9,5)
+	 SELE 5
+	 GOTO 1
+	PFLOR8=PA8
+    ENDCASE
+    IF	T=23
+      TNSTP=12
+      T=0
+    ENDIF
+ ENDDO
+
+

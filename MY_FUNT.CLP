@@ -1,0 +1,3 @@
+
+\CLIPLIB\MY_FUNC2
+

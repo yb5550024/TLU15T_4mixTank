@@ -1,0 +1,315 @@
+#INCLUDE "T15_COM.H"
+CLEA
+RAR1=0
+SET TALK OFF
+set  cons on
+SET CURS ON
+SET ESCA ON
+SET CONF OFF
+SELEC 4
+use
+USE adtprn
+GOTO TOP
+DO WHILE   .NOT. EOF()
+if empty(alltrim(RATNO))=.t. .or.  alltrim(RATNO)="0"
+  DELE
+ENDIF
+SKIP
+ENDDO
+APPEN BLANK
+PACK
+SELEC 2
+use
+USE W1
+SELEC 4
+   SET COLOR TO &C5 +/ &C1
+   d_pos:=array(10)
+   d_pos:={4,15,23,34,37,40,43,49,60,68}
+   @ 0,2 SAY " 日期 :    年    月    日   時間 :                     程式設計>>>威匠科技  "
+  @ 1,2  SAY " 含水修正                    <<  各車資料輸入  >>                           "
+   @ 2,2 SAY "┌────────────────────────────────────┐"
+  @ 3,2  SAY "│ 序號      車 號   月/日/年   時 分 秒 坍度  配比號碼  執行米數 拌合秒數│"
+  @ 4,2  SAY "├────────────────────────────────────┤"
+   @ 5,2 SAY "│                                                                        │"
+   @ 6,2 SAY "│                                                                        │"
+   @ 7,2 SAY "│                                                                        │"
+   @ 8,2 SAY "│                                                                        │"
+   @ 9,2 SAY "│                                                                        │"
+  @ 10,2 SAY "│                                                                        │"
+  @ 11,2 SAY "│                                                                        │"
+  @ 12,2 SAY "│                                                                        │"
+  @ 13,2 SAY "│                                                                        │"
+  @ 14,2 SAY "│                                                                        │"
+  @ 15,2 SAY "│                                                                        │"
+  @ 16,2 SAY "│                                                                        │"
+  @ 17,2 SAY "│                                                                        │"
+  @ 18,2 SAY "│                                                                        │"
+  @ 19,2 SAY "│                                                                        │"
+  @ 20,2 SAY "│                                                                        │"
+  @ 21,2 SAY "└────────────────────────────────────┘"
+   SET COLOR TO &C7 +/ &C1
+  @ 0,10 SAY  SUBSTR(DTOC(DATE()),7,2)
+  @ 0,17 SAY  SUBSTR(DTOC(DATE()),1,2)
+  @ 0,23 SAY  SUBSTR(DTOC(DATE()),4,2)
+  @ 0,37 SAY  TIME()
+  LSK=0
+      GOTO TOP
+      SCRNO=5
+  DO WHILE  RAR1<>23
+      @ 5,4 CLEA  TO 20,75
+     DO WHILE .NOT. EOF()   .AND.  SCRNO <21
+     @ SCRNO,d_pos[1]	SAY scaNO   PICT "XXXXXXXXX"
+     @ SCRNO,d_pos[2]  SAY CARNO
+     @ SCRNO,d_pos[3]  SAY CDATE
+     @ SCRNO,d_pos[4]  SAY CHOUR
+     @ SCRNO,d_pos[5]  SAY CMIN
+     @ SCRNO,d_pos[6]  SAY CSEC
+     @ SCRNO,d_pos[7]  SAY TANDO
+     @ SCRNO,d_pos[8]  SAY RATNO
+     @ SCRNO,d_pos[9]  SAY COUNT
+     SKIP
+     SCRNO=SCRNO+1
+     ENDDO
+     XGET=1
+     SKIP(-1)
+     SCRNO=SCRNO-1
+     IF LSK=24	.OR. LSK=3 .OR. LSK=13
+     SKIP -(SCRNO-5)
+      SCRNO=5
+     ENDIF
+     x_inpn=1
+ DO WHILE XGET=1
+     XCARNO=CARNO
+     IF empty(alltrim(XCARNO))<>.t.
+       XCDATE=CDATE
+       XCHOUR=CHOUR
+     ELSE
+       SKIP (-1)
+       IF .NOT. BOF()
+	 XCDATE=CDATE
+	 XCHOUR=CHOUR
+	 SKIP
+	 ELSE
+	 XCDATE=CDATE
+	 XCHOUR=CHOUR
+       ENDIF
+     ENDIF
+     xscano=SCANO
+     XCMIN=CMIN
+     XCSEC=CSEC
+     XRATNO=RATNO
+     XCOUNT=COUNT
+     XTANDO=TANDO
+
+   SET COLOR TO &C6 / &C1
+  @ 22,1 SAY "  Esc- 查詢,跳頁,跳筆或其它選折擇                                          "
+	SET COLOR TO  gr +/ &C1
+  @ 22,1 SAY "  Esc"
+  IF EMPTY(SUBSTR(DTOC(XCDATE),1,2))
+    XCDATE=DATE()
+  ENDIF
+  IF  XCHOUR=0
+    XCHOUR=VAL(SUBSTR(TIME(),1,2))
+  ENDIF
+  IF  XCMIN=0
+    XCMIN=VAL(SUBSTR(TIME(),4,2))
+  ENDIF
+  IF  XCSEC=0
+    XCSEC=VAL(SUBSTR(TIME(),7,2))
+  ENDIF
+  SET  COLO  TO  GR+  / &C1
+  PWATER=INT((WDATA(15)-2048)*WATER_ADJ/2048)
+  IF  WATER_INPUT=0
+    @ 1,11 SAY	PWATER	PICT "9999"
+  ENDIF
+  set  cons  on
+  SET CURS ON
+   SET COLOR TO &C7 +/ &C1, gr+ /r
+    XscaNO = fgetserno(9,x_inpn)
+     @ SCRNO,d_pos[1] GET XscaNO    PICT "XXXXXXXXX"
+     @ SCRNO,d_pos[2] GET XCARNO
+     @ SCRNO,d_pos[3] GET XCDATE
+     @ SCRNO,d_pos[4] GET XCHOUR      PICT "99"
+     @ SCRNO,d_pos[5] GET XCMIN       PICT "99"
+     @ SCRNO,d_pos[6] GET XCSEC       PICT "99"
+     @ SCRNO,d_pos[7] GET XTANDO      PICT "9999"
+     @ SCRNO,d_pos[8] GET XRATNO
+     @ SCRNO,d_pos[9] GET XCOUNT      PICT "99.9"
+     READ
+     LSK=INKEY()
+     selec 2
+     XRATNO=FSUBSTR(XRATNO,Len_ratno_dbf," ",0)
+     XRATNO=upper(XRATNO)
+     IF EMPTY(ALLTRIM(XRATNO))=.F.
+       LOCA FOR  ALLTRIM(XRATNO)=ALLTRIM(XRATNO)
+     ELSE
+       GOTO BOTT
+       SKIP
+     ENDIF
+     IF EOF()
+       SET COLOR TO &C6 / &C1
+       @ 22,1 SAY "      >>>>>>無此配比,請重新輸入<<<<<<<<<按任一鍵開始                        "
+       SET COLOR TO &C7 +/ &C1
+       AWAIT=" "
+       @ 22,1 GET AWAIT
+       READ
+     ENDIF
+     SELEC 4
+     lsk=0
+	SET COLOR TO &C6 / &C1
+  @ 22,1 SAY "Pg-Up上頁,  Pg-Dn下頁, ↑↓上下筆,  Esc- 查詢配比,  Ｆ１列印,  Ctl-End  結束 "
+	SET COLOR TO  gr +/ &C1
+	  @ 22,1  SAY "Pg-Up"
+	  @ 22,13 SAY "Pg-Dn"
+	  @ 22,24 SAY "↑↓"
+	  @ 22,37 SAY "Esc"
+	  @ 22,53 SAY "Ｆ１"
+	  @ 22,64 SAY "Ctl-End"
+    SET COLOR TO &C7 +/ &C1
+    PWDSPN=SECONDS()
+     do while  LSK<>13 .AND. LSK<>24 .AND. LSK<>5  .AND. LSK<>18 .and. LSK<>3  .and. LSK<>27 .and. LSK<>23 .AND. LSK<>28
+       LSK=INKEY()
+       SET  COLO  TO  GR+  / &C1
+       iF  (WATER_INPUT=0) .AND. (SECONDS()- PWDSPN > 0.5)
+	 @ 1,11 SAY  PWATER  PICT "9999"
+	 PWATER=INT((WDATA(15)-2048)*WATER_ADJ/2048)
+	 PWDSPN=SECONDS()
+       ENDIF
+     ENDDO
+    SET COLOR TO &C7 +/ &C1
+     DO CASE
+	CASE LSK=13 .OR. LSK=24
+	  x_inpn=val(substr(xscano,-3,3)) +1
+	   SELE 2
+	   IF .NOT. EOF()
+	   SELE 4
+	     REPL SCANO WITH XSCANO,TANDO WITH XTANDO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     @ SCRNO,d_pos[1]  SAY scaNO  PICT "XXXXXXXXX"
+	     @ SCRNO,d_pos[2]  SAY CARNO
+	     @ SCRNO,d_pos[3]  SAY CDATE
+	     @ SCRNO,d_pos[4]  SAY CHOUR
+	     @ SCRNO,d_pos[5]  SAY CMIN
+	     @ SCRNO,d_pos[6]  SAY CSEC
+	     @ SCRNO,d_pos[7]  SAY TANDO
+	     @ SCRNO,d_pos[8]  SAY RATNO
+	     @ SCRNO,d_pos[9]  SAY COUNT
+	     SKIP
+	     SCRNO=SCRNO+1
+	     IF EOF()
+	     APPEN  BLAN
+	     ENDIF
+	     IF SCRNO>20
+		SCRNO=5
+		XGET=0
+	     ENDIF
+	   ENDIF
+	   SELE 4
+	CASE LSK=5
+	     REPL SCANO WITH XSCANO,TANDO WITH XTANDO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     @ SCRNO,d_pos[1]  SAY scaNO  PICT "XXXXXXXXX"
+	     @ SCRNO,d_pos[2]  SAY CARNO
+	     @ SCRNO,d_pos[3]  SAY CDATE
+	     @ SCRNO,d_pos[4]  SAY CHOUR
+	     @ SCRNO,d_pos[5]  SAY CMIN
+	     @ SCRNO,d_pos[6]  SAY CSEC
+	     @ SCRNO,d_pos[7]  SAY TANDO
+	     @ SCRNO,d_pos[8]  SAY RATNO
+	     @ SCRNO,d_pos[9]  SAY COUNT
+	     IF SCRNO=5
+		SKIP (-15)
+		IF  BOF()
+	       * SKIP
+		ENDIF
+		XGET=0
+	     ELSE
+	      SCRNO=SCRNO-1
+	      SKIP (-1)
+	     ENDIF
+	 CASE  LSK=18
+      @ 5,4 CLEA  TO 20,75
+	     REPL  SCANO WITH XSCANO,TANDO WITH XTANDO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     @ SCRNO,d_pos[1]  SAY scaNO  PICT "XXXXXXXXX"
+	     @ SCRNO,d_pos[2]  SAY CARNO
+	     @ SCRNO,d_pos[3]  SAY CDATE
+	     @ SCRNO,d_pos[4]  SAY CHOUR
+	     @ SCRNO,d_pos[5]  SAY CMIN
+	     @ SCRNO,d_pos[6]  SAY CSEC
+	     @ SCRNO,d_pos[7]  SAY TANDO
+	     @ SCRNO,d_pos[8]  SAY RATNO
+	     @ SCRNO,d_pos[9]  SAY COUNT
+	     SKIP (-(SCRNO+10))
+	     SCRNO=5
+	     XGET=0
+	 CASE LSK=3
+      @ 5,4 CLEA  TO 20,75
+	     REPL  SCANO WITH XSCANO,TANDO WITH XTANDO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     @ SCRNO,d_pos[1]  SAY scaNO  PICT "XXXXXXXXX"
+	     @ SCRNO,d_pos[2]  SAY CARNO
+	     @ SCRNO,d_pos[3]  SAY CDATE
+	     @ SCRNO,d_pos[4]  SAY CHOUR
+	     @ SCRNO,d_pos[5]  SAY CMIN
+	     @ SCRNO,d_pos[6]  SAY CSEC
+	     @ SCRNO,d_pos[7]  SAY TANDO
+	     @ SCRNO,d_pos[8]  SAY RATNO
+	     @ SCRNO,d_pos[9]  SAY COUNT
+	     SKIP  (20-SCRNO)
+	     SCRNO=5
+	     XGET=0
+	  CASE	LSK=23
+	     REPL SCANO WITH XSCANO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     @ SCRNO,d_pos[1]  SAY scaNO  PICT "XXXXXXXXX"
+	     @ SCRNO,d_pos[2]  SAY CARNO
+	     @ SCRNO,d_pos[3]  SAY CDATE
+	     @ SCRNO,d_pos[4]  SAY CHOUR
+	     @ SCRNO,d_pos[5]  SAY CMIN
+	     @ SCRNO,d_pos[6]  SAY CSEC
+	     @ SCRNO,d_pos[7]  SAY TANDO
+	     @ SCRNO,d_pos[8]  SAY RATNO
+	     @ SCRNO,d_pos[9]  SAY COUNT
+	    CLEA
+	     RETU
+	  CASE LSK=27
+	    SAVE SCRE TO SCRMA1
+	    set curs off
+	    prnrec=recno()
+	    do RATEN
+	    *DO REP
+	    SELEC 4
+	    use
+	    USE adtprn
+	    SELEC 2
+	    use
+	    USE W1
+	    sele 4
+	    goto prnrec
+	    set curs on
+	    REST SCRE FROM SCRMA1
+	  case	 LSK=28
+	     REPL  SCANO WITH XSCANO,TANDO WITH XTANDO,CARNO  WITH XCARNO,CDATE WITH XCDATE,CHOUR WITH XCHOUR,CMIN WITH XCMIN,CSEC WITH XCSEC,RATNO WITH  XRATNO,COUNT WITH XCOUNT
+	     SAVE SCRE TO SCRMA1
+	     x_inpn=val(substr(xscano,-3,3)) +1
+	     *set curs off
+	     prnrec=recno()
+	     SET COLOR TO &C5 4 &C1
+	     @ 22,1 SAY " 車次      資料列印中      <車次 = 0  者不列印,列印後資料自動取消>       "
+	     SET COLOR TO &C7 +/ &C1
+	     DO LUPRN1
+	     SELEC 4
+	     use
+	     USE adtprn
+	     PACK
+	     SELEC 2
+	     use
+	     USE W1
+	     sele 4
+	     goto prnrec
+	     set curs on
+	     REST SCRE FROM SCRMA1
+	     *set curs off
+	     RETU
+	   ENDCASE
+	 ENDDO XGET=1
+
+  ENDDO RAR1<>23
+
+

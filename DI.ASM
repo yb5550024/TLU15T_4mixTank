@@ -1,0 +1,51 @@
+
+.286c
+PUBLIC	 DI
+EXTRN  __RETNI:FAR
+EXTRN  __PARNI:FAR
+
+DGROUP	GROUP	DATASG
+DATASG	SEGMENT  PUBLIC '_DATA'
+M2    db     ?
+DATASG ENDS
+PROG  SEGMENT  'CODE'
+      ASSUME  CS:PROG,DS:DGROUP
+DI   PROC  FAR
+     PUSH  BP
+     MOV  BP,SP
+     push DS
+     push ES
+     push SI
+     push DI
+	  MOV AX,1
+	  PUSH AX
+	  CALL __PARNI
+	  ADD SP,2
+	  MOV DX,AX
+	  MOV AX,2
+	  PUSH AX
+	  CALL __PARNI
+	  ADD SP,2
+	  MOV CX,AX
+	  IN AX,DX
+	  XCHG AH,AL
+
+	  MOV BX,01H
+REP1:	  ROR AX,1
+	  LOOP REP1
+	  AND AX,BX
+ STOP:	  PUSH AX
+	  CALL	__RETNI
+	  ADD SP,2
+   POP DI
+   POP SI
+   POP ES
+   POP DS
+   POP BP
+
+   RET
+DI    ENDP
+PROG  ENDS
+END
+
+

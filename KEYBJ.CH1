@@ -1,0 +1,5 @@
+#define K_PLUS	 43   // SIFT =
+#define K_MINU	95   // SIFT -
+#define K_EQU	61   //
+#define K_DASH	45   //
+

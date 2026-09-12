@@ -1,0 +1,124 @@
+#line 1 "alu16.h"
+#line 2 "NPAH1_1.PRG"
+if  F3_N=1
+  IF  T=0
+    T=INKEY()
+  ENDIF
+  IF T <>0
+    dbSelectArea( LUDBF )
+    dbGoto(LURECNO)
+    IF (GETNO <=1)  .AND. ((T=5) .OR. (T=24) )
+      DO CASE
+      CASE   T=24
+    XP=0
+    dbRecall()
+    dbSkip(1)
+    IF EOF()
+      dbGoBottom()
+    ENDIF
+    dbDelete()
+      CASE   T=5
+    dbRecall()
+    dbSkip( (-1) )
+    XP=0
+    IF  ! BOF()
+      dbGoTop()
+      dbDelete()
+    ENDIF
+      ENDCASE
+      IF BOF()
+    XSCANO=space(9)
+    XCARNO="       "
+    XRATNO=space(9)
+    XVUSE=0
+    XTANDO=0
+    XCALW_REP=1
+      ELSE
+    XSCANO= SCANO
+    XCARNO= CARNO
+    XRATNO= RATNO
+    XVUSE= VUSE
+    XTANDO=TANDO
+    XCALW_REP=ACALW_REP
+      ENDIF
+      SetColor( "&C1 / &C7 +" )
+      NPAH1_DSP0(SCRNO,XSCANO,XCARNO,XRATNO,XVUSE,XTANDO,XCALW_REP)
+      SetColor( "&C7 +/ &C1" )
+      CHRN=subSTR(XSCANO,-9,9)
+      ph_xn=9
+      XP=0
+      FGETNO=1
+      Y1=SCRNO
+      YY1=Y1
+      GETNO=1
+    ELSE
+      DO NPAH1_DSP1
+      IF T1=233
+      DO NPAH1_DSP2
+      ENDIF
+    ENDIF
+
+
+
+
+
+
+
+
+    LURECNO=RECNO()
+    T=0
+  ENDIF
+ENDIF
+
+
+PROCEDURE  NPAH1_DSP3
+PARAMETERS  P1,P2,P3
+  DO CASE
+  CASE    T=13
+    XP=0
+  CASE    T=24
+    XP=0
+    dbRecall()
+    dbSkip(1)
+    IF EOF()
+      dbGoBottom()
+    ENDIF
+    dbDelete()
+  CASE T=5
+    dbRecall()
+    dbSkip( (-1) )
+    XP=0
+    IF    ! BOF()
+      dbGoTop()
+      dbDelete()
+    ENDIF
+  ENDCASE
+  DevPos( SCRNO, 9 ) ; DevOutPict( ASCANO, "999999999" )
+  DevPos( SCRNO, 24 ) ; DevOutPict( ACARNO, "XXXXXXX" )
+  DevPos( SCRNO, 37 ) ; DevOut( ARATNO )
+  DevPos( SCRNO, 52 ) ; DevOutPict( AVUSE, "99.9" )
+  DevPos( SCRNO, 61 ) ; DevOutPict( ATANDO, "9999" )
+  IF  WASTE=1
+    DevPos( SCRNO, 71 ) ; DevOut( APOSITION )
+  ELSE
+    DevPos( SCRNO, 75 ) ; DevOutPict( ACALW_REP, "9999" )
+  ENDIF
+T=0
+retu
+
+FUNCTION  NPAH1_DSP0
+PARAMETERS  Y,D1,D2,D3,D4,D5,D6
+XCOR=SETCOLOR()
+SetColor( "&C7 +/ &C1" )
+DevPos( Y, 9 ) ; DevOutPict( D1, "999999999" )
+DevPos( Y, 24 ) ; DevOutPict( D2, "XXXXXXX" )
+DevPos( Y, 37 ) ; DevOut( D3 )
+DevPos( Y, 52 ) ; DevOutPict( D4, "99.9" )
+DevPos( Y, 61 ) ; DevOutPict( D5, "9999" )
+IF WASTE=1
+  DevPos( Y, 71 ) ; DevOut( XPOSITION )
+ELSE
+DevPos( Y, 75 ) ; DevOutPict( D6, "99" )
+ENDIF
+SetColor( "&XCOR" )
+RETU

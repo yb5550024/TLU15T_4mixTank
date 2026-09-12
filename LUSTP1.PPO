@@ -1,0 +1,2849 @@
+#line 1 "SIO_TXT.CH"
+#line 11 "LUSTP1.PRG"
+#line 1 "T15_COM.H"
+#line 13 "LUSTP1.PRG"
+FUNCTION GET_MIX_DATA
+PARAMETERS  _ARATNO,_AVUSE,STOR_A
+   xd_wno=fSelectNo()
+   ISSEEK=0
+   X_RET=""
+   ISSEEK= fseek_C(2,"RATNO",_ARATNO,"RATNO",@X_RET)
+   IF ISSEEK >0
+       X_OK=0
+      IF AUTOR =1
+      dbSelectArea( "8" )
+      MX=INT((_AVUSE+0.4)*2)*.5
+      __dbLocate( {|| (MLAV=RATVOL) .AND.(MLMV=MX)},,,, .F. )
+      IF   ! EOF()
+        X_OK=1
+        IF _AVUSE >MLA1
+          STOR_A[GS_TOT +UWC_TOT +1]=MLA1
+    ELSE
+          STOR_A[GS_TOT +UWC_TOT +1]=_AVUSE
+        ENDIF
+      ENDIF
+      ENDIF
+      IF (AUTOR =0) .OR.  (X_OK=0)
+     IF _AVUSE > RATVOL
+         STOR_A[GS_TOT +UWC_TOT +1]=RATVOL
+     ELSE
+         STOR_A[GS_TOT +UWC_TOT +1]=_AVUSE
+     ENDIF
+      ENDIF
+      dbSelectArea( "2" )
+      dbGoto(isseek)
+      FOR XLOOP=1  TO    GS_TOT+ UWC_TOT
+     ICX=ALLTRIM(STR(XLOOP,2,0))
+     STOR_A[XLOOP]= M&ICX  *  STOR_A[GS_TOT +UWC_TOT +1]
+      NEXT
+   ENDIF
+   dbSelectArea( xd_wno )
+RETU   ISSEEK
+
+FUNCTION GET_DATA
+PARAMETERS  GD_PRESS
+xd_wno=fSelectNo()
+dbSelectArea( "2" )
+__dbLocate( {|| ALLTRIM(RATNO)==ALLTRIM(ARATNO)},,,, .F. )
+IF ! EOF()
+
+  IF    COM_E=1
+     if (empty(Aus2)=.F.)  .AND. (AVUSE>0)
+       _XUS3=0
+       _LAG_LAG=0
+       _LAG_CAR=0
+       IS_SEEK=fseek_2C(14,"LAG_NA_NO",alltrim(Aus2),"LAG_ADDR_NO",alltrim(A_ADDR_NO),"LAG_LAG","LAG_CAR",@_LAG_LAG,@_LAG_CAR)
+       XUS3=xvuse
+       XTOT_CAR=1
+       dbSelectArea( "14" )
+       IF IS_SEEK <0
+     dbAppend()
+     _FIELD->LAG_NA_NO := AUS2; _FIELD->LAG_NAME := AUS2_1; _FIELD->LAG_ADDR_NO := A_ADDR_NO; _FIELD->LAG_ADDR := AUS2_2
+       ENDIF
+       _FIELD->LAG_DATE := DATE(); _FIELD->LAG_LAG := AUS3; _FIELD->LAG_CAR := ATOT_CAR
+     endIf
+    dbSelectArea( "2" )
+  ENDIF
+
+  LAST_PCS=0
+  IF WASTE <>1
+    DevPos( 23, 75 ) ; DevOutPict( ACALW_REP, "99" )
+  ENDIF
+  ACALW_REP=ACALW_REP-1
+  IF  ACALW_REP <0
+    ACALW_REP=0
+  ENDIF
+  NEXTOK1=1
+  LAST_PCS=0
+  NSCANO1=ASCANO
+  VUSE=AVUSE
+  RATNO=ARATNO
+  CARNO=ACARNO
+  TANDO=ATANDO
+  FILL_A_D4(A_PRESS_N0,1,1,21,15,11,0)
+  FILL_A_D2(A_PRESS_N1,GD_PRESS,GD_PRESS,18,0)
+  FILL_A_D4(A_PRESS_B0,1,1,21,15,11,0)
+  A_PRESS_N1[GD_PRESS,13] :=RATVOL
+  A_PRESS_N1[GD_PRESS,15] :=VUSE
+  FOR IX=1 TO 15
+    A_PRESS_N0[1,21,IX,1] :=77
+    A_PRESS_N0[1,21,IX,2] :=RATNO
+  NEXT
+  IF AUTOR =0
+    DO MP1
+  ELSE
+    DO MP1_1
+  ENDIF
+  actx=0
+  FOR I=1  TO GS_TOT +UWC_TOT
+    ic=ltrim(str(i,2,0))
+    if (stp_a[i] > 0)
+      actx=1
+      exit
+    endif
+  NEXT
+  MX=1
+  WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+    FOR I=1  TO GS_TOT +UWC_TOT
+      IC_X=ALLTRIM(STR(I,2,0))
+      X0= A_PRESS_N0[GD_PRESS,MX,I,1]
+      A_PRESS_N0[GD_PRESS,MX,I,8] := X0
+      IF MX=1
+    if( actx=0  .AND.  lchtype=6)
+       SetColor( "gr+/ &C1" )
+       XMC_F=A_M_NAME[i,3]
+       DevPos( A_M_NAME[I,23], A_M_NAME[I,13] ) ; DevOutPict( x0, "&XMC_F" )
+       SetColor( "&C7 +/ &C1" )
+    endif
+      endif
+    NEXT
+    MX=MX+1
+  ENDDO
+  IF W0DBF=1
+    dbSelectArea( "17" )
+    __dbLocate( {|| ALLTRIM(RATNO)==ALLTRIM(ARATNO)},,,, .F. )
+    IF    (! EOF()   .AND.  ((W0_EN=1)    .OR.  (DIN(6)=1)) )
+      MX=1
+      wwic=ALLTRIM(STR(gs_tot+uwc_tot+1,2,0))
+      WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+    FOR I=1  TO GS_TOT +UWC_TOT
+      IC_X=ALLTRIM(STR(I,2,0))
+      X0= A_PRESS_N0[GD_PRESS,MX,I,1]
+      X1= A_PRESS_N0[GD_PRESS,MX,I,5] * M&IC_X
+      A_PRESS_N0[GD_PRESS,MX,I,1] := X1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        A_PRESS_B0[GD_PRESS,MX,I,1] := X1
+
+
+
+    NEXT
+    MX=MX+1
+      ENDDO
+    else
+      if disc2>0
+    do case
+    case lchtype=13
+      MX=1
+      IF A_PRESS_N0[GD_PRESS,MX,6,8] >0
+        WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+        XDISC=DISC2  *    A_PRESS_N0[GD_PRESS,MX,1,5]
+        X0= XDISC  * A_PRESS_N0[GD_PRESS,MX,3,8]/(A_PRESS_N0[GD_PRESS,MX,3,8] +A_PRESS_N0[GD_PRESS,MX,4,8] )
+        A_PRESS_N0[GD_PRESS,MX,3,1]=A_PRESS_N0[GD_PRESS,MX,3,1]  + X0
+        X0= XDISC  *  A_PRESS_N0[GD_PRESS,MX,4,8]/(A_PRESS_N0[GD_PRESS,MX,3,8] +A_PRESS_N0[GD_PRESS,MX,4,8] )
+        A_PRESS_N0[GD_PRESS,MX,4,1]=A_PRESS_N0[GD_PRESS,MX,4,1]  + X0
+        A_PRESS_N0[GD_PRESS,MX,6,1]=A_PRESS_N0[GD_PRESS,MX,6,1]  -XDISC
+          MX=MX+1
+        ENDDO
+      ENDIF
+    endcase
+      ENDIF
+    ENDIF
+    dbSelectArea( "2" )
+  ENDIF
+  SetColor( "GR + * / &C1" )
+  DevPos( 23, 11 ) ; DevOut( SUBSTR(SPACE(9)+ALLTRIM(ASCANO),-9,9) )
+  DevPos( 23, 25 ) ; DevOut( ACARNO )
+  DevPos( 23, 37 ) ; DevOut( ARATNO )
+  DevPos( 23, 52 ) ; DevOutPict( AVUSE, "99.9" )
+  DevPos( 23, 61 ) ; DevOutPict( ATANDO, "9999" )
+  SetColor( "&C7 +/ &C1" )
+
+
+
+
+
+
+
+
+
+
+
+
+  X=_TOT_D_A[20,4]
+  IF  X =0
+    IF _TOT_D_A[20,3]=0
+      _TOT_D_A[20,4] :=1
+      X=3
+    ELSE
+      _TOT_D_A[20,4] := _TOT_D_A[20,3]
+      X=_TOT_D_A[20,3]
+      X=MOD(X,2)+1
+      _TOT_D_A[20,3] :=X
+      _TOT_D_A[20,4] := _TOT_D_A[20,3]
+      X=X+2
+    ENDIF
+  ELSE
+      X=_TOT_D_A[20,4]
+      X=MOD(X,2)+1
+      _TOT_D_A[20,3] :=X
+
+      X=X+2
+  ENDIF
+  _TOT_D_A[20,4]=2
+  _TOT_D_A[20,3]=2
+  X=4
+   _TOT_D_A[2,X] :=ALLTRIM(ASCANO)
+   _TOT_D_A[3,X]  :=AUS2_1
+   _TOT_D_A[4,X]  :=AUS2_2
+   _TOT_D_A[22,X]  :=Aposition
+   _TOT_D_A[5,X]  :=0
+   _TOT_D_A[6,X]  :=ACARW
+   _TOT_D_A[7,X]  :=0
+   _TOT_D_A[8,X]  :=TIME()
+   _TOT_D_A[9,X]  :=ATOT_CAR
+   _TOT_D_A[10,X] :=AVUSE
+   _TOT_D_A[11,X] :=AUS3
+
+
+
+     _TOT_D_A[12,X] :=S_STRO
+     _TOT_D_A[14,X] :=S_TANDO
+     _TOT_D_A[17,X] :=S_MAX
+
+   _TOT_D_A[13,X] :=ACARNO
+   IF ATANDO <>0
+     _TOT_D_A[14,X] :=ATANDO
+   ENDIF
+   _TOT_D_A[15,X] :=ACARDRV
+   _TOT_D_A[16,X] :=AUS2
+   _TOT_D_A[18,X] :=ARATNO
+   _TOT_D_A[21,X] :=AU_PRICE
+   IF (EMPTY(ASCANO) <> .T.  ) .AND. val(ASCANO)>10000
+    IF    LAG_REPNO1 <> ASCANO
+      LAG_REPNO1 = ALLTRIM(ASCANO)
+    ENDIF
+    IF (LAGDATE=DATE() .OR.  repno_cont=1   )
+      LAG_REPNO1=str(val(LAG_REPNO1)+1 ,9,0)
+    ELSE
+      LAG_REPNO1=fgetserno(9,1)
+      LAGDATE=DATE()
+    ENDIF
+   ENDIF
+   LAG_REPNO=LAG_REPNO1
+   lag_sno=ALLTRIM(str(val(lag_sno)+1,9,0))
+
+   _TOT_D_A[19,X] :=LAG_SNO
+  __MSave( "LAGDATA9", "LAG*", .T. )
+  ASCANO=LAG_REPNO1
+  LAG_PNO=LAG_REPNO1
+  IF ACALW_REP <=0
+    AVUSE=0
+    ARATNO=space(9)
+    dbSelectArea( "3" )
+    Set( 11, "ON" )
+    dbGoTop()
+    IF ! EOF()
+      AVUSE=VUSE
+      ARATNO=RATNO
+      ASCANO=SCANO
+      ACARNO=CARNO
+      ATANDO=TANDO
+      DevPos( 23, 11 ) ; DevOut( SUBSTR(SPACE(7)+ALLTRIM(ASCANO),-9,9) )
+      DevPos( 23, 25 ) ; DevOut( ACARNO )
+      DevPos( 23, 37 ) ; DevOut( ARATNO )
+      DevPos( 23, 52 ) ; DevOutPict( AVUSE, "99.9" )
+      DevPos( 23, 61 ) ; DevOutPict( ATANDO, "9999" )
+      IF WASTE <>1
+    DevPos( 23, 75 ) ; DevOutPict( ACALW_REP, "99" )
+      ENDIF
+      dbDelete()
+      __dbPack()
+      Set( 11, "OFF" )
+    ENDIF
+      IF WASTE <>1
+    DevPos( 23, 75 ) ; DevOutPict( ACALW_REP, "99" )
+      ENDIF
+  ENDIF
+ELSE
+
+
+  IF EMPTY(ARATNO)=.T.
+    AVUSE=0
+    ARATNO=space(9)
+  ENDIF
+  dbSelectArea( "3" )
+  Set( 11, "ON" )
+  dbGoTop()
+  IF ! EOF()
+    AVUSE=VUSE
+    ARATNO=RATNO
+    ASCANO=SCANO
+    ACARNO=CARNO
+    ATANDO=TANDO
+
+
+
+
+
+    dbDelete()
+    __dbPack()
+    Set( 11, "OFF" )
+  ENDIF
+ENDIF
+dbSelectArea( xd_wno )
+dbGoto(LURECNO)
+ aus3=0
+ ATOT_CAR=0
+X=_TOT_D_A[20,3] +1
+IF X >=3
+  X=1
+ENDIF
+
+RETU
+
+FUNCTION RDDLY     
+PARAMETERS  RDN,WN,W_AN  
+
+
+
+IF INT((WDATA(WN)-2048)*A_M_NAME[wn+1,6]/PER/2048)> W_AN
+  IF  ABS(SECONDS()-RDDELAY[RDN,2]) >= RDDELAY[RDN,1]
+    RDDELAY[RDN,3] :=1
+  ELSE
+    RDDELAY[RDN,3] :=77
+  ENDIF
+ELSE
+  RDDELAY[RDN,3] :=0
+ENDIF
+RETU   
+
+
+
+
+
+
+
+
+
+
+
+
+
+PROCEDURE  pnt_tit
+PARAMETERS  P1,P2,P3
+PRINTERTST=0
+DO  PRINTERTST      WITH     APORT
+IF PRINTERTST=1
+  Set( 17, "On" )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  FSetToPrinter(aport,PNTW)
+
+  DevPos( PROW()+2, 2 ) ; DevOut( " ¤é´Á :    ¦~    ¤ë    ¤é                                               " )
+  X=_Tot_d_a[20,4] +2
+  DevPos( PROW(), 9 ) ; DevOutPict( YEAR(DATE()), "9999" )
+  DevPos( PROW(), 17 ) ; DevOut( SUBSTR(DTOC(DATE()),1,2) )
+  DevPos( PROW(), 23 ) ; DevOut( SUBSTR(DTOC(DATE()),4,2) )
+  DevPos( PROW(), 34 ) ; DevOut( "¨®¸¹:" )
+  DevPos( PROW(), 41 ) ; DevOut( _Tot_d_a[13,X] )
+  DevPos( PROW(), 51 ) ; DevOut( "°t¤ñ:" )
+  DevPos( PROW(), 56 ) ; DevOutPict( _Tot_d_a[18,X], "9999" )
+  IF  empty(_Tot_d_a[2,X]) <> .T.
+    DevPos( PROW(), 66 ) ; DevOut( "§Ç¸¹:" )
+    DevPos( PROW(), 72 ) ; DevOutPict( _Tot_d_a[2,X], "XXXXXXXXXXXXXX" )
+  ENDIF
+  IF  (COM_E=0)  .AND.    ((empty(_Tot_d_a[2,X])    <> .T.)  .OR. (_Tot_d_a[14,X] <> 0))
+      DevPos( PROW()+1, 1 ) ; DevOut( " " )
+      if  waste=1
+     DevPos( PROW(), 51 ) ; DevOut( "¤u¦a:" )
+     DevPos( PROW(), 56 ) ; DevOut( _Tot_d_a[22,X] )
+      endif
+    IF    _Tot_d_a[14,X] <> 0
+      DevPos( PROW(), 66 ) ; DevOut( "§~«×:" )
+      DevPos( PROW(), 71 ) ; DevOutPict( _Tot_d_a[14,X], "9999" )
+    ENDIF
+  ENDIF
+  DevPos( PROW()+1, 1 ) ; DevOut( "--------------------------------------------------------------------------------------------------" )
+  DevPos( PROW()+1, 1 ) ; DevOut( "      NO.  ®É¶¡  ¦Ì¼Æ  ²Ö­p(¦Ì)        ³]©w­«¶q/¹ê»Ú­«¶q (Kg)" )
+  DevPos( PROW()+1, 1 ) ; DevOut( " " )
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    xcd=SUBSTR("       "+alltrim(A_M_NAME[X,1] ),-6,6)
+    DevPos( PROW(), 6 *(X-1)+1 ) ; DevOut( XCD )
+  NEXT
+  DevPos( PROW(), 6 *(X-1)+1 ) ; DevOut( "Á`­«" )
+  DevPos( PROW()+1, 1 ) ; DevOut( "------------------------------------------------------------------------------------------------------" )
+  DevPos( PROW()+1, 1 ) ; DevOut( " " )
+  Set( 20, "SCREEN" )
+endif
+RETU
+
+
+FUNCTION TST1_LS1
+PARAMETERS  TST_M1
+IF LS1[TST_M1,1]=1
+  IF DIX(DI_ADS2,TST_M1-1)=0 .AND. RDOK2(TST_M1-1)=1
+    IF LS1[TST_M1,2]=0
+
+      SetDigitOut(1,TST_M1-1,0)
+      LS1[TST_M1,2] :=1
+      DO CASE
+      CASE UCHTYPE=1
+    SetColor( "R * / &C1" )
+    MTANK_MARK(6,STP_FN,1)
+    SetColor( "&C7  / &C1" )
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS1[TST_M1,2]=1
+      LS1[TST_M1,2] :=0
+
+      SetDigitOut(1,TST_M1-1,1)
+      SetColor( "&C2    / &C1" )
+      MTANK_MARK(6,STP_FN,1)
+      SetColor( "&C7    / &C1" )
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+
+FUNCTION TST0_LS1   
+PARAMETERS  TST_M1,TST_M2
+FOR XDI=TST_M1 TO TST_M2
+  IF LS1[XDI,1]=1
+    DIN_X=0
+    IF DIX(DI_ADS2,XDI-1)=1
+      DIN_X=1
+    ENDIF
+    IF DIN_X=1 .AND. RDZEROK(A_M_NAME[XDI,8])=1
+      IF LS1[XDI,2]=0
+
+    SetDigitOut(2,A_M_NAME[XDI,8],0)
+    LS1[XDI,2] :=1
+    DO CASE
+    CASE LCHTYPE=4
+      SetColor( "R * / &C1" )
+      MTANK_MARK(6,XDI,1)
+      SetColor( "&C7  / &C1" )
+    ENDCASE
+      ENDIF
+    ELSE
+      IF  RDZEROK(A_M_NAME[XDI,8])=1
+    IF LS1[XDI,2]=1
+      LS1[XDI,2] :=0
+
+      SetColor( "&C2 / &C1" )
+      MTANK_MARK(6,XDI,0)
+      SetColor( "&C7  / &C1" )
+    ENDIF
+      ELSE
+
+    FOR XDI_1=TST_M1 TO TST_M2
+      LS1[XDI_1,2] :=0
+      SetColor( "&C2 / &C1" )
+      MTANK_MARK(6,XDI,0)
+      SetColor( "&C7  / &C1" )
+    NEXT
+      ENDIF
+    ENDIF
+  ENDIF
+NEXT
+XN1=0
+FOR XDI_1=TST_M1 TO TST_M2
+  IF  LS1[XDI_1,2] =1
+    XN1=1
+    EXIT
+  ENDIF
+NEXT
+IF XN1=0
+  IF MIXAMP < MIXMAX
+    IF TST_M1 <= GS_TOT
+
+      SetDigitOut(2,A_M_NAME[TST_M1,8],1)
+    ELSE
+      IF MIXAMP > 10
+
+    SetDigitOut(2,A_M_NAME[TST_M1,8],1)
+      else
+
+    SetDigitOut(2,A_M_NAME[TST_M1,8],0)
+      endif
+    ENDIF
+  ELSE
+
+    SetDigitOut(2,A_M_NAME[TST_M1,8],0)
+  ENDIF
+ELSE
+
+  SetDigitOut(2,A_M_NAME[TST_M1,8],0)
+ENDIF
+RETU
+
+FUNCTION TST1_LS2
+PARAMETERS  TST_M1
+IF LS2[A_M_NAME[TST_M1,8]+1,1]=1
+  IF DIX(DI_ADS3,A_M_NAME[TST_M1,8])=0 .AND. RDZEROK(A_M_NAME[TST_M1,8])=1
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=0
+
+      SetDigitOut(2,A_M_NAME[TST_M1,8],0)
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=1
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+
+    SetColor( "R * / &C1" )
+    DO CASE
+    CASE TST_M1=3
+      DevPos( 11, 7 ) ; DevOut( "úLúPúPúKúPúPúO" )
+    CASE TST_M1=5
+      DevPos( 11, 22 ) ; DevOut( "úLúPúKúPúO" )
+    CASE TST_M1=7
+      DevPos( 11, 36 ) ; DevOut( "úLúPúKúPúO" )
+    CASE TST_M1=8
+      DevPos( 11, 46 ) ; DevOut( "úLúKúO" )
+    CASE TST_M1=10
+      DevPos( 11, 53 ) ; DevOut( "úLúPúPúKúPúO" )
+    CASE TST_M1=11
+      DevPos( 11, 67 ) ; DevOut( "úLúKúO" )
+    CASE TST_M1=12
+      DevPos( 11, 73 ) ; DevOut( "úLúKúO" )
+    ENDCASE
+    SetColor( "&C7  / &C1" )
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=1
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=0
+
+      SetDigitOut(2,A_M_NAME[TST_M1,8],1)
+      SetColor( "&C2    / &C1" )
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+    DO CASE
+    CASE TST_M1=3
+      DevPos( 11, 7 ) ; DevOut( "úLúPúPúKúPúPúO" )
+    CASE TST_M1=5
+      DevPos( 11, 22 ) ; DevOut( "úLúPúKúPúO" )
+    CASE TST_M1=7
+      DevPos( 11, 36 ) ; DevOut( "úLúPúKúPúO" )
+    CASE TST_M1=8
+      DevPos( 11, 46 ) ; DevOut( "úLúKúO" )
+    CASE TST_M1=10
+      DevPos( 11, 53 ) ; DevOut( "úLúPúPúKúPúO" )
+    CASE TST_M1=11
+      DevPos( 11, 67 ) ; DevOut( "úLúKúO" )
+    CASE TST_M1=12
+      DevPos( 11, 73 ) ; DevOut( "úLúKúO" )
+    ENDCASE
+      ENDCASE
+      SetColor( "&C7    / &C1" )
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+
+FUNCTION TST0_LS2
+PARAMETERS  TST_M1
+IF LS2[A_M_NAME[TST_M1,8]+1,1]=1
+  IF DIX(DI_ADS3,A_M_NAME[TST_M1,8])=1 .AND. RDOK2(TST_M1-1)=1
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=0
+
+      SetDigitOut(1,TST_M1-1,0)
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=1
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+    SetColor( "R * / &C1" )
+    DO CASE
+    CASE TST_M1=1 .OR.TST_M1=2 .OR.TST_M1=3
+      DevPos( 11, 7 ) ; DevOut( "úZúYúYúYúYúYú[" )
+    CASE TST_M1=4.OR.TST_M1=5
+      DevPos( 11, 22 ) ; DevOut( "úZúYúYúYú[" )
+    CASE TST_M1=6 .OR.TST_M1=7
+      DevPos( 11, 36 ) ; DevOut( "úZúYúYúYú[" )
+    CASE TST_M1=8
+      DevPos( 11, 46 ) ; DevOut( "úZúYú[" )
+    CASE TST_M1=9 .OR.TST_M1=10
+      DevPos( 11, 53 ) ; DevOut( "úZúYúYúYúYú[" )
+    CASE TST_M1=11
+      DevPos( 11, 67 ) ; DevOut( "úZúYú[" )
+    CASE TST_M1=12
+      DevPos( 11, 73 ) ; DevOut( "úZúYú[" )
+    ENDCASE
+    SetColor( "&C7  / &C1" )
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=1
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=0
+
+      SetDigitOut(1,TST_M1-1,1)
+      SetColor( "&C2    / &C1" )
+      DO CASE
+      CASE TST_M1=1 .OR.TST_M1=2 .OR.TST_M1=3
+    DevPos( 11, 7 ) ; DevOut( "úZúYúYúYúYúYú[" )
+      CASE TST_M1=4.OR.TST_M1=5
+    DevPos( 11, 22 ) ; DevOut( "úZúYúYúYú[" )
+      CASE TST_M1=6 .OR.TST_M1=7
+    DevPos( 11, 36 ) ; DevOut( "úZúYúYúYú[" )
+      CASE TST_M1=8
+    DevPos( 11, 46 ) ; DevOut( "úZúYú[" )
+      CASE TST_M1=9 .OR.TST_M1=10
+    DevPos( 11, 53 ) ; DevOut( "úZúYúYúYúYú[" )
+      CASE TST_M1=11
+    DevPos( 11, 67 ) ; DevOut( "úZúYú[" )
+      CASE TST_M1=12
+    DevPos( 11, 73 ) ; DevOut( "úZúYú[" )
+      ENDCASE
+      SetColor( "&C7    / &C1" )
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+
+FUNCTION WEIG_RESCALL
+PARAMETERS  DSM_FN
+SW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]
+IF  SW1 >0
+  DSN_WX=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,3]
+  MNX_W=SW1/(SW1+DSN_WX) *A_M_NAME[STP_FN,9]
+  A_M_NAME[STP_FN,10] := MNX_W
+  DO CASE
+  CASE LCHTYPE=4
+    IF DSM_FN <=3
+      A_M_NAME[1,12] := MNX_W
+    ELSE
+      A_M_NAME[2,12] := MNX_W
+    ENDIF
+  ENDCASE
+ENDIF
+RETU
+
+FUNCTION WEIG_URESCALL
+PARAMETERS  DSM_FN
+SW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]
+IF  SW1 >0
+  DSN_WX=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,3]
+  MNX_W=SW1/(SW1-DSN_WX) *A_M_NAME[STP_FN,9]
+  A_M_NAME[STP_FN,10] := MNX_W
+  DO CASE
+  CASE UCHTYPE=1
+    DO CASE
+    CASE DSM_FN=8
+      A_M_NAME[KLCHN+2,12] := MNX_W
+    CASE DSM_FN=9
+      A_M_NAME[KLCHN+3,12] := MNX_W
+    ENDCASE
+  ENDCASE
+ENDIF
+RETU
+
+PROCEDURE  CONVEYER
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE   CNVSTP=0
+  FOR XF=1  TO GS_TOT
+    CNVSTP=1
+    UPOV=0
+    DNOV=0
+    IF WTANK_F[XF,1]<>1
+      CNVSTP=0
+      UPOV=0
+      DNOV=0
+      EXIT
+    ENDIF
+  NEXT
+  IF CNVSTP=1
+    FOR  I=1  TO  GS_TOT
+      WTANK_F[I,1] :=0
+      WTANK_F[I,2] :=0
+    NEXT
+    X=_Tot_d_a[20,4] +2
+    DevPos( 15, 12 ) ; DevOut( _Tot_d_a[18,X] )
+    DevPos( 16, 12 ) ; DevOutPict( _Tot_d_a[10,X], "99.9" )
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    IF STPN&ic_x=1   .AND.   F3_RUN=0
+      DevPos( 23, 9 ) ; DevOut( SUBSTR(SPACE(9)+ALLTRIM(ASCANO),-9,9) )
+      DevPos( 23, 25 ) ; DevOut( ACARNO )
+      DevPos( 23, 37 ) ; DevOut( ARATNO )
+      DevPos( 23, 52 ) ; DevOutPict( AVUSE, "99.9" )
+      DevPos( 23, 61 ) ; DevOutPict( ATANDO, "9999" )
+      IF WASTE <>1
+    DevPos( 23, 75 ) ; DevOutPict( ACALW_REP, "99" )
+      ENDIF
+      E_STORE = 1
+      X=_TOT_D_A[20,4] +2
+      IF empty(_Tot_d_a[2,X]) =.T. .OR. val(_Tot_d_a[2,X])=0
+    E_STORE = 0
+      ENDIF
+      IF E_STORE =1
+
+      ENDIF
+    ENDIF
+    Set( 17, "ON" )
+  ENDIF
+  SetColor( "&C5 +/ &C1" )
+
+
+
+
+
+
+  SetColor( "&C2 / &C1" )
+CASE  (CNVSTP=1 .AND. DIN(8)=0    .AND. DIN(10)=1    .AND.  DIN(11)=1 .AND.  DIN(15)=1)  
+  CNVSTP=2
+  IF UPTKSTP =0
+    SetColor( "B+ / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "ú^ú]ú_" )
+    SetColor( "&C2 / &C1" )
+  ENDIF
+  XWSTPN=    STPN1
+  A_STOR_1(@A_PRESS_N0,XWSTPN,1,GS_TOT)
+  A_STOR_1(@A_PRESS_B0,XWSTPN,1,GS_TOT)
+  FOR  I=1  TO    GS_TOT
+    WTANK_F[I,1] :=-99
+    WTANK_F[I,2] :=-99
+    SetColor( "W+   /&C1" )
+    DevPos( 4, UPTANK[5,1] ) ; DevOutPict( UPTANK[4,1], "99" )
+    SetColor( "&C2 / &C1" )
+  NEXT
+  FOR  I=1  TO    KLCHN
+    GS_DROP[I,2] :=0
+  NEXT
+CASE CNVSTP=2
+  CNVSTP=3
+  UPTANK[4,2]=SECONDS()
+  FOR  I=1  TO    GS_TOT
+    IF    WTANK_F[I,2] <>1
+      CNVSTP=2
+      EXIT
+    ENDIF
+  NEXT
+CASE CNVSTP=3
+  IF  DIN(15)=0
+    SetColor( "R +/ &C1" )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    UPTANK[4,2]=SECONDS()
+    SetColor( "&C2 / &C1" )
+  ELSE
+    SetColor( "W /&C1" )
+
+    X=SECONDS()-UPTANK[4,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[4,2]
+    ENDIF
+    X=UPTANK[4,1]-X
+    IF    X<=0
+      X=0
+    ENDIF
+    SetColor( "GR+ /&C1" )
+    DevPos( 4, UPTANK[5,1] ) ; DevOutPict( X, "99" )
+    SetColor( "&C2 /&C1" )
+  ENDIF
+  IF  X<=0
+
+
+    SetColor( "GR+  /&C1" )
+    DevPos( 4, UPTANK[5,1] ) ; DevOutPict( X, "99" )
+    CNVSTP=4
+  ENDIF
+CASE CNVSTP=4
+  IF UPTKSTP=0
+    UPTKSTP=4
+    SetColor( "B+ / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "ú^ú]ú_" )
+    SetColor( "&C2 / &C1" )
+  ENDIF
+ENDCASE
+RETU
+
+
+PROCEDURE  UP_TANK
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE UPTKSTP=4       .AND. (DIN(12)=1) .AND. (DIN(15)=1 ) .AND.  (TANKSTP=0)
+  UPTKSTP=5
+  FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+     IF  TIME1[XF,1] =88
+    if STP_A[XF] <>7   .AND.  WEIGHT_TYPE[xf] <>1
+      UPTKSTP=4
+      EXIT
+    ENDIF
+     ENDIF
+    IF WTANK_F[XF,1]<>1
+      IF  TIME1[XF,1] <>88
+    UPTKSTP=4
+    EXIT
+      ENDIF
+    ENDIF
+    do    case
+    case  AE_TYPE=89
+      IF stp9<>7
+    UPTKSTP=4
+    EXIT
+      ENDIF
+
+
+
+
+
+    ENDcase
+  NEXT
+CASE (UPTKSTP=5)  .AND. (DIN(12)=1) .AND. (DIN(15)=1 ) .AND.  (TANKSTP=0)  .AND. ((MIXAMP >10)     )
+  TANKSTP=1
+  UPTKSTP=61
+  change_tot_d(@_tot_d_A,4,3)
+  Xcn1=ALLTRIM(STR(GS_TOT+1,2,0))
+  XWSTPN=    STPN&xcn1
+  A_STOR_1(@A_PRESS_N0,XWSTPN,GS_TOT+1,GS_TOT+UWC_TOT)
+  A_STOR_1(@A_PRESS_B0,XWSTPN,GS_TOT+1,GS_TOT+UWC_TOT)
+  IF DIN(9)=1
+    TANKSTP=0
+    UPTKSTP=5
+
+      SetColor( "R / &C1" )
+      DevPos( 18, 40 ) ; DevOut( "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ " )
+
+    SetColor( "&C2 / &C1" )
+  ENDIF
+CASE UPTKSTP=62
+   Xcn1=ALLTRIM(STR(GS_TOT+1,2,0))
+   XWSTPN=    STPN&xcn1
+  A_STORn_1(@A_PRESS_N0,XWSTPN,1,GS_TOT+UWC_TOT,3,4)
+  UPTKSTP=6
+  IF  UPTKSTP=6
+    IF PLOT_E=0
+      SetColor( "B+ / &C1" )
+      DevPos( 18, 40 ) ; DevOut( "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ " )
+    endif
+    SetColor( "&C2 / &C1" )
+    UPTANK[1,2]=SECONDS()
+    SetColor( "GR +/ &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+
+    SetDigitOut(2,14,1)
+    SetColor( "&C2 / &C1" )
+    FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+      IF TIME1[XF,1] <>88
+    WTANK_F[XF,1] :=-99
+    WTANK_F[XF,2] :=-99
+      ENDIF
+    NEXT
+  ENDIF
+CASE UPTKSTP=61
+  xd_wno=fSelectNo()
+  IF KOT=1  
+    UPTKSTP=0
+  ELSE
+    UPTKSTP=62
+  ENDIF
+  STORTIME=TIME()
+  X=_TOT_D_A[20,4] +2
+  _TOT_D_A[8,X]  := STORTIME
+
+  _TOT_D_A[23,X]  := pmixtm
+  SetColor( "&C7 +/ &C1" )
+  DevPos( 16, 51 ) ; DevOutPict( PMIXTM, "999" )
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+    E_STORE = 1
+    X=_TOT_D_A[20,4] +2
+    IF empty(_TOT_D_A[2,X])=.T. .OR. val(_Tot_d_a[2,X])=0
+      E_STORE = 0
+    ENDIF
+    X=_TOT_D_A[20,4] +2
+
+    IF (E_STORE =1)   .AND.   val(_TOT_D_A[2,X]) >0
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      X=_TOT_D_A[20,4] +2
+
+      dbSelectArea( "1" )
+      dbAppend()
+      _FIELD->LUTIME := STORTIME; _FIELD->LUDATE := DATE(); _FIELD->LAG_VUSE := A_PRESS_N0[3,STPN&ic_x,1,6]
+      _FIELD->MIX_SEC := PMIXTM
+      _FIELD->sign := "1"
+      _FIELD->SCANO := ALLTRIM(_TOT_D_A[2,X])
+      _FIELD->CARNO := _TOT_D_A[13,X]
+      _FIELD->TVUSE := A_PRESS_N0[3,STPN&ic_x,1,5]
+      _FIELD->RATNO := _TOT_D_A[18,X]
+      _FIELD->LTANDO := _TOT_D_A[14,X]
+      _FIELD->PAN_NO := STPN&ic_x
+      if empty(_TOT_D_A[19,X])=.F.
+    if VALTYPE(_TOT_D_A[19,X])="C"
+      _FIELD->LAGNO1 := _TOT_D_A[19,X]    
+    ENDIF
+      ENDIF
+      _FIELD->S_STRO := _TOT_D_A[12,X]     
+    _FIELD->p1701 := _TOT_D_A[22,x]   
+      IF COM_E=1
+
+      ENDIF
+      IF  STORAB_D=1
+    dbSelectArea( "19" )
+    dbAppend()
+    _FIELD->LUTIME := STORTIME; _FIELD->LUDATE := DATE(); _FIELD->LAG_VUSE := A_PRESS_N0[3,STPN&ic_x,1,6]
+    X=_TOT_D_A[20,4] +2
+    _FIELD->SCANO := ALLTRIM(_TOT_D_A[2,X]); _FIELD->CARNO := _TOT_D_A[13,X]; _FIELD->TVUSE := A_PRESS_N0[3,STPN&ic_x,1,5]; _FIELD->RATNO := _TOT_D_A[18,X]; _FIELD->LTANDO := _TOT_D_A[14,X]
+    _FIELD->PAN_NO := STPN&ic_x; _FIELD->LAGNO1 := _TOT_D_A[19,X]     
+    _FIELD->S_STRO := _TOT_D_A[12,X]     
+      _FIELD->p1701 := _TOT_D_A[22,x]   
+    IF COM_E=1
+
+    ENDIF
+      ENDIF
+    ENDIF
+  ELSE
+    ACTIME=TIME()
+    HDOK=0
+  ENDIF
+  XTW=0
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+    kX=_TOT_D_A[20,4] +2
+    IF (E_STORE =1 .AND.  val(_TOT_D_A[2,kX]) >0   )
+      IF  (STORAB_D=1)
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    dbSelectArea( "19" )
+    kX=_TOT_D_A[20,4] +2
+    FOR  XLP=1 TO (GS_TOT+UWC_TOT)
+      XMC_F=A_M_NAME[XLP,3]
+      if  lchtype=16 .OR. LCHTYPE=17
+        do    adjwaB0
+        do case
+        case xLP=1
+          _FIELD->adjTM1 := G1_WATER
+        case xLP=2
+          _FIELD->adjTM2 := G2_WATER
+        case xLP=3
+          _FIELD->adjTM3 := S1_WATER
+        case xLP=4
+          _FIELD->adjTM4 := S2_WATER
+        endcase
+      endif
+
+      XTW=XTW+A_PRESS_n0[3,STPN&ic_x,XLP,1]+A_PRESS_n0[3,STPN&ic_x,XLP,2]
+      XMC1=ALLTRIM(STR(XLP,2,0))
+
+      XTMP0 = A_PRESS_n0[3,STPN&IC_X,XLP,1]
+      IF XTMP0 >0
+
+        XTMP0 =  XTMP0 +A_PRESS_n0[3,STPN&IC_X,XLP,2]
+      ENDIF
+      XDEC=CAL_DEC(XLP)
+      IF XDEC=0
+        XTMP0=INT(XTMP0)
+      ENDIF
+      _FIELD->TM&XMC1 := XTMP0
+        _FIELD->p1701 := _TOT_D_A[22,kx]   
+
+    NEXT
+      ENDIF
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      dbSelectArea( "1" )
+      kX=_TOT_D_A[20,4] +2
+      x_pos1=recno()
+      FOR  Xlp=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[Xlp,3]
+    IF W0DBF=1
+      A_PRESS_N0[3,STPN&ic_x,Xlp,1] =A_PRESS_N0[3,STPN&ic_x,Xlp,8]
+      A_PRESS_N0[3,STPN&ic_x,Xlp,2] =A_PRESS_N0[3,STPN&ic_x,Xlp,11]
+
+    ENDIF
+    XDEC=CAL_DEC(XLP)
+    IF XDEC=0
+      A_PRESS_N0[3,STPN&ic_x,Xlp,1] =INT(A_PRESS_N0[3,STPN&ic_x,Xlp,1] )
+      A_PRESS_N0[3,STPN&ic_x,Xlp,2]=INT(A_PRESS_N0[3,STPN&ic_x,Xlp,2])
+    ENDIF
+    XTW=XTW+A_PRESS_N0[3,STPN&ic_x,XLP,1]+A_PRESS_N0[3,STPN&ic_x,XLP,2]
+    XMC1=ALLTRIM(STR(XLP,2,0))
+    if pnt_func=0
+      XTMP0 = A_PRESS_N0[3,STPN&IC_X,XLP,1]  +A_PRESS_N0[3,STPN&IC_X,XLP,2]
+    else
+      XTMP0 = A_PRESS_N0[3,STPN&IC_X,XLP,1]
+    endif
+    dbGoto(x_pos1)
+    _FIELD->TM&XMC1 := XTMP0
+    XTMPD=LUDATE
+    if   (pnt_func=1) .OR.    (ERRPNT_E=1)
+      dbSkip(1)
+      if eof()
+         dbAppend()
+         _FIELD->LAGNO1 := _TOT_D_A[19,kX]     
+         _FIELD->LUDATE := XTMPD
+         _FIELD->sign := "2"
+      endif
+      IF XTMP0 =0
+         A_PRESS_N0[3,STPN&IC_X,XLP,2]=0
+      endif
+      _FIELD->TM&XMC1 := A_PRESS_N0[3,STPN&IC_X,XLP,2]
+    endif
+
+
+
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+
+    X=_TOT_D_A[20,4] +2
+    IF (E_STORE =1  .AND.  val(_TOT_D_A[2,X]) >0 )
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      X=_TOT_D_A[20,4] +2
+      dbSelectArea( "1" )
+      dbAppend()
+      _FIELD->LUTIME := STORTIME; _FIELD->LUDATE := DATE(); _FIELD->LAGNO1 := _TOT_D_A[19,X]  
+      _FIELD->S_STRO := _TOT_D_A[12,X]     
+      _FIELD->sign := "3"
+
+
+
+
+
+    _FIELD->p1701 := _TOT_D_A[22,x]   
+      IF COM_E=1
+
+      ENDIF
+      if storab_d=1
+    dbSelectArea( "19" )
+    dbAppend()
+    X=_TOT_D_A[20,4] +2
+    _FIELD->LUTIME := STORTIME; _FIELD->LUDATE := DATE(); _FIELD->LAGNO1 := _TOT_D_A[19,X]  
+    _FIELD->S_STRO := _TOT_D_A[12,X]     
+      _FIELD->p1701 := _TOT_D_A[22,kx]   
+    IF COM_E=1
+
+    ENDIF
+      endif
+      xdec_a :=ARRAY(3)
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+    getData_dec(a_m_name[x,3],@xdec_a)
+    XMC_F=xdec_a[1]
+
+
+
+    XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+    A_PRESS_N0[3,STPN&IC_X,X,10]=A_PRESS_N0[3,STPN&IC_X,X,4]
+    if storab_d=1
+      dbSelectArea( "19" )
+      XMC1=ALLTRIM(STR(X,2,0))
+
+        IF ((STANDW_ERR[X] > 0) .OR. (STANDW2_ERR[X] > 0)  ) .AND.      lchtype <>30
+          IF A_PRESS_B0[3,STPN&IC_X,X,1] =0
+        A_PRESS_B0[3,STPN&IC_X,X,4]=0
+        A_PRESS_B0[3,STPN&IC_X,X,4]=0
+          ELSE
+        XF_DATA=A_PRESS_b0[3,STPN&IC_X,X,1]+A_PRESS_B0[3,STPN&IC_X,X,2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        xerr=STANDW_ERR[X]  *xdec_a[3]
+        if (xerr=0)
+            xerr= int(XF_DATA    * STANDW2_ERR[X] * xdec_a[3])
+        endif
+        RNDX=int(SECONDS()  * RAND())
+        XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+        XF_DATA1=XF_DATA1/xdec_a[3]
+
+
+        A_PRESS_B0[3,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+        A_PRESS_B0[2,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+        ENDIF
+      ENDIF
+
+      _FIELD->TM&XMC1 := A_PRESS_n0[3,STPN&IC_X,X,10]
+      kX=_TOT_D_A[20,4] +2
+        _FIELD->p1701 := _TOT_D_A[22,kx]   
+    endif
+    dbSelectArea( "1" )
+    XMC1=ALLTRIM(STR(X,2,0))
+    kX=_TOT_D_A[20,4] +2
+    IF W0DBF=1
+      IF (STANDW_ERR[X] > 0) .OR. (STANDW2_ERR[X] > 0)
+        IF A_PRESS_N0[3,STPN&IC_X,X,8] =0
+          A_PRESS_N0[3,STPN&IC_X,X,4]=0
+          A_PRESS_N0[2,STPN&IC_X,X,4]=0
+          A_PRESS_N0[3,STPN&IC_X,X,12]=0
+          A_PRESS_N0[2,STPN&IC_X,X,12]=0
+        ELSE
+
+          XF_DATA=A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          xerr=STANDW_ERR[X]  *xdec_a[3]
+          if (xerr=0)
+          xerr= int(XF_DATA   * STANDW2_ERR[X] * xdec_a[3])
+          endif
+          RNDX=int(SECONDS()  * RAND())
+          XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+          XF_DATA1=XF_DATA1/xdec_a[3]
+
+          A_PRESS_N0[3,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+          A_PRESS_N0[2,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+          XDEC=CAL_DEC(X)
+          IF XDEC=0
+         A_PRESS_N0[3,STPN&IC_X,X,4]=INT(A_PRESS_N0[3,STPN&IC_X,X,4])
+         A_PRESS_N0[2,STPN&IC_X,X,4]=INT(A_PRESS_N0[2,STPN&IC_X,X,4])
+          ENDIF
+        ENDIF
+
+      ENDIF
+    ENDIF
+    _FIELD->TM&XMC1 := A_PRESS_N0[3,STPN&IC_X,X,4]
+      _FIELD->p1701 := _TOT_D_A[22,kx]   
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  XTW=0
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  FOR  X=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[X,3]
+    XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,4]
+  NEXT
+
+
+
+
+
+    XTWA=0
+    XTWBA=0
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+    dbSelectArea( "7" )
+    dbGoBottom()
+    kX=_TOT_D_A[20,4] +2
+    if scano <> _TOT_D_A[2,kx]
+      dbAppend()
+      dbCommitAll()
+    endif
+    IF STORAB=1
+      dbSelectArea( "18" )
+      dbGoBottom()
+      if scano <> _TOT_D_A[2,kx]
+        dbAppend()
+        dbCommitAll()
+      endif
+    ENDIF
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F="9"+A_M_NAME[X,3]
+      XTW=0
+      XTWB=0
+      FOR XN1=1 TO STPN&IC_X
+    XTW=XTW+A_PRESS_N0[3,XN1,X,4]
+    XTWB=XTWB+A_PRESS_N0[3,XN1,X,10]
+    IF PNT_REMAIN=1
+       XTW=XTW - A_PRESS_N0[3,XN1,X,12]
+       XTWB=XTWB - A_PRESS_N0[3,XN1,X,12]
+    endif
+      NEXT
+      IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+    IF (E_STORE =1)
+      dbSelectArea( "7" )
+      XMC1=ALLTRIM(STR(X,2,0))
+      _FIELD->TOTM&XMC1 := XTW
+      dbCommitAll()
+      IF (STORAB=1)
+         dbSelectArea( "18" )
+         _FIELD->TOTM&XMC1 := XTWB
+         dbCommitAll()
+      ENDIF
+    ENDIF
+      ELSE
+    HDOK=0
+      ENDIF
+      XTWA=XTWA+XTW
+      XTWBA=XTWBA+XTWB
+    NEXT
+    Set( 20, "SCREEN" )
+    kX=_TOT_D_A[20,4] +2
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .AND.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    dbSelectArea( "7" )
+    do  s_sa_d1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    dbCommitAll()
+    IF STORAB=1
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      dbSelectArea( "18" )
+      do  s_sa_d1
+
+
+      _FIELD->TOTW := XTWBA     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ENDIF
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+  IF A_PRESS_N0[3,STPN&IC_X+1,1,5]  =0
+    _TOT_D_A[1,kx] :=date()
+    _TOT_D_A[7,kx] :=XTWA
+    _TOT_D_A[5,kx] := 0
+    IF (EMPTY(_TOT_D_A[6,kx])=.F.)  .AND.   (EMPTY(_TOT_D_A[7,kx])=.F.)
+    _TOT_D_A[5,kx] :=_TOT_D_A[6,kx] +_TOT_D_A[7,kx]
+    ENDIF
+
+
+
+
+
+
+    lag_pno= str(val(LAG_REPNO)+1,9,0)
+    lag_pno=_TOT_D_A[2,kx]
+     __MSave( "LAGDATA9", "LAG*", .T. )
+
+
+    PRINTERTST=0
+    DO    PRINTERTST WITH BPORT
+    IF PRINTERTST=1  .AND. (empty(_Tot_d_a[2,kX]) <>.T.)   .AND. (VAL(C_PRT_REP) <>0 )
+
+    Set( 17, "On" )
+
+    FSetToPrinter(bport,PNTW)
+
+       dO REP_&C_PRT_REP
+
+      Set( 20, "SCREEN" )
+    ENDIF
+  ENDIF
+
+
+  PRINTERTST=0
+  DO  PRINTERTST    WITH   APORT
+  IF (PRINTERTST=1) .AND. (E_STORE =1)
+     Set( 17, "On" )
+     do case
+     case aport="1"
+       Set( 24, "lpt1", .F. )
+       QOut( chr(27) + "SP1;" )
+     case aport="2"
+       Set( 24, "lpt2", .F. )
+       QOut( chr(27) + "SP2;" )
+     case aport="3"
+       Set( 24, "lpt3", .F. )
+       QOut( chr(27) + "sp3;" )
+     endcase
+     Set( 17, "ON" )
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    IF (E_STORE =1 )  .AND.  (STPN&IC_X=1  )
+
+
+      PNT_TITa_p(date(),@_tot_d_a)
+
+    ENDIF
+
+
+    pnt_produce(STPN&IC_X,STORTIME,_TOT_D_A[23,kx],A_PRESS_N0,0)
+
+    if pnt_remain=0
+      hTOTWACT :=ARRAy(15)
+      afill(hTOTWACT,0)
+      pnt_lastw(3,STPN&IC_X,A_PRESS_N0,0,1,hTOTWACT)
+    endif
+  endif
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  IF A_PRESS_N0[3,STPN&IC_X + 1,1,5]  =0
+    x=1
+    IF X=1
+      X=_TOT_D_A[20,3]
+      IF X=0
+    _TOT_D_A[20,4] :=0
+      ELSE
+    _TOT_D_A[20,4] :=X
+    _TOT_D_A[20,3] :=0
+      ENDIF
+    ENDIF
+
+  ENDIF
+  dbSelectArea( xd_wno )
+CASE UPTKSTP=6
+      UPTKSTP=7
+CASE UPTKSTP=7
+  IF  ((DIN(15)=0)       )
+
+    SetDigitOut(2,14,0)
+    UPTANK[1,2]=SECONDS()
+    X=UPTANK[1,1]
+    SetColor( "R +/ &C1" )
+    DevPos( 7, UPTANK[5,1] ) ; DevOutPict( UPTANK[1,1], "99" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+    SetColor( "&C2 / &C1" )
+  ELSE
+    SetColor( "B+ / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+    SetColor( "&C2 / &C1" )
+    X=SECONDS()-UPTANK[1,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[1,2]
+    ENDIF
+    X=UPTANK[1,1]-X
+    IF    X<=0
+      X=0
+    ENDIF
+    SetColor( "GR+ /&C1" )
+    DevPos( 7, UPTANK[5,1] ) ; DevOutPict( X, "99" )
+    SetColor( "&C2 /&C1" )
+    IF ( (MIXAMP <= 10) .OR. (MIXAMP >= MIXMAX))
+
+      SetDigitOut(2,14,0)
+    ELSE
+
+      SetDigitOut(2,14,1)
+    ENDIF
+  ENDIF
+  IF  X<=0
+    UPTKSTP=8
+    UPTANK[2,2]=SECONDS()
+    SetColor( "W+ /&C1" )
+    DevPos( 7, UPTANK[5,1] ) ; DevOutPict( UPTANK[1,1], "99" )
+    SetColor( "B+ / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "ú^ú]ú_" )
+    SetColor( "&C2 / &C1" )
+
+    SetDigitOut(2,14,0)
+  ENDIF
+CASE UPTKSTP=8
+  IF  (DIN(15)=0       )
+
+    SetDigitOut(2,14,0)
+    UPTANK[2,2]=SECONDS()
+    X=UPTANK[2,1]
+    SetColor( "R +/ &C1" )
+    DevPos( 9, UPTANK[5,1] ) ; DevOutPict( UPTANK[2,1], "99" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "ú^ú]ú_" )
+    SetColor( "&C2 / &C1" )
+  ELSE
+    SetColor( "B+ / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "ú^ú]ú_" )
+    SetColor( "&C2 / &C1" )
+    X=SECONDS()-UPTANK[2,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[2,2]
+    ENDIF
+    X=UPTANK[2,1]-X
+    IF    X<=0
+      X=0
+    ENDIF
+    SetColor( "GR+ /&C1" )
+    DevPos( 9, UPTANK[5,1] ) ; DevOutPict( X, "99" )
+    SetColor( "&C2 /&C1" )
+  ENDIF
+  IF  X<=0    .AND. ((MIXAMP >10) .AND. (MIXAMP <MIXMAX) )
+
+
+    if gs_pre=1
+      CNVSTP=0
+    endif
+
+
+
+    SetColor( "W+ /&C1" )
+    UPTANK[3,2]=SECONDS()
+    DevPos( 9, UPTANK[5,1] ) ; DevOutPict( UPTANK[2,1], "99" )
+    UPTKSTP=9
+    SetColor( "GR +/ &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+    SetColor( "&C2 / &C1" )
+
+    SetDigitOut(2,14,1)
+  ENDIF
+CASE UPTKSTP=9
+  IF  (DIN(15)=0 .OR. (MIXAMP >= MIXMAX ) .OR. (MIXAMP <= 10)      )
+
+    SetDigitOut(2,14,0)
+    UPTANK[3,2]=SECONDS()
+    X=UPTANK[3,1]
+    SetColor( "R +/ &C1" )
+    DevPos( 11, UPTANK[5,1] ) ; DevOutPict( UPTANK[3,1], "99" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+    SetColor( "&C2 / &C1" )
+  ELSE
+
+
+    SetDigitOut(2,14,1)
+    SetColor( "R+  / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "újúKúk" )
+    SetColor( "&C2 / &C1" )
+    X=SECONDS()-UPTANK[3,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[3,2]
+    ENDIF
+    X=UPTANK[3,1]-X
+    IF    X<=0
+      X=0
+    ENDIF
+    SetColor( "GR+ /&C1" )
+    DevPos( 11, UPTANK[5,1] ) ; DevOutPict( X, "99" )
+    SetColor( "&C2 /&C1" )
+  ENDIF
+  IF  X<=0
+    SetColor( "W+ /&C1" )
+    DevPos( 11, UPTANK[5,1] ) ; DevOutPict( UPTANK[3,1], "99" )
+    UPTKSTP=10
+    SetColor( "W  / &C1" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "úG--úH" )
+    IF CNVSTP=0
+      SetColor( "W+    /&C1" )
+      DevPos( 4, UPTANK[5,1] ) ; DevOutPict( UPTANK[4,1], "99" )
+      SetColor( "&C2 / &C1" )
+    ENDIF
+
+    SetDigitOut(2,14,0)
+  ENDIF
+CASE UPTKSTP=10
+  UPTKSTP=11
+
+  SetDigitOut(2,14,0)
+  FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+    IF WTANK_F[XF,2]<>1
+      UPTKSTP=11
+      EXIT
+    ENDIF
+  NEXT
+CASE UPTKSTP=11
+   DO  CASE
+   CASE (gs_pre <>1) .OR. (UCHTYPE=1) .OR.  (UCHTYPE=2)
+     CNVSTP=0
+   ENDCASE
+   UPTKSTP=0
+ENDCASE
+RETU
+
+
+PROCEDURE  Pnt_MixTime
+PARAMETERS  xPnt_MIXT,XPMIXT_PLUS,XMIXTM,RST_PRINTER,xstor
+IF XPNT_MIXT =1
+  xd_wno=fSelectNo()
+  if xstor=1
+    IF W0DBF=1
+      dbSelectArea( "19" )
+      dbGoBottom()
+      _FIELD->TM16 := XMIXTM
+    ENDIF
+    dbSelectArea( "1" )
+    dbGoBottom()
+    _FIELD->TM16 := XMIXTM
+  endif
+  PRINTERTST=0
+   DO  PRINTERTST    WITH   APORt
+
+   IF  PRINTERTST=1
+     IF RST_PRINTER=1
+
+       FSetToPrinter(aport,PNTW)
+
+     ELSE
+       Set( 20, "PRINTER" )
+     ENDIF
+     DevPos( PROW(), 1 ) ; DevOut( "©Õ¦X®É¶¡(s)" )
+     DevPos( PROW(), 13 ) ; DevOutPict( XMIXTM, "999" )
+     DevPos( PROW()+1, 1 ) ; DevOut( " " )
+     if TOT_DATA[GS_TOT+UWC_TOT+2]=1
+       DevPos( PROW(), 1 ) ; DevOut( "==================================================================================================" )
+       DevPos( PROW()+1, 1 ) ; DevOut( " " )
+       x_LAST=gs_tot+uwc_tot-ae_tot
+       xpn=8
+       FOR X=1 TO (GS_TOT+UWC_TOT)
+     XMC_F="9"+A_M_NAME[X,3]
+
+
+
+
+
+      PW=getData_pw(A_M_NAME[X,3])
+      DevPos( PROW(), xpn ) ; DevOutPict( tot_data[x], "&XMC_F" )
+      xpn=xpn + pw
+       NEXT
+       XMC_F="99999"
+       if tot_deci>0
+     XMC_F="99999.99"
+       endif
+       xpn=xpn +7
+       DevPos( PROW(), xpn ) ; DevOutPict( TOT_DATA[GS_TOT+UWC_TOT+1], "&XMC_F" )
+       DevPos( PROW()+1, 1 ) ; DevOut( " " )
+     endif
+     Set( 20, "SCREEN" )
+   ENDIF
+   dbSelectArea( xd_wno )
+ENDIF
+RETU
+
+PROCEDURE  TANKSTP0
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE   TANKSTP=0
+CASE  TANKSTP=1 .AND. (DIN(9)=0)   .AND. (DIN(12)=1  .AND.   ((MIXAMP >10) .AND. (MIXAMP <=MIXMAX)  ))
+  IF PLOT_E=1
+    BMP_SN[2] :=SECONDS()
+    DO PLOT_MIXAS
+  ENDIF
+  tankstp=2
+  SetColor( "&C7 +/ &C1" )
+  MIXTM=0
+  MIXTM_S=SECONDS()
+  PAUSE_TM=0
+  DevPos( 17, 64 ) ; DevOut( "   " )
+  if spacial_0=0
+    IC_X=ALLTRIM(STR(GS_TOT+1,1,0))
+    if lchtype >= 5
+      IF LAGDATE=DATE()
+    LAGW=LAGW+ A_PRESS_N0[U_PRESS,Stpn&IC_X,GS_TOT+1,5]
+      ELSE
+    LAGW=A_PRESS_N0[U_PRESS,Stpn&IC_X,GS_TOT+1,5]
+    LAGDATE=DATE()
+      ENDIF
+      __MSave( "LAGDATA9", "LAG*", .T. )
+      DevPos( 0, 26 ) ; DevOutPict( LAGW, "9999.9" )
+      ACT_V  = A_PRESS_N0[U_PRESS,Stpn&IC_X,GS_TOT+1,6]     
+      DevPos( 17, 12 ) ; DevOutPict( A_PRESS_N0[U_PRESS,Stpn&IC_X,GS_TOT+1,6], "99.9" )
+    endif
+  endif
+CASE  TANKSTP=2
+
+
+  IF DIN(15)=0      
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SetColor( "GR+ /&C1" )
+  X=0
+  IF PLOT_ACT=1
+    X=2
+  ENDIF
+   DevPos( 17+X, 51 ) ; DevOutPict( MIXTM, "999" )
+  SetColor( "&C2 /&C1" )
+  IF  MIXTM>=PMIXTM
+    TANKSTP=3
+  ENDIF
+  IF KOT=1  
+    xindex=1
+  else
+    xindex=GS_TOT+1
+  endif
+  IF SPACIAL_0 =0
+    FOR   XF=xindex  TO (GS_TOT +UWC_TOT)
+      IF (TIME1[XF,1] <>88)
+    IF WTANK_F[XF,2]<>1
+      TANKSTP=2
+      EXIT
+    ENDIF
+      ENDIF
+    NEXT
+  ELSE
+    IF UPTKSTP    > 0
+      TANKSTP=2
+    ENDIF
+  ENDIF
+  IF TANKSTP=3
+
+    FOR  I=xindex   TO (GS_TOT +UWC_TOT)
+      WTANK_F[I,2] :=0
+    NEXT
+  ENDIF
+  IF DIN(15)=0     
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SetColor( "GR+ /&C1" )
+  X=0
+  IF PLOT_ACT=1
+    X=2
+  ENDIF
+  DevPos( 17+X, 51 ) ; DevOutPict( MIXTM, "999" )
+  SetColor( "&C2 /&C1" )
+CASE  TANKSTP=3
+  TANKSTP=4
+CASE  TANKSTP=4 .AND.DIN(15)=1
+  IF KOT=1  
+    xindex=1
+  else
+    xindex=GS_TOT+1
+  endif
+
+  XFnish=1
+  FOR IX=xindex TO (GS_TOT+UWC_TOT)
+    IF WTANK_F[IX,3]=0
+      XFnish=0
+      EXIT
+    ENDIF
+  NEXT
+
+  IF (INT((MIXA()-2048)*MAIN_AMP/2048)<=PMIXA)    .AND.  DIN(13)=1
+    Pnt_MixTime(PNT_MIXT,PMIXT_PLUS,MIXTM,0,1)
+    IF PLOT_E=1
+      DO  TANK_DSP
+    ENDIF
+    TANKSTP=5
+    DROPTM_S=SECONDS()
+    DROPTM=0
+    IF KOT=1  
+      xindex=1
+    else
+      xindex=GS_TOT+1
+    endif
+
+    XFN1=1
+    FOR IX=xindex TO (GS_TOT+UWC_TOT)
+      IF WTANK_F[IX,3]=0
+    XFN1=0
+    EXIT
+      ENDIF
+    NEXT
+    IF XFN1=1
+
+      BEEP=1
+      FOR IX=xindex TO (GS_TOT+UWC_TOT)
+    WTANK_F[IX,3]=0
+      NEXT
+    ELSE
+      BEEP=0
+    ENDIF
+  ENDIF
+  IF DIN(15)=0     
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SetColor( "GR+ /&C1" )
+  XFN1=0
+  IF PLOT_ACT=1
+    XFN1=2
+  ENDIF
+  DevPos( 17+XFN1, 51 ) ; DevOutPict( MIXTM, "999" )
+  SetColor( "&C2 /&C1" )
+CASE  TANKSTP=5
+   IF ABS(SECONDS()-MIXTM_S)>=1
+     MIXTM=MIXTM+1
+     MIXTM_S=SECONDS()
+     SetColor( "GR+ /&C1" )
+     X=0
+     DevPos( 17+X, 51 ) ; DevOutPict( MIXTM, "999" )
+     SetColor( "&C2 /&C1" )
+   ENDIF
+
+  IF DIN(13)=1
+    SetColor( "&C10 / &C1" )
+    DevPos( 18, 40 ) ; DevOut( "úLúPúPúPúPúPúPúPúKúPúPúPúPúPúPúPúPúPúO" )
+  ELSE
+    SetColor( "R+   / &C1" )
+    DevPos( 18, 40 ) ; DevOut( "úLúPúPúPúPúPúPúPúKúPúPúPúPúPúPúPúPúPúO" )
+  ENDIF
+  SetColor( "&C7 +/ &C1" )
+  IF DIN(15)=0     
+    DROPTM_S=SECONDS()
+    DROPTM=0
+
+    SetDigitOut(2,15,0)
+  ELSE
+    IF DIN(13)=1
+      IF DIN(9)=0
+    DROPT_S=SECONDS()
+    DROPTM=0
+
+    SetDigitOut(2,13,0)
+    IF BEEP=2
+      BEEP=1
+    ENDIF
+      ELSE
+    IF BEEP=1
+
+      SetDigitOut(2,13,1)
+      ALMTM[1,2] := SECONDS()
+      ALMTM[2,2] := 0
+      BEEP=2
+    ENDIF
+      ENDIF
+      IF ABS(SECONDS()-DROPTM_S)>=1
+    DROPTM=DROPTM+1
+    DROPTM_S=SECONDS()
+      ENDIF
+
+      SetDigitOut(2,15,1)
+    ELSE
+      DROPTM_S=SECONDS()
+      DROPTM=0
+
+      SetDigitOut(2,15,0)
+    ENDIF
+  ENDIF
+  IF DROPTM >=PMIXOP
+    TANKSTP=6
+  ENDIF
+  SetColor( "W + /&C1" )
+  DevPos( 17, 64 ) ; DevOutPict( DROPTM, "999" )
+  SetColor( "&C2 /&C1" )
+  IF BEEP=2
+    IF ALMTM[1,2] >0
+      IF (SECONDS()-ALMTM[1,2]) >= ALMTM[1,1]
+
+    SetDigitOut(2,13,0)
+     ALMTM[1,2] =0
+     ALMTM[2,2] := SECONDS()
+      ENDIF
+    ELSE
+      IF (SECONDS()-ALMTM[2,2]) >= ALMTM[2,1]
+
+    SetDigitOut(2,13,1)
+     ALMTM[1,2] := SECONDS()
+     ALMTM[2,2] =0
+      ENDIF
+    ENDIF
+  ENDIF
+CASE  TANKSTP=6
+
+  SetDigitOut(2,15,0)
+
+  SetDigitOut(2,13,0)
+  X=1
+  FOR IX=1 TO 15
+    IF WTANK_F[IX,3]=0
+      X=0
+      EXIT
+    ENDIF
+  NEXT
+  IF X=1
+    FOR IX=1 TO 15
+      WTANK_F[IX,3] :=0
+    NEXT
+    ACT_V=-1
+    DevPos( 15, 12 ) ; DevOut( space(9) )
+    DevPos( 16, 12 ) ; DevOut( "    " )
+    DevPos( 17, 12 ) ; DevOut( "    " )
+  ENDIF
+  IF  SPACIAL_0=1
+     SetColor( "W+    /&C1" )
+     DevPos( 15, 41 ) ; DevOut( "©Õ¦X¢²" )
+
+  ENDIF
+  SetColor( "&C2 / &C1" )
+  DevPos( 18, 40 ) ; DevOut( "úLúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúO" )
+  SetColor( "&C7 +/ &C1" )
+  DevPos( 17, 64 ) ; DevOut( "   " )
+  DevPos( 17, 51 ) ; DevOut( "   " )
+  TANKSTP=0
+ENDCASE
+
+
+PROCEDURE  OUTDATA_RST
+PARAMETERS  P1,P2,P3
+
+DRSTX=STPN7
+xdec_a :=ARRAY(3)
+FOR  X=1  TO (GS_TOT+UWC_TOT)
+  getData_dec(a_m_name[x,3],@xdec_a)
+  A_PRESS_N0[2,DRSTX,X,9]=A_PRESS_N0[2,DRSTX,X,4]
+  A_PRESS_N0[2,DRSTX,X,10]=A_PRESS_N0[2,DRSTX,X,4]
+  IC_X=NTOC(X)
+
+
+
+
+
+  IF STANDW_ERR[X] > 0
+    IF A_PRESS_N0[2,DRSTX,X,8] =0
+      A_PRESS_N0[2,DRSTX,X,9]=0
+    ELSE
+      IF LCHTYPE=4
+    XF_DATA=A_PRESS_N0[2,DRSTX,X,1]+A_PRESS_N0[2,DRSTX,X,2]
+      ELSE
+    XF_DATA=A_PRESS_N0[2,DRSTX,X,8]+A_PRESS_N0[2,DRSTX,X,11]
+      ENDIF
+
+
+
+
+
+
+
+
+    RNDX=SECONDS()    * RAND()
+    XF_DATA1=- STANDW_ERR[X]*xdec_a[3] + MOD(RNDX,(STANDW_ERR[X]*xdec_a[3] * 2) +1)
+    XF_DATA1=XF_DATA1/xdec_a[3]
+
+
+
+      IF   ABS(XF_DATA-A_PRESS_N0[2,DRSTX,X,4]) > STANDW_ERR[X]
+    A_PRESS_N0[2,DRSTX,X,9]=XF_DATA+XF_DATA1
+      ENDIF
+    ENDIF
+  ENDIF
+  A_PRESS_N0[2,DRSTX,X,4]=A_PRESS_N0[2,DRSTX,X,9]
+  NEXT
+RETU
+
+PROCEDURE  stp4_2_21
+PARAMETERS  P1,P2,P3
+XPA1=0
+XPA2= A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-1,4]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-2,4]  +A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-2,4]
+RDDLY(STP_FN,xpa1,xpa2)     
+XRD := RDDELAY[STP_FN,3]
+IF XRD<>0
+  IF XRD=1
+    XMC_F=A_M_NAME[STP_FN,3]
+    DevPos( 4, A_M_NAME[STP_FN,13] ) ; DevOutPict( A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,2], "&XMC_F" )
+    DSPB_FMK(A_M_NAME[STP_FN,8]+1,1)  
+    WTANK_F[STP_FN,1] :=1
+    IF    (A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN+1,1] >0)
+      EW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,2]
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,4] := INT(EW1)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,7] := 1
+      XMC_F=A_M_NAME[STP_FN,3]
+
+      EWN=EW1*2048/A_M_NAME[STP_FN,10]
+      SETCHDATA(STP_ZN,EWN)
+      X=EWN +CHENDATA(0)  +CHENDATA(1)+CHENDATA(2)
+      SETDLA(0,X)
+      STP4=0
+      STP5=1
+    ELSE
+      EWN=WDATA(0)-2048
+      EW1=INT  ((EWN)*A_M_NAME[STP_FN,10]/PER/2048)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,4] := INT(EW1)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,7] := 1
+      XMC_F=A_M_NAME[STP_FN,3]
+
+      SETCHDATA(STP_ZN,EWN)
+      X=EWN +CHENDATA(0)  +CHENDATA(1)+CHENDATA(2)
+      SETDLA(0,x)
+      STP4=0
+      STP5=1
+    ENDIF
+  ENDIF
+  RET_F=1
+  RETU
+endIF
+RETU
+
+FUNCTION    GET_WEIGHT
+PARAMETERS  XB_TOT
+  xd_wno=fSelectNo()
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  RET_S=CHR(2)+"D,2,"
+  kX=_TOT_D_A[20,4] +2
+
+  dbSelectArea( "7" )
+  XC=SCANO
+  RET_S=RET_S+FSUBSTR(XC,-20," ",0) +","
+  XC=DTOS(DATE())
+  RET_S=RET_S+FSUBSTR(XC,-10," ",0) +","
+  XC=SUBSTR(STORTIME,1,2) + SUBSTR(STORTIME,4,2) + SUBSTR(STORTIME,7,2)
+  RET_S=RET_S+FSUBSTR(XC,-10," ",0) +","
+
+
+
+
+  XC=TOTVUSE
+  RET_S=RET_S+FSUBSTR(XC,-10," ",0) +","
+
+
+  XC=RATVOL
+  RET_S=RET_S+FSUBSTR(XC,-10," ") +","
+
+  XC=CARNO
+  RET_S=RET_S+FSUBSTR(XC,10," ") +","
+
+  XC=P1701
+  RET_S=RET_S+FSUBSTR(XC,-10," ") +",A,"
+
+  XC=RATNO
+  RET_S=RET_S+FSUBSTR(XC,10," ") +","
+  xtotw=0
+  FOR  XG=1  TO  15
+
+    X_DEC=CAL_DEC(XG)
+    xc=STR(XB_TOT[XG],10,X_DEC)
+    RET_S=RET_S+ FSUBSTR(XC,-10," ") +","
+    xtotw=xtotw+VAL(xc)
+  next
+  XC=XTOTW
+  RET_S=RET_S+ FSUBSTR(XC,-10," ")
+  RET_S=RET_S + ",B,"
+
+  XC=RATNO
+  RET_S=RET_S+FSUBSTR(XC,10," ") +","
+  xtotw=0
+  FOR  XG=1  TO  15
+
+    X_DEC=CAL_DEC(XG)
+    xc=STR(XB_TOT[XG],10,X_DEC)
+    RET_S=RET_S+ FSUBSTR(XC,-10," ") +","
+    xtotw=xtotw+VAL(xc)
+  next
+  XC=XTOTW
+  RET_S=RET_S+ FSUBSTR(XC,-10," ") +CHR(3)
+
+  dbSelectArea( xd_wno )
+RETU  RET_S
+
+FUNCTION   CAL_DEC
+PARAMETERS  XINDEX
+XRET=0
+X1=VAL(A_M_NAME[XINDEX,3]) -INT(VAL(A_M_NAME[XINDEX,3]))
+IF X1 >0
+  XRET=2
+ENDIF
+RETU  XRET
+
+
+
+
+FUNCTION   getData_DEC     
+PARAMETERS  s_txt,ret_a
+ret_a[1]=s_txt
+ret_a[2]=len(s_txt)
+ret_a[3]=1
+xna=val(ret_a[1])
+if xna-int(xna)>0
+     xna=xna *10
+     if (xna-int(xna))=0
+       ret_a[2]=len(s_txt)-2+0.1
+       ret_a[3]=10
+     else
+       ret_a[2]=len(s_txt)-3+0.2
+       ret_a[3]=100
+     endif
+endif
+retu
+
+FUNCTION   getData_PW    
+PARAMETERS  s_txt
+XPW=5
+IF LEN(S_TXT) >4
+  XPW= LEN(S_TXT) +1
+ENDIF
+retu  XPW
+
+FUNCTION   PNT_SBUF0
+PARAMETERS  XTEXT,LINEW,XOK
+  IF  XOK=77
+    XOK=PNT1_OK()
+    IF XOK=1
+       Set( 20, "PRINTER" )
+       XLINE=INT((LEN(XTEXT)+(LINEW -1))/LINEW)
+       FOR X=0    TO   XLINE-1
+      DevPos( PROW()+1, 1 ) ; DevOut( SUBSTR(xtext,(X * LINEW)+1,LINEW ) )
+       NEXT
+       DevPos( PROW()+1, 1 ) ; DevOut( " " )
+       Set( 20, "SCREEN" )
+    ENDIF
+  ENDIF
+RETU
+
+FUNCTION   SEEK_PMIXTM
+PARAMETERS  RATNO_X
+XRET_S=PMIXTM
+xd_wno=fSelectNo()
+dbSelectArea( "2" )
+__dbLocate( {|| ALLTRIM(RATNO)==ALLTRIM(RATNO_X)},,,, .F. )
+IF ! EOF()
+   IF MIXSEC >30
+      XRET_S=MIXSEC
+   ELSE
+      XRET_S=PMIXTM_O
+   ENDIF
+ENDIF
+dbSelectArea( xd_wno )
+RETU  XRET_S
+
+FUNCTION    pnt_tita_p
+PARAMETERS  date_p,pnt_d_a
+
+
+PRINTERTST=0
+DO  PRINTERTST      WITH     APORT
+IF PRINTERTST=1
+  xd_wno=fSelectNo()
+
+
+  FSetToPrinter(aport,PNTW)
+
+  X=pnt_d_a[20,4] +2
+  IF pnt_CName=1  .AND. COM_E=1
+
+    DevPos( PROW(), 1 ) ; DevOut( "«È¤á:" )
+    IF    EMPTY(pnt_d_a[16,X])=.F.
+    DevPos( PROW(), 6 ) ; DevOut( alltrim(pnt_d_a[3,X])+"(" +alltrim(pnt_d_a[16,X]) +")" )
+    ENDIF
+  ENDIF
+  DevPos( PROW(), 45 ) ; DevOut( "¤é´Á:" )
+  DevPos( PROW(), 51 ) ; DevOut( DATE_p )
+
+
+  IF COM_E=1
+    DevPos( PROW()+1, 1 ) ; DevOut( "¤u¦a:" )
+    X_DET=" "
+    fseek_C(13,"P1701",alltrim(pnt_d_a[22,X]),"P1702",@X_DET)
+
+    XC=""
+    IF EMPTY(pnt_d_a[22,X])=.F.
+      XC="("  +  ALLTRIM(pnt_d_a[22,X]) +")"
+    ENDIF
+    DevPos( PROW(), 6 ) ; DevOut( alltrim(X_DET) +XC )
+    DevPos( PROW(), 36 ) ; DevOut( "°t¤ñ:" )
+    X_POS=41
+  ELSE
+    DevPos( PROW(), 6 ) ; DevOut( "°t¤ñ:" )
+    X_POS=11
+  ENDIF
+  X_RATNO=alltrim(pnt_d_a[18,X])
+  X_DET=" "
+  fseek_C(2,"RATNO",X_RATNO,"DETAIL",@X_DET)
+  X_DET=ALLTRIM(X_DET)
+  IF   EMPTY(X_DET)=.F.
+     X_RATNO=X_RATNO +" (" +X_DET +")"
+  ENDIF
+  DevPos( PROW(), X_POS ) ; DevOut( X_RATNO )
+
+  DevPos( PROW(), 68 ) ; DevOut( "¨®¸¹:" )
+  X_s=alltrim(pnt_d_a[13,X])
+
+
+
+
+
+    DevPos( PROW(), 75 ) ; DevOut( X_s )
+
+
+
+
+  DevPos( PROW()+1, 1 ) ; DevOut( "§Ç¸¹:" )
+  DevPos( PROW(), 6 ) ; DevOutPict( pnt_d_a[2,X], "XXXXXXXXX" )
+  DevPos( PROW(), 40 ) ; DevOut( "§~«×(CM):" )
+  DevPos( PROW(), 50 ) ; DevOutPict( pnt_d_a[14,X], "9999" )
+  DevPos( PROW(), 60 ) ; DevOut( "±j«×(Kg/cm2):" )
+  DevPos( PROW(), 75 ) ; DevOut( pnt_d_a[12,X] )
+
+
+
+
+
+
+
+
+  DevPos( PROW()+1, 1 ) ; DevOut( "==================================================================================================" )
+  DevPos( PROW()+1, 1 ) ; DevOut( "      NO.  ®É¶¡  ¦Ì¼Æ  ²Ö­p(¦Ì)" )
+  DevPos( PROW()+1, 1 ) ; DevOut( " " )
+  xpn=8
+
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+
+
+
+
+
+
+    PW=getData_PW(A_M_NAME[X,3])
+    xcd=fSUBSTR(A_M_NAME[X,1],-pw," ")
+    DevPos( PROW(), xpn+1 ) ; DevOut( XCD )
+    xpn=xpn + pw
+  NEXT
+  xpn=xpn +1
+  DevPos( PROW(), xpn+1 ) ; DevOut( " Á`­«" )
+  DevPos( PROW()+1, 1 ) ; DevOut( "==================================================================================================" )
+  DevPos( PROW()+1, 1 ) ; DevOut( " " )
+  Set( 20, "SCREEN" )
+  dbSelectArea( xd_wno )
+endif
+RETU
+
+FUNCTION    pnt_produce
+PARAMETERS  p_STPN,p_STORTIME,p_mixsec,pnt_press,RST_PRINTER
+PRINTERTST=0
+DO  PRINTERTST      WITH     APORt
+
+IF PRINTERTST=1
+  IF RST_PRINTER=1
+
+
+    FSetToPrinter(aport,PNTW)
+
+  ELSE
+    Set( 20, "PRINTER" )
+  ENDIF
+  DevPos( PROW(), 6 ) ; DevOutPict( P_STPN, "99" )
+  DevPos( PROW(), 10 ) ; DevOut( p_STORTIME )
+  p_mixv=pnt_press[3,p_STPN,1,5]
+  DevPos( PROW(), 18 ) ; DevOutPict( pnt_press[3,p_STPN,1,5], "99.9" )
+  DevPos( PROW(), 25 ) ; DevOutPict( pnt_press[3,p_STPN,1,6], "99.9" )
+  if read_dbf(5,75,"PA12")=1
+    DevPos( PROW(), 40 ) ; DevOut( "©Õ¦X®É¶¡(¬í):" )
+    DevPos( PROW(), 54 ) ; DevOutPict( p_mixsec, "99.9" )
+  ENDIF
+  DevPos( PROW()+1, 1 ) ; DevOut( "°t¤è" )
+  XTW=0
+  xpn=8
+
+  xdec_a :=ARRAY(3)
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    getData_dec(a_m_name[x,3],@xdec_a)
+
+    XMC_F=xdec_a[1] 
+    if pnt_func=1 
+      XTMP0 =  pnt_press[3,P_STPN,X,1]
+    else
+      XTMP0 =  pnt_press[3,P_STPN,X,1] + pnt_press[3,P_STPN,X,2]
+    endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if pnt_func=1
+      xtmp0=int((xtmp0 *xdec_a[3] /p_mixv)+0.4    )/xdec_a[3]
+    else
+      xtmp0=int(xtmp0 *xdec_a[3] +0.4 )/xdec_a[3]
+    endif
+    XTW =XTW+ XTMP0
+    PW=getData_PW(A_M_NAME[X,3])
+    DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "&XMC_F" )
+    xpn=xpn + pw
+  NEXT
+  XMC_F="9999"
+  if tot_deci>0
+    XMC_F="9999.99"
+  endif
+  xpn=xpn +2
+  DevPos( PROW(), xpn ) ; DevOutPict( XTW, "&XMC_F" )
+
+
+  if pnt_func=1
+    DevPos( PROW()+1, 1 ) ; DevOut( "½Õ¤ô«á" )
+    XTW=0
+    xpn=8
+    x_LAST=gs_tot+uwc_tot-ae_tot
+    xdec_a :=array(3)
+    FOR X=1 TO (GS_TOT+UWC_TOT)
+      getData_dec(a_m_name[x,3],@xdec_a)
+      XMC_F=xdec_a[1]
+      XTMP0 =  pnt_press[3,P_STPN,X,1]
+      xtmp0=int(xtmp0*xdec_a[3]+0.4 )/xdec_a[3]
+
+
+
+
+
+
+
+
+
+      IF XTMP0 >0
+    XTMP0 =  XTMP0 +pnt_press[3,P_STPN,X,2]
+      ENDIF
+      XTW =XTW+ XTMP0
+
+
+
+
+
+      PW=getData_PW(A_M_NAME[X,3])
+      DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "&XMC_F" )
+      xpn=xpn + pw
+    NEXT
+    XMC_F="9999"
+    if tot_deci>0
+      XMC_F="9999.99"
+    endif
+    xpn=xpn +2
+    DevPos( PROW(), xpn ) ; DevOutPict( XTW, "&XMC_F" )
+  endif
+  DevPos( PROW()+1, 1 ) ; DevOut( "­p¶q­È" )
+  XTW=0
+  xpn=8
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[X,3]
+    XTMP0 =  pnt_press[3,P_STPN,X,4]
+    XTW =XTW+ XTMP0
+    PW=getData_pw(A_M_NAME[X,3])
+    DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "&XMC_F" )
+    xpn=xpn + pw
+  NEXT
+  XMC_F="9999"
+  if tot_deci>0
+    XMC_F="9999.99"
+  endif
+  xpn=xpn +2
+  DevPos( PROW(), xpn ) ; DevOutPict( XTW, "&XMC_F" )
+  DevPos( PROW()+1, 1 ) ; DevOut( " " )
+ENDIF
+Set( 17, "On" )
+Set( 20, "SCREEN" )
+RETU
+
+FUNCTION    gotosno
+PARAMETERS  xb_sno
+retn=-2
+dbSelectArea( "1" )
+dbGoBottom()
+if alltrim(lagno1)==xb_sno
+   retn=1
+endif
+if (eof()=.F.)    .AND.    retn=1
+  WHILE   (alltrim(lagno1)==xb_sno)  .AND.  (BOF()=.F.)
+    dbSkip( -1 )
+  end
+  IF BOF()
+     dbGoTop()
+  ELSE
+    dbSkip(1)
+  ENDIF
+  retn=recno()
+endif
+return    retn
+
+FUNCTION    add_data
+PARAMETERS  xb_tm,xindex
+  for xloop=1    to  15
+    xlpc=alltrim(str(xloop,2,0))
+    xb_tm[xloop] =xb_tm[xloop]    +  (tm&xlpc * xindex)
+  next
+return
+
+FUNCTION    save2_sadbf
+PARAMETERS  xa_tot
+  dbSelectArea( "7" )
+  dbGoBottom()
+  if eof()=.F.
+    xa_serno=alltrim(lagno1)
+    xa_ok=gotosno(xa_serno)
+    if xa_ok>0
+      dbSelectArea( "1" )
+      xa_tot :=array(15)
+      AFILL(XA_TOT,0)
+      WHILE alltrim(lagno1)==xa_serno
+     if sign="3"
+
+       add_data(@xa_tot,1)
+     endif
+     if sign="4"
+
+       add_data(@xa_tot,-1)
+     endif
+     dbSkip(1)
+      end
+      dbSelectArea( "7" )
+      for xloop=1   to    15
+    xlpc=alltrim(str(xloop,2,0))
+     _FIELD->TOTM&XLPC := XA_TOT[XLOOP]
+      next
+    endif
+  endif
+  dbSelectArea( "1" )
+  dbGoBottom()
+RETU
+
+FUNCTION    pnt_remains
+PARAMETERS  p_pos,p_STPN,pnt_press,RST_PRINTER,p_stor,p_totwact
+PRINTERTST=0
+
+
+if (E_STORE =1)   .AND. p_stor=1
+  dbSelectArea( "1" )
+  dbGoBottom()
+  px_date=ludate
+  px_lagno1=lagno1
+  IF TM1<> -99
+    dbAppend()
+    _FIELD->ludate := px_date
+    _FIELD->lagno1 := px_lagno1
+    _FIELD->sign := "4"
+  ENDIF
+  FOR  XN=1  TO    GS_TOT +UWC_TOT
+    xNC=ALLTRIM(STR(XN,2,0))
+    XD= pnt_press[p_pos,P_STPN,XN,12]
+    XDEC=CAL_DEC(XN)
+    IF XDEC=0
+      pnt_press[p_pos,P_STPN,XN,12] =INT(XD)
+    ENDIF
+    _FIELD->TM&XNC := pnt_press[p_pos,P_STPN,XN,12]
+  NEXT
+  if  pnt_press[p_pos,P_STPN+1,1,5]=0
+    dbAppend()
+    _FIELD->ludate := px_date
+    _FIELD->lagno1 := px_lagno1
+    _FIELD->sign := "5"
+    FOR  XN=1  TO    GS_TOT +UWC_TOT
+      xNC=ALLTRIM(STR(XN,2,0))
+      _FIELD->TM&XNC := p_totwact[XN]
+    NEXT
+  endif
+endif
+if  pnt_press[p_pos,P_STPN+1,1,5]=0
+
+   pa_tot :=array(15)
+   AFILL(pA_TOT,0)
+   save2_sadbf(@PA_TOT)
+   IF  STAR=1
+     o_BUF0=GET_WEIGHT(PA_TOT)
+   ENDIF
+endif
+DO  PRINTERTST      WITH     APORt
+
+IF (E_STORE =1) .AND.  PRINTERTST=1
+  IF RST_PRINTER=1
+
+
+    FSetToPrinter(aport,PNTW)
+
+  ELSE
+    Set( 20, "PRINTER" )
+  ENDIF
+  DevPos( PROW(), 1 ) ; DevOut( "´Ý¯d­È" )
+  x_LAST=gs_tot+uwc_tot-ae_tot
+  xpn=8
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[X,3]
+    XTMP0= pnt_press[p_pos,P_STPN,X,12]
+    PW=getData_pw(A_M_NAME[X,3])
+    DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "&XMC_F" )
+    xpn=xpn + pw
+  NEXT
+
+    DevPos( PROW()+1, 1 ) ; DevOut( "»~®t¢H" )
+    xpn=8
+    FOR X=1 TO (GS_TOT+UWC_TOT)
+      if maker_sn=1
+     x_err=0
+      else
+    x_err= pnt_press[p_pos,P_STPN,X,12]
+      endif
+      XTMP0_1= (pnt_press[p_pos,P_STPN,X,4]- X_ERR - (pnt_press[p_pos,P_STPN,X,1] + pnt_press[p_pos,P_STPN,X,2]  )) * 100
+      XTMP0_2= pnt_press[p_pos,P_STPN,X,1] + pnt_press[p_pos,p_STPN,X,2]
+      XTMP0= XTMP0_1/XTMP0_2
+      PW=getData_pw(A_M_NAME[X,3])
+      DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "99.9" )
+      xpn=xpn + pw
+    NEXT
+
+    DevPos( PROW()+1, 1 ) ; DevOut( "§t¤ô¢H" )
+    xpn=8
+    FOR X=1 TO (GS_TOT)
+      XTMP0= INT(pnt_press[p_pos,P_STPN,X,2]*1000/pnt_press[p_pos,P_STPN,X,1])/10
+      PW=getData_pw(A_M_NAME[X,3])
+      DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "99.9" )
+      xpn=xpn + pw
+    NEXT
+    DevPos( PROW()+1, 1 ) ; DevOut( " " )
+    tot_data[gs_tot +uwc_tot+2]=0
+  IF pnt_press[p_pos,p_STPN+1,1,5]  =0
+    tot_data[gs_tot +uwc_tot+2]=1
+    if pnt_mixt<>1
+      DevPos( PROW(), 1 ) ; DevOut( "==================================================================================================" )
+      DevPos( PROW()+1, 1 ) ; DevOut( " " )
+    endif
+    XTW=0
+    xpn=8
+    x_LAST=gs_tot+uwc_tot-ae_tot
+    FOR X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F="9"+A_M_NAME[X,3]
+      XTMP0=0
+      FOR XN1=1 TO P_STPN
+    XDE=CAL_DEC(X)
+    IF  XDE=0
+      pnt_press[p_pos,XN1,X,4]=INT(pnt_press[p_pos,XN1,X,4])
+      pnt_press[p_pos,XN1,X,12] =INT(pnt_press[p_pos,XN1,X,12] )
+
+    ENDIF
+    IF MAKER_SN=1
+      X_ERR=0
+    ELSE
+      X_ERR=pnt_press[p_pos,XN1,X,12]
+    ENDIF
+    XTMP0=XTMP0+pnt_press[p_pos,XN1,X,4]-X_ERR
+      NEXT
+      IF (P_TOTWACT[X]>0)
+     XTMP0=P_TOTWACT[X]
+      ENDIF
+      XTW=XTW+XTMP0
+      PW=getData_pw(A_M_NAME[X,3])
+      tot_data[x]=xtmp0
+      if pnt_mixt<>1
+    DevPos( PROW(), xpn ) ; DevOutPict( XTMP0, "&XMC_F" )
+      endif
+      xpn=xpn + pw
+    NEXT
+    XMC_F="99999"
+    if tot_deci>0
+      XMC_F="99999.99"
+    endif
+    xpn=xpn +1
+    tot_data[gs_tot +uwc_tot+1]=XTW
+    if pnt_mixt<>1
+      DevPos( PROW(), xpn ) ; DevOutPict( XTW, "&XMC_F" )
+      DevPos( PROW()+1, 1 ) ; DevOut( " " )
+    endif
+  ENDIF
+  Set( 17, "On" )
+  Set( 20, "SCREEN" )
+ENDIF
+RETU
+
+FUNCTION    FSetToPrinter
+PARAMETERS  fport,XPNTW
+Set( 17, "On" )
+do case
+case fport="1"
+  Set( 24, "lpt1", .F. )
+  QOut( chr(27) + "SP1;" )
+case fport="2"
+  Set( 24, "lpt2", .F. )
+  QOut( chr(27) + "SP2;" )
+case fport="3"
+  Set( 24, "lpt3", .F. )
+  QOut( chr(27) + "SP3;" )
+endcase
+Set( 17, "On" )
+x= RDLPT(VAL(fPORT)-1)
+IF (x =144)  .OR. (x=pnt_redy_code)
+  Set( 20, "PRINTER" )
+  if empty(Xpntw)=.T.
+    DevPos( PROW(), 0 ) ; DevOut( "~X15;" )
+  else
+    DevPos( PROW(), 0 ) ; DevOut( " ~X&Xpntw" +";" )
+  endif
+endif
+RETU
+
+
+FUNCTION    FSetToPnt
+PARAMETERS  fport,fcmd
+PRINTERTST=0
+DO  PRINTERTST      WITH     fPORT
+if  PRINTERTST    =0
+  return
+endif
+Set( 17, "On" )
+do case
+case fport="1"
+  Set( 24, "lpt1", .F. )
+  QOut( chr(27) + "SP1;" )
+case fport="2"
+  Set( 24, "lpt2", .F. )
+  QOut( chr(27) + "SP2;" )
+case fport="3"
+  Set( 24, "lpt3", .F. )
+  QOut( chr(27) + "SP3;" )
+endcase
+Set( 17, "On" )
+Set( 20, "PRINTER" )
+
+  DevPos( PROW(), 0 ) ; DevOut( fcmd )
+RETU
+
+
+FUNCTION    save_produce1
+PARAMETERS  p_STPN,p_STORTIME,p_mixsec,pnt_press,P_TOT,P_DATE,p_totwact
+  dbSelectArea( "1" )
+  dbAppend()
+  _FIELD->LUTIME := p_STORTIME
+  _FIELD->LUDATE := P_DATE
+  _FIELD->LAG_VUSE := pnt_press[3,p_STPN,1,6]
+  _FIELD->MIX_SEC := p_mixsec
+  _FIELD->TVUSE := pnt_press[3,p_STPN,1,5]
+  _FIELD->PAN_NO := P_STPN
+  _FIELD->sign := "1"
+  HX=P_TOT[20,4] +2
+  _FIELD->SCANO := P_TOT[2,HX]
+  _FIELD->CARNO := P_TOT[13,HX]
+  _FIELD->RATNO := P_TOT[18,HX]
+  _FIELD->LTANDO := P_TOT[14,HX]
+  _FIELD->LAGNO1 := P_TOT[19,HX]     
+  _FIELD->S_STRO := P_TOT[12,HX]     
+  _FIELD->p1701 := P_TOT[22,Hx]   
+
+
+
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    XC=ALLTRIM(STR(X,2,0))
+    _FIELD->TM&XC := pnt_press[3,P_STPN,X,1]
+  NEXT
+
+
+  dbAppend()
+  _FIELD->LAGNO1 := P_TOT[19,HX]     
+  _FIELD->LUDATE := P_DATE
+  _FIELD->sign := "2"
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    XC=ALLTRIM(STR(X,2,0))
+    _FIELD->TM&XC := pnt_press[3,P_STPN,X,2]
+  NEXT
+
+
+  dbAppend()
+  _FIELD->LAGNO1 := P_TOT[19,HX]     
+  _FIELD->LUDATE := P_DATE
+  _FIELD->sign := "3"
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    XC=ALLTRIM(STR(X,2,0))
+    _FIELD->TM&XC := pnt_press[3,P_STPN,X,4]
+  NEXT
+  dbCommitAll()
+RETU
+
+FUNCTION    save_sadbf
+PARAMETERS  p_STPN,p_STORTIME,p_mixsec,pnt_press,P_TOT,P_DATE,p_totwact
+  HX=P_TOT[20,4] +2
+  dbSelectArea( "7" )
+  dbAppend()
+  _FIELD->LUDATE := p_date  
+  _FIELD->SCANO := P_TOT[2,Hx]  
+  _FIELD->LUTIME := P_STORTIME    
+  _FIELD->CARNO := P_TOT[13,Hx] 
+  _FIELD->TANDO := P_TOT[14,Hx] 
+  _FIELD->S_STRO := P_TOT[12,HX]     
+  _FIELD->p1701 := P_TOT[22,Hx]   
+  _FIELD->US2 := P_TOT[16,Hx]  
+  _FIELD->US2_1 := P_TOT[3,Hx]  
+  _FIELD->RATNO := P_TOT[18,Hx]   
+
+  _FIELD->LAGNO1 := P_TOT[19,Hx]  
+  if com_e=1
+    _FIELD->CARLAG := P_TOT[9,Hx]    
+    _FIELD->CARDRV := P_TOT[15,Hx]   
+    _FIELD->p1702 := P_TOT[4,Hx]   
+    _FIELD->LAGTTW := P_TOT[11,Hx]  
+
+  endif
+
+
+
+  X_KINDTOT=GS_TOT+UWC_TOT
+  X2_TOT :=ARRAY(X_KINDTOT +1)
+  FOR X2=1 TO (X_KINDTOT+1)
+     X2_TOT[X2]=0
+  NEXT
+  LOOPX2=1
+  while (A_PRESS_N0[3,LOOPX2,1,5]>0)
+    X2_TOT[X_KINDTOT+1]=0
+    FOR X2=1 TO (X_KINDTOT)
+      XC=ALLTRIM(STR(X2,2,0))
+      X2_TOT[X2]=X2_TOT[X2] + pnt_press[3,LOOPX2,X2,4] - pnt_press[3,LOOPX2,X2,12]
+      X2_TOT[X_KINDTOT +1]=X2_TOT[X_KINDTOT +1] + X2_TOT[X2]
+    NEXT
+    LOOPX2=LOOPX2 +1
+    IF    (A_PRESS_N0[3,LOOPX2,1,5]=0)
+      _FIELD->TOTVUSE := A_PRESS_N0[3,LOOPX2-1,1,6]   
+    ENDIF
+  ENDDO
+  _FIELD->TOTW := X2_TOT[X_KINDTOT +1]
+  FOR X2=1 TO (X_KINDTOT)
+    XC=ALLTRIM(STR(X2,2,0))
+    if (p_totwact[x2] >0)
+      _FIELD->TOTM&XC := p_totwact[X2]
+    else
+      _FIELD->TOTM&XC := X2_TOT[X2]
+    endif
+  NEXT
+  dbCommitAll()
+RETU
+
+
+FUNCTION    pnt_Lastw
+PARAMETERS  p_pos,p_STPN,pnt_press,RST_PRINTER,p_stor,p_totwact
+PRINTERTST=0
+
+
+x_LAST=gs_tot+uwc_tot-ae_tot
+if  pnt_press[p_pos,P_STPN+1,1,5]=0
+
+   pa_tot :=array(15)
+   AFILL(pA_TOT,0)
+   save2_sadbf(@PA_TOT)
+endif
+DO  PRINTERTST      WITH     APORt
+IF PRINTERTST=1
+  IF RST_PRINTER=1
+
+
+    FSetToPrinter(aport,PNTW)
+
+  ELSE
+    Set( 20, "PRINTER" )
+  ENDIF
+  if  errpnt_e=1
+    DevPos( PROW(), 1 ) ; DevOut( "»~®t¢H" )
+    xpn=8
+    FOR X=1 TO (GS_TOT+UWC_TOT)
+      if maker_sn=1
+     x_err=0
+      else
+    x_err= pnt_press[p_pos,P_STPN,X,12]
+      endif
+      XTMP0_1= (pnt_press[p_pos,P_STPN,X,4]-x_err  - (pnt_press[p_pos,P_STPN,X,1] + pnt_press[p_pos,P_STPN,X,2]  )) * 100
+      XTMP0_2= pnt_press[p_pos,P_STPN,X,1] + pnt_press[p_pos,p_STPN,X,2]
+      XTMP0= XTMP0_1/XTMP0_2
+      PW=getData_pw(A_M_NAME[X,3])
+      DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "99.9" )
+      xpn=xpn + pw
+    NEXT
+    DevPos( PROW()+1, 1 ) ; DevOut( " " )
+   endif
+     if  pnt_func=1
+       DevPos( PROW(), 1 ) ; DevOut( "§t¤ô¢H" )
+       xpn=8
+       FOR X=1 TO (GS_TOT)
+     XTMP0= INT((pnt_press[p_pos,P_STPN,X,2]*1000/pnt_press[p_pos,P_STPN,X,1])    )/10     
+     PW=getData_pw(A_M_NAME[X,3])
+     DevPos( PROW(), xpn+1 ) ; DevOutPict( XTMP0, "99.9" )
+     xpn=xpn + pw
+       NEXT
+       DevPos( PROW()+1, 1 ) ; DevOut( " " )
+    endif
+  IF pnt_press[p_pos,p_STPN+1,1,5]  =0
+    DevPos( PROW(), 1 ) ; DevOut( "==================================================================================================" )
+    DevPos( PROW()+1, 1 ) ; DevOut( " " )
+    XTW=0
+    xpn=8
+    x_LAST=gs_tot+uwc_tot-ae_tot
+    FOR X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F="9"+A_M_NAME[X,3]
+      XTMP0=0
+      FOR XN1=1 TO P_STPN
+    XDE=CAL_DEC(X)
+    IF  XDE=0
+      pnt_press[p_pos,XN1,X,4]=INT(pnt_press[p_pos,XN1,X,4])
+      pnt_press[p_pos,XN1,X,12] =INT(pnt_press[p_pos,XN1,X,12] )
+
+    ENDIF
+    IF MAKER_SN=1
+      X_ERR=0
+    ELSE
+      X_ERR=pnt_press[p_pos,XN1,X,12]
+    ENDIF
+
+    XTMP0=XTMP0+pnt_press[p_pos,XN1,X,4] -X_ERR
+      NEXT
+      IF (P_TOTWACT[X]>0)
+     XTMP0=P_TOTWACT[X]
+      ENDIF
+      XTW=XTW+XTMP0
+      PW=getData_pw(A_M_NAME[X,3])
+      DevPos( PROW(), xpn ) ; DevOutPict( XTMP0, "&XMC_F" )
+      xpn=xpn + pw
+    NEXT
+    XMC_F="99999"
+    if tot_deci>0
+      XMC_F="99999.99"
+    endif
+    xpn=xpn +1
+    DevPos( PROW(), xpn ) ; DevOutPict( XTW, "&XMC_F" )
+    DevPos( PROW()+1, 1 ) ; DevOut( " " )
+  ENDIF
+  Set( 17, "On" )
+  Set( 20, "SCREEN" )
+ENDIF
+RETU
+
+PROCEDURE  S_SA_d1
+PARAMETERS  P1,P2,P3
+    kX=_TOT_D_A[20,4] +2
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+_FIELD->LUDATE := DATE()  
+_FIELD->SCANO := _TOT_D_A[2,kx]    
+_FIELD->TOTW := XTWA   
+_FIELD->LUTIME := STORTIME   
+_FIELD->CARLAG := _TOT_D_A[9,kx]    
+_FIELD->TOTVUSE := A_PRESS_N0[3,STPN&IC_X,1,6]    
+_FIELD->CARNO := _TOT_D_A[13,kx] 
+_FIELD->TANDO := _TOT_D_A[14,kx] 
+_FIELD->CARDRV := _TOT_D_A[15,kx]   
+_FIELD->S_STRO := _TOT_D_A[12,KX]     
+_FIELD->p1701 := _TOT_D_A[22,kx]   
+
+
+IF COM_E=1
+  _FIELD->p1702 := _TOT_D_A[4,kx]   
+  _FIELD->LAGTTW := _TOT_D_A[11,kx]  
+  _FIELD->US2 := _TOT_D_A[16,kx]  
+  _FIELD->US2_1 := _TOT_D_A[3,kx]  
+
+
+
+ENDIF
+_FIELD->RATNO := _TOT_D_A[18,kx]   
+
+_FIELD->LAGNO1 := _TOT_D_A[19,kx]  
+dbCommitAll()
+RETU
+
+PROCEDURE  DRAW_P1
+PARAMETERS  P1,P2,P3
+    DevPos( 3, UPTANK[5,1]-2 ) ; DevOut( "¢z¢w¢{" )
+    DevPos( 4, UPTANK[5,1]-2 ) ; DevOut( "¢x" )
+    DevPos( 4, UPTANK[5,1]+2 ) ; DevOut( "¢x" )
+    DevPos( 5, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢}" )
+    DevPos( 6, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢{" )
+    DevPos( 7, UPTANK[5,1]-2 ) ; DevOut( "¢x" )
+    DevPos( 7, UPTANK[5,1]+2 ) ; DevOut( "¢x" )
+    DevPos( 8, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢t" )
+    DevPos( 9, UPTANK[5,1]-2 ) ; DevOut( "¢x" )
+    DevPos( 9, UPTANK[5,1]+2 ) ; DevOut( "¢x" )
+    DevPos( 10, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢t" )
+    DevPos( 11, UPTANK[5,1]-2 ) ; DevOut( "¢x" )
+    DevPos( 11, UPTANK[5,1]+2 ) ; DevOut( "¢x" )
+    DevPos( 12, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "úG--úH" )
+    XP= UPTANK[5,1]-29
+    IF XP <0
+      XP=1
+    ENDIF
+    DevPos( 13, XP ) ; DevOut( " ¢z¢wúR¢w¢w¢w¢wúR¢w¢w¢w¢w¢{úG--úH" )
+    DevPos( 14, XP ) ; DevOut( " ¢|¢wúQ¢w¢w¢w¢wúQ¢w¢w¢w¢w¢}" )
+    DevPos( 13, UPTANK[5,1]-4 ) ; DevOut( "¢{úG--úH " )
+    DevPos( 14, UPTANK[5,1]-4 ) ; DevOut( "¢}       " )
+    SetColor( "W+/&C1" )
+
+    DevPos( 7, UPTANK[5,1] ) ; DevOutPict( UPTANK[1,1], "99" )
+    DevPos( 9, UPTANK[5,1] ) ; DevOutPict( UPTANK[2,1], "99" )
+    DevPos( 11, UPTANK[5,1] ) ; DevOutPict( UPTANK[3,1], "99" )
+    SetColor( "&C2 / &C1" )
+RETU

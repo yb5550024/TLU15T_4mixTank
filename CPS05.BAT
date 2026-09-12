@@ -1,0 +1,2 @@
+CLIPPER   @TLU15S05 /DTLU15S05=1    %1   %2
+

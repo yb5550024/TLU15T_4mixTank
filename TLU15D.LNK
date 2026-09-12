@@ -1,0 +1,26 @@
+
+
+
+DYN
+FI TLU15
+DYN
+FI  LUSTP
+DYN
+FI  MY_FUNT
+FI  LUPRN
+FI  LUTEST
+FI  LUPAR
+FI  LUPAH
+FI  LUDIS
+fi  PGM
+FI  setadj
+FI   \clip52e\obj\gt
+FI   MX-CLP
+LIB \cliplib\t
+LIB \clip52e\lib\EXTEND
+LIB \clip52e\lib\CLIPPER
+LIB \clip52e\lib\pcbios
+LIB \clip52e\lib\DBFNTX
+LIB \clip52e\lib\TERMINAL
+LIB \clip52e\lib\exospace
+

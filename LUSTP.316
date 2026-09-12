@@ -1,0 +1,3218 @@
+*LUSTP.PRG
+
+IF STAR=1  .AND. DOSIGN=0
+   IF NEXTOK=1	.OR. NEXTOK2=1 .OR. PRCEND=1
+      DO CASE
+      CASE  LCHTYPE=1  .AND. NEXTOK1=1
+	 IF STP1=0 .AND. VAL(TPCOA)-PANDIC <>0
+	 IF SWA&TPCOA<>0
+	 STP1=1
+	 ELSEIF SWA&TPCOA=0 .AND. WAZOK=0
+	 STP1=1
+	 ENDIF
+	 ENDIF
+	 IF STP2=0 .AND. VAL(TPCOB)-PANDIC <>0
+	    IF SWB&TPCOB<>0
+	    STP2=1
+	    ELSEIF SWB&TPCOB=0 .AND. WBZOK=0
+	    STP2=1
+	    ENDIF
+	 ENDIF
+	 IF STP3=0 .AND. VAL(TPCOC)-PANDIC <>0
+	     IF SWC&TPCOC<>0
+	     STP3=1
+	     ELSEIF SWC&TPCOC=0 .AND. WCZOK=0
+	     STP3=1
+	     ENDIF
+	 ENDIF
+	 IF STP4=0 .AND. VAL(TPCOD)-PANDIC <>0
+	     IF SWD&TPCOD<>0
+	     STP4=1
+	     ELSEIF SWD&TPCOD=0 .AND. WDZOK=0
+	     STP4=1
+	     ENDIF
+	 ENDIF
+
+      CASE  LCHTYPE=2  .AND. NEXTOK1=1
+	 IF STP2=0 .AND. STP1=0 .AND. VAL(TPCOB)-PANDIC <>0
+	 STP1=1
+	 ENDIF
+	 IF STP3=0 .AND. VAL(TPCOC)-PANDIC <>0
+	    IF SWC&TPCOC<>0
+	    STP3=1
+	    ELSEIF SWC&TPCOC=0 .AND. WCZOK=0
+	    STP3=1
+	    ENDIF
+	 ENDIF
+	 IF STP4=0 .AND. VAL(TPCOD)-PANDIC <>0
+	   IF SWD&TPCOD<>0
+	   STP4=1
+	   ELSEIF SWD&TPCOD=0 .AND. WDZOK=0
+	   STP4=1
+	   ENDIF
+	 ENDIF
+      CASE  LCHTYPE=3  .AND. NEXTOK1=1
+	 IF STP1=0 .AND. VAL(TPCOA)-PANDIC <>0
+	   IF SWA&TPCOA<>0
+	   STP1=1
+	   ELSEIF SWA&TPCOA=0 .AND. WAZOK=0
+	   STP1=1
+	   ENDIF
+	 ENDIF
+	 IF STP2=0 .AND. VAL(TPCOB)-PANDIC <>0
+	   IF SWB&TPCOB<>0
+	   STP2=1
+	   ELSEIF SWB&TPCOB=0 .AND. WBZOK=0
+	   STP2=1
+	   ENDIF
+	 ENDIF
+	 IF STP4=0 .AND. STP3=0 .AND. VAL(TPCOD)-PANDIC <>0
+	 STP3=1
+	 ENDIF
+      CASE  LCHTYPE=4  .AND. NEXTOK1=1
+
+	    IF STP2=0 .AND. STP1=0 .AND. VAL(TPCOB)-PANDIC <>0
+	      IF     (ABS(SWA&TPCOB)	   > INT((WDATA(0)-2048)*MOVKG0/PER/2048)) .AND. SWA&TPCOB <>0
+		 STP1=1
+	      ELSE
+		IF SWA&TPCOB <>0
+		   SET COLOR TO &C2 / &C1
+			 @ 12,7  SAY   "úZúYúYúYúYúYú["
+		   SET COLOR TO &C7 +/ &C1
+		   PUBL EWA&TPCOA
+		   EWA&TPCOA=ABS(SWA&TPCOA)
+		    @ 9,8  SAY	  EWA&TPCOA   PICT "9999"
+		   SETCHDATA(0,(EWA&TPCOA)*2048/Movkg0)
+		   SETDLA(0,EWA&TPCOA*2048/Movkg0)
+		ELSE
+		   PUBL EWA&TPCOB
+		   EWA&TPCOB=0
+		   WAZOK=1
+		ENDIF
+		 STP1=0
+		 IF WAFOK=1
+		 WAFOK1=1
+		 ELSE
+		 WAFOK=1
+		 ENDIF
+		 TPCOA=LTRIM(STR(INT(VAL(TPCOA)-1)))
+		 PUBL EWA&TPCOA
+		 EWA&TPCOA=0
+		 STP2=2
+		   IF SWB&TPCOB<>0
+		     IF     ABS(SWB&TPCOB)	 +EWA&TPCOB> INT((WDATA(0)-2048)*MOVKG0/PER/2048)
+			STP2=2
+		     ELSE
+			SET COLOR TO &C2 / &C1
+			 @ 12,7  SAY   "úZúYúYúYúYúYú["
+			SET COLOR TO &C7 +/ &C1
+			STP2=4
+			IF WBFOK=1
+			WBFOK1=1
+			ELSE
+			WBFOK=1
+			ENDIF
+			PUBL EWB&TPCOB
+			EWB&TPCOB=INT((WDATA(0)-2048)*MOVKG0/PER/2048)-EWA&TPCOB
+		    @ 9,16 SAY	  EWB&TPCOB   PICT "9999"
+			SETCHDATA(1,(EWB&TPCOB)*2048/MOVKG0)
+		     ENDIF
+		   ENDIF
+	      ENDIF
+	    ENDIF
+	 IF STP3=0 .AND. STP4=0 .AND. VAL(TPCOD)-PANDIC <>0
+	       IF SWD&TPCOC=0
+		 if  val(tpcoc)-PANDIC	= 1
+		 xx=discl
+		 else
+		 xx=1
+		 endif
+		 XPWA=PWATER * xx
+		 ELSE
+		 XPWA=0
+	       ENDIF
+	       IF (ABS(SWC&TPCOC)      -XPWA > INT((WDATA(1)-2048)*MOVKG1/PER/2048))  .AND. SWC&TPCOD <>0
+		 STP3=1
+	       ELSE
+		 IF SWC&TPCOD <>0
+		    SET COLOR TO &C2 / &C1
+		 @ 12,23 SAY   "úZúYúYúYúYúYú["
+		    SET COLOR TO &C7 +/ &C1
+		 ELSE
+		   WCZOK=1
+		   STP3=0
+		 ENDIF
+		 IF WCFOK=1
+		 WCFOK1=1
+		 ELSE
+		 WCFOK=1
+		 ENDIF
+		 PUBL EWC&TPCOD
+		 EWC&TPCOD=ABS(SWC&TPCOC)      -XPWA
+		    @ 9,24 SAY	  EWC&TPCOD   PICT "9999"
+		 SETCHDATA(2,(EWC&TPCOD)*2048/MOVKG1)
+		   SETDLA(1,EWC&TPCOD*2048/Movkg1)
+		 TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		 PUBL EWC&TPCOC
+		 EWC&TPCOC=0
+		 STP4=2
+
+		  IF SWD&TPCOD<>0
+		  if  val(tpcoc)-PANDIC  = 1
+		  xx=discl
+		  else
+		  xx=1
+		  endif
+		  IF	 ABS(SWD&TPCOD)      -(PWATER * xx)+EWC&TPCOD > INT((WDATA(1)-2048)*MOVKG1/PER/2048)
+		     STP4=2
+		  ELSE
+		     SET COLOR TO &C2 / &C1
+		 @ 12,23 SAY   "úZúYúYúYúYúYú["
+		     SET COLOR TO &C7 +/ &C1
+		     STP4=4
+		     IF WDFOK=1
+		     WDFOK1=1
+		     ELSE
+		     WDFOK=1
+		     ENDIF
+		     PUBL EWD&TPCOD
+		     EWD&TPCOD=INT((WDATA(1)-2048)*MOVKG1/PER/2048)-EWC&TPCOD
+		    @ 9,32 SAY	  EWD&TPCOD   PICT "9999"
+		     SETCHDATA(3,(EWD&TPCOD)*2048/MOVKG1)
+		  ENDIF
+		  ELSEIF SWD&TPCOD=0 .AND. WDZOK=0
+		  STP4=2
+		  ENDIF
+	      ENDIF
+	  ENDIF
+      CASE  LCHTYPE=5  .AND. NEXTOK1=1
+	 IF STP1=0 .AND. STP2=0 .AND. STP3=0 .AND. STP4=0 .AND. VAL(TPCOD) -PANDIC <>0
+	   IF	  (ABS(SWA&TPCOB)	> INT((WDATA(0)-2048)*MOVKG0/PER/2048)) .OR. (SWB&TPCOD =0 .AND.  SWC&TPCOD =0	.AND.  SWD&TPCOD =0 )
+	      STP1=1
+	   ELSE
+		SET COLOR TO &C2 / &C1
+		      @ 12,7  SAY   "úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+		SET COLOR TO &C7 +/ &C1
+		PUBL EWA&TPCOA
+		EWA&TPCOA=ABS(SWA&TPCOA)
+		 @ 9,8	SAY    EWA&TPCOA   PICT "9999"
+		SETCHDATA(0,(EWA&TPCOA)*2048/Movkg0)
+		SETDLA(0,EWA&TPCOA*2048/Movkg0)
+	      STP1=0
+	      IF WAFOK=1
+	      WAFOK1=1
+	      ELSE
+	      WAFOK=1
+	      ENDIF
+	      TPCOA=LTRIM(STR(VAL(TPCOA)-1,5,0))
+	      PUBL EWA&TPCOA
+	      EWA&TPCOA=0
+		  IF	 ABS(SWB&TPCOB)       +EWA&TPCOD> INT((WDATA(0)-2048)*MOVKG0/PER/2048)	.OR. ( SWC&TPCOD =0  .AND.  SWD&TPCOD =0  )
+		     STP2=2
+		  ELSE
+		     SET COLOR TO &C2 / &C1
+		      @ 12,7  SAY   "úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+		     SET COLOR TO &C7 +/ &C1
+		       IF WBFOK=1
+		       WBFOK1=1
+		       ELSE
+		       WBFOK=1
+		       ENDIF
+		     PUBL EWB&TPCOB
+		     EWB&TPCOD=ABS(SWB&TPCOD)
+		     @ 9,16 SAY    EWB&TPCOB   PICT "9999"
+		     SETCHDATA(1,(EWB&TPCOB)*2048/MOVKG0)
+		       SETDLA(0,(EWA&TPCOd+EWB&TPCOD)*2048/Movkg0)
+		     STP2=0
+		     IF WBFOK=1
+		     WBFOK1=1
+		     ELSE
+		     WBFOK=1
+		     ENDIF
+		     TPCOB=LTRIM(STR(VAL(TPCOB)-1,5,0))
+		     PUBL EWB&TPCOB
+		     EWB&TPCOB=0
+
+		  IF	 ABS(SWC&TPCOC) +EWA&TPCOD+EWB&TPCOD > INT((WDATA(0)-2048)*MOVKG0/PER/2048)  .OR.    SWD&TPCOD =0
+		     STP3=2
+		  ELSE
+		     SET COLOR TO &C2 / &C1
+		      @ 12,7  SAY   "úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+		     SET COLOR TO &C7 +/ &C1
+		       IF WCFOK=1
+		       WCFOK1=1
+		       ELSE
+		       WCFOK=1
+		       ENDIF
+		     PUBL EWC&TPCOD
+		     EWC&TPCOD=ABS(SWC&TPCOD)
+		     @ 9,24 SAY    EWC&TPCOD   PICT "9999"
+		     SETCHDATA(2,(EWC&TPCOD)*2048/MOVKG0)
+		       SETDLA(0,(EWA&TPCOD+EWB&TPCOD+EWC&TPCOD)*2048/Movkg0)
+		     STP3=0
+		     IF WCFOK=1
+		     WCFOK1=1
+		     ELSE
+		     WCFOK=1
+		     ENDIF
+		     TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		     PUBL EWC&TPCOC
+		     EWC&TPCOC=0
+		     STP4=2
+		    ENDIF
+		  ENDIF
+	   ENDIF
+
+	 ENDIF
+      ENDCASE
+
+
+      DO CASE
+      CASE  UCHTYPE=1  .AND. NEXTOK2=1
+	 IF STP5=0 .AND. VAL(TPCOE)-PANDIC <>0
+	   IF SWE&TPCOE<>0
+	   if  val(tpcoc)-PANDIC  = 1
+	   xx=discu
+	   else
+	   xx=1
+	   endif
+	   IF	  ABS(SWE&TPCOE)      +(PWATER * xx) > INT((WDATA(KLCHN+0)-2048)*MOVKG4/PER/2048)
+	      STP5=1
+	   ELSE
+	      SET COLOR TO &C2 / &C1
+		    @ 12,49 SAY   "úZúYú["
+	   SET COLOR TO &C7 +/ &C1
+	      STP5=4
+	      WEFOK=1
+		    PUBL EWE&TPCOE
+	      EWE&TPCOE=INT((WDATA(KLCHN)-2048)*MOVKG4/PER/2048)
+	      SETCHDATA(4,(WDATA(KLCHN)-2048))
+	   ENDIF
+
+	   ELSEIF SWE&TPCOE=0 .AND. WEZOK=0
+	   STP5=1
+	   ENDIF
+	 ENDIF
+	 IF STP6=0 .AND. VAL(TPCOF)-PANDIC <>0
+	    IF SWF&TPCOF<>0
+	    IF	   ABS(SWF&TPCOF)	> INT((WDATA(KLCHN+1)-2048)*MOVKG5/PER/2048)
+	       STP6=1
+	    ELSE
+	       SET COLOR TO &C2 / &C1
+		     @ 12,57 SAY   "úZúYú["
+	    SET COLOR TO &C7 +/ &C1
+	       STP6=4
+	       WFFOK=1
+		     PUBL EWF&TPCOF
+	       EWF&TPCOF=INT((WDATA(KLCHN+1)-2048)*MOVKG5/PER/2048)
+	       SETCHDATA(5,(WDATA(KLCHN+1)-2048))
+	    ENDIF
+
+	    ELSEIF SWF&TPCOF=0 .AND. WFZOK=0
+	    STP6=1
+	    ENDIF
+	 ENDIF
+
+	    IF STP7=0 .AND. STP9=0 .AND. VAL(TPCOI)-PANDIC <>0	.AND. WIZOK=0
+		 IF	(ABS(SWG&TPCOG)       > INT((WDATA(KLCHN+2)-2048)*MOVKG6/PER/2048))  .AND.  SWG&TPCOI<>0
+		    STP7=1
+		 ELSE
+		    IF SWG&TPCOG <>0
+		       SET COLOR TO &C2 / &C1
+		       @ 12,65 SAY   "úZúYú["
+		       SET COLOR TO &C7 +/ &C1
+		       PUBL EWG&TPCOG
+		       IF SWI&TPCOG=0
+			  EWG&TPCOG=INT((WDATA(KLCHN+2)-2048)*MOVKG6/PER/2048)
+		       ELSE
+			  EWG&TPCOG=ABS(SWG&TPCOG)
+		       ENDIF
+		       @ 6,66 SAY EWG&TPCOG  PICT "9999"
+		       SETDLA((KLCHN+2),CHENDATA(6))
+		    ELSE
+		       PUBL EWG&TPCOG
+		       EWG&TPCOG=0
+		    ENDIF
+		    STP7=0
+		    WGZOK=1
+		    WGFOK=1
+		    TPCOG=LTRIM(STR(INT(VAL(TPCOG)-1)))
+		    PUBL EWG&TPCOG
+		    EWG&TPCOG=0
+		    IF SWI&TPCOI<>0
+		      IF     ABS(SWI&TPCOI)	  +EWG&TPCOI> INT((WDATA(KLCHN+2)-2048)*MOVKG6/PER/2048)
+		      STP9=2
+		   ELSE
+		      SET COLOR TO &C2 / &C1
+		      @ 12,65 SAY   "úZúYú["
+		      SET COLOR TO &C7 +/ &C1
+		      STP9=4
+		      WIFOK=1
+		      PUBL EWI&TPCOI
+		      EWI&TPCOI=INT((WDATA(KLCHN+2)-2048)*MOVKG6/PER/2048)-EWG&TPCOI
+		      @ 9,66 SAY    EWI&TPCOI	PICT "9999"
+		      SETCHDATA(6,(EWI&TPCOI)*2048/MOVKG6)
+		  ENDIF
+		ELSE
+		 IF SWG&TPCOI=0
+		     IF   WIzok=0
+		      WIFOK=1
+		      WIZOK=1
+		      STP9=0
+		      PUBL EWI&TPCOI
+		      EWI&TPCOI=0
+		      TPCOI=LTRIM(STR(INT(VAL(TPCOI)-1)))
+		      PUBL EWI&TPCOI
+		       EWI&TPCOI=0
+		     ENDIF
+		 ELSE
+		    WIFOK=1
+		    PUBL EWI&TPCOI
+		    EWI&TPCOI=0
+		 STP9=4
+		 ENDIF
+		 ENDIF
+	     ENDIF
+	   ENDIF
+
+
+	 IF STP8=0 .AND. VAL(TPCOH)-PANDIC <>0
+	    IF SWH&TPCOH<>0
+	    IF	   ABS(SWH&TPCOH)	> INT((WDATA(KLCHN+3)-2048)*MOVKG7/PER/2048)
+	       STP8=1
+	    ELSE
+	       SET COLOR TO &C2 / &C1
+		     @ 12,73 SAY   "úZúYú["
+	    SET COLOR TO &C7 +/ &C1
+	       STP8=4
+	       WHFOK=1
+		     PUBL EWH&TPCOH
+	       EWH&TPCOH=INT((((WDATA(KLCHN+3)-2048)*MOVKG7/PER/2048))*100)/100
+	       SETCHDATA(7,(WDATA(KLCHN+3)-2048))
+	    ENDIF
+
+	    ELSEIF SWH&TPCOH=0 .AND. WHZOK=0
+	    STP8=1
+	    WHZOK=1
+	    ENDIF
+	 ENDIF
+
+      CASE  UCHTYPE=2  .AND. NEXTOK2=1
+	 IF STP5=0 .AND. VAL(TPCOE)-PANDIC <>0
+	   IF SWE&TPCOE<>0
+	   STP5=1
+	   ELSEIF SWE&TPCOE=0 .AND. WEZOK=0
+	   STP5=1
+	   ENDIF
+	 ENDIF
+	 IF STP6=0 .AND. STP7=0 .AND. STP9=0 .AND. VAL(TPCOI)-PANDIC <>0
+	 STP6=1
+	 ENDIF
+	 IF STP8=0 .AND. VAL(TPCOH)-PANDIC <>0
+	    IF SWH&TPCOH<>0
+	    STP8=1
+	    ELSEIF SWH&TPCOH=0 .AND. WHZOK=0
+	    STP8=1
+	    ENDIF
+	 ENDIF
+      CASE  UCHTYPE=3  .AND. NEXTOK2=1
+	 IF STP5=0 .AND. VAL(TPCOE)-PANDIC <>0
+	    IF SWE&TPCOE<>0
+	    STP5=1
+	    ELSEIF SWE&TPCOE=0 .AND. WEZOK=0
+	    STP5=1
+	    ENDIF
+	 ENDIF
+	 IF STP6=0 .AND. STP7=0 .AND. STP8=0 .AND. STP9=0   .AND. VAL(TPCOH)-PANDIC <>0
+	 STP6=1
+	 ENDIF
+      ENDCASE
+  *ENDIF
+  IF STP1=1   .OR. STP2=1.OR. STP3=1.OR. STP4=1
+    DO CASE
+       CASE LCHTYPE=1
+	    IF STP1=1  .AND. DIN(0)=1  .AND. DRAF=0
+	      DRAF=1
+	      SET COLOR TO W*/N
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,7 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+	    IF STP2=1 .AND. DIN(1)=1  .AND. DRBF=0
+	      DRBF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,15 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+	    IF STP3=1 .AND. DIN(2)=1  .AND. DRCF=0
+	      DRCF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,23 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+	    IF STP4=1  .AND. DIN(3)=1 .AND. DRDF=0
+	      DRDF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,31 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+       CASE LCHTYPE=2
+	    IF STP1=1  .AND. DIN(0)=1 .AND. DRAF=0
+	      DRAF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,7  SAY   "úZúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+	    IF STP3=1  .AND. DIN(1)=1  .AND. DRCF=0
+	      DRCF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,23 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+	    IF STP4=1 .AND. DIN(2)=1  .AND. DRDF=0
+	      DRDF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,31 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+       CASE LCHTYPE=3
+	      IF STP1=1  .AND. DIN(0)=1 .AND. DRAF=0
+		DRAF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,7 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP2=1  .AND. DIN(1)=1 .AND. DRBF=0
+		DRBF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,15 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP3=1   .AND. DIN(2)=1 .AND. DRCF=0
+		DRCF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,23 SAY   "úZúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+
+       CASE LCHTYPE=4
+	      IF STP1=1  .AND. DIN(0)=1  .AND. DRAF=0
+		DRAF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,7  SAY   "úZúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP3=1  .AND. DIN(1)=1  .AND. DRCF=0
+		DRCF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,23 SAY   "úZúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+
+       CASE LCHTYPE=5
+	      IF STP1=1  .AND. DIN(0)=1  .AND. DRAF=0
+		DRAF=1
+	      SET COLOR TO &C2 */ &C1
+	      @ 12,7  SAY   "úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+    ENDCASE
+  ENDIF
+
+    IF STP5=1 .OR. STP6=1.OR. STP7=1.OR. STP8=1
+      DO CASE
+	 CASE UCHTYPE=1
+	      IF STP5=1  .AND. DIN(KLCHN)=1    .AND. DREF=0
+		DREF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,49 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP6=1 .AND. DIN(KLCHN+1)=1  .AND. DRFF=0
+		DRFF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,57 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP7=1 .AND. DIN(KLCHN+2)=1  .AND. DRGF=0
+		DRGF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,65 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP8=1  .AND. DIN(KLCHN+3)=1  .AND. DRHF=0
+		DRHF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,73 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	 CASE UCHTYPE=2
+	      IF STP5=1  .AND. DIN(KLCHN)=1 .AND. DREF=0
+		DREF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,49 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP6=1 .AND. DIN(KLCHN+1)=1  .AND. DRFF=0
+		DRFF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,57 SAY   "úZúYúYúYúYúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	      IF STP8=1  .AND. DIN(KLCHN+2)=1 .AND. DRHF=0
+		DRHF=1
+	      SET COLOR TO &C2 */ &C1
+		@ 12,73 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      ENDIF
+	 CASE	UCHTYPE=3
+       IF STP5=1  .AND. DIN(KLCHN)=1  .AND. DREF=0
+	 DREF=1
+	      SET COLOR TO &C2 */ &C1
+	 @ 12,57 SAY   "úZúYúYúYúYúYúYúYúYúYú[ "
+	      SET COLOR TO &C7 +/ &C1
+       ENDIF
+
+      ENDCASE
+    ENDIF
+   DO CASE
+      CASE STP1=1   .and. din(14)=1  .AND. DIN(0)=0
+	   STP1=2
+      CASE STP1=2
+	   DRAF=0
+	   DO CASE
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOA)-PANDIC >0) .AND. SWA&TPCOA=0
+	      DO CASE
+		 CASE LCHTYPE=1  .OR. LCHTYPE=3
+		      STP1=0
+	   TOTANK0=0
+		      PUBL EWA&TPCOA
+		      EWA&TPCOA=0
+		 CASE LCHTYPE=2 .OR.LCHTYPE=4 .OR.LCHTYPE=5
+		      STP1=0
+		      STP2=2
+		      PUBL EWA&TPCOA
+		      EWA&TPCOA=0
+	      ENDCASE
+	      WAZOK=1
+	      IF WAFOK=1
+	      WAFOK1=1
+	      ELSE
+	      WAFOK=1
+	      ENDIF
+	      TPCOA=LTRIM(STR(INT(VAL(TPCOA)-1)))
+	      PUBL EWA&TPCOA
+	      EWA&TPCOA=0
+	   CASE NEXTOK1=1  .AND. VAL(TPCOA)-PANDIC  > 0  .AND. SWA&TPCOA <> 0
+	      @  4,8  SAY  ABS(SWA&TPCOA) PICT "9999"
+
+	      SET COLOR TO &C2 / &C1
+	      @  7,7 SAY   "úLúKúO"
+		 do case
+		 CASE LCHTYPE=1
+	      SET COLOR TO &C2 / &C1
+		    @ 12,7 SAY	 "úZúYú["
+		 CASE LCHTYPE=2
+	      SET COLOR TO &C2 / &C1
+		    @ 12,7  SAY   "úZúYúYúYúYúYú["
+		 CASE LCHTYPE=3
+	      SET COLOR TO &C2 / &C1
+		    @ 12,7 SAY	 "úZúYú["
+		 CASE LCHTYPE=4
+	      SET COLOR TO &C2 / &C1
+		    @ 12,7  SAY   "úZúYúYúYúYúYú["
+		 CASE LCHTYPE=5
+	      SET COLOR TO &C2 / &C1
+		     @ 12,7  SAY   "úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+		 ENDCASE
+	      SET COLOR TO &C7 +/ &C1
+	      CLEACHMEM(0)
+	      CLEACHW(0)
+	      IF VAL(TPCOA)-PANDIC =1
+	      PPFLOR1=PFLOR1+SDRA*PERFLR
+
+	      ELSE
+	      PPFLOR1=PFLOR1
+	      ENDIF
+	      IF SWA&TPCOA<0
+		 SWA&TPCOA=ABS(SWA&TPCOA)
+		IF NVUSE > 5
+		  IF DISCH1=1
+		  DISAA=0.5
+		  ELSE
+		  DISAA=1
+		  ENDIF
+		MOVKG0=MOVKG0*NVUSE/(NVUSE-DISAA)
+		POVKG0=POVKG0*NVUSE/(NVUSE-DISAA)
+		ENDIF
+	      ELSE
+		POVKG0=SPOVKG0
+		MOVKG0=SMOVKG0
+	      ENDIF
+	      SETW1(0,(SWA&TPCOA*PER-PPFLOR1)*2048/POVKG0)
+	      SETW2(0,(SWA&TPCOA*PER-ERKG1)*2048/POVKG0)
+	      SETOK(0)
+	      DOUT(0,1)
+	      STP1=3
+	   ENDCASE
+      CASE STP1=3
+	   IF STOPTM1=0
+	     STOPTM1=SECONDS()
+	     STOP1 =INT((CHENDATA(0))*POVKG0/PER/2048)
+	   ELSEIF SECONDS()-STOPTM1 >=2
+	     STOPTM1=SECONDS()
+	     IF (INT((CHENDATA(0))*POVKG0/PER/2048)-STOP1) < STOPA
+	     DOUT3(0,1)
+	     ELSE
+	       DOUT3(0,0)
+	      stoptm1=0
+	     ENDIF
+	   ENDIF
+
+	   IF RDOK2(0)=0 .or. WCNT1=0
+	     STOPTM1=0
+	     DOUT3(0,0)
+		      PUBL EWA&TPCOA
+		EWA&TPCOA=INT((CHENDATA(0))*POVKG0/PER/2048)
+	      IF WAFOK=1
+	      WAFOK1=1
+	      ELSE
+	      WAFOK=1
+	      ENDIF
+	      @  4,8  SAY 0  PICT "9999"
+	      @  9,8  SAY EWA&TPCOA  PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,7 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      DO CASE
+		 CASE LCHTYPE=1 .OR.LCHTYPE=3
+		      STP1=4
+		 CASE LCHTYPE=2 .OR.LCHTYPE=4 .OR. LCHTYPE=5
+		      STP1=0
+		      STP2=2
+		      SETDLA(0,EWA&TPCOA*2048/povkg0)
+		      TPCOA=LTRIM(STR(INT(VAL(TPCOA)-1)))
+		      PUBL EWA&TPCOA
+		      EWA&TPCOA=0
+	      ENDCASE
+	    *	POVKG0=SPOVKG0
+	   ENDIF
+      CASE STP1=4  .AND. DIN(8)=1   .AND. DRTKF=0  .AND. TOTANK0=1
+	   DRTKF=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+      CASE STP1=4  .AND. DIN(8)=0 .AND. DIN(11)=1
+	      * POVKG0=SPOVKG0
+	   IF  TOTANK0=1  .AND. (DRSTA<=DRNO) .AND. (TOTDR1>0)
+	   TOTDR1=TOTDR1-1
+	   DRTKF=1
+	   TOTANK0=0
+	   DOUT2(0,1)
+	      SET COLOR TO &C2 / &C1
+	   @ 12,7 SAY	"úLúKúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+	   SETZERTM(0,PZERTM1)
+SETZER(0,INT(((PZER1/MOVKG0))*PER*2048)+2048)
+	   SETZEROK(0)
+	   STP1=5
+
+	   ENDIF
+      CASE STP1=5
+	   IF  RDZEROK(0)=0
+	 * MOVKG0=SMOVKG0
+	    POVKG0=SPOVKG0
+	   MOVKG1=SMOVKG0
+	   DRNO=DRNO+1
+	   TOTDR1=TOTDR1+1
+
+	   CLEACHMEM(0)
+	      SET COLOR TO &C2 / &C1
+	   @ 12,7 SAY	"úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+	   WAZOK=1
+	   TPCOA=LTRIM(STR(INT(VAL(TPCOA)-1)))
+	   PUBL EWA&TPCOA
+	   EWA&TPCOA=0
+	   STP1=0
+	   ENDIF
+   ENDCASE
+
+   DO CASE
+      CASE STP2=1  .AND. DIN(1)=0
+	   STP2=2
+      CASE STP2=2 .and. din(14)=1
+	   DRBF=0
+	   DO CASE
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOB)-PANDIC >0) .AND. SWB&TPCOB=0
+	      DO CASE
+		 CASE LCHTYPE=1 .OR. LCHTYPE=3
+		      TOTANK1=0
+		      STP2=0
+		      WBZOK=1
+		      PUBL EWB&TPCOB
+		      EWB&TPCOB=0
+		      TPCOB =LTRIM(STR(INT(VAL(TPCOB)-1)))
+		      PUBL EWB&TPCOB
+		      EWB&TPCOB=0
+		 CASE LCHTYPE=2 .OR. LCHTYPE=4
+		      STP2=0
+			IF  EWA&TPCOB<>0
+			STP2=4
+		      ELSE
+		      WBZOK=1
+		      ENDIF
+		      PUBL EWB&TPCOB
+		      EWB&TPCOB=0
+		 CASE LCHTYPE=5
+		      STP2=0
+		      STP3=2
+		      PUBL EWB&TPCOB
+		      EWB&TPCOB=0
+	      TPCOB=LTRIM(STR(INT(VAL(TPCOB)-1)))
+	      PUBL EWB&TPCOB
+	      EWB&TPCOB=0
+	      ENDCASE
+	      IF WBFOK=1
+	      WBFOK1=1
+	      ELSE
+	      WBFOK=1
+	      ENDIF
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOB)-PANDIC >0) .AND. SWB&TPCOB<>0
+	      @  4,16 SAY  ABS(SWB&TPCOB)   PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,15 SAY   "úLúKúO"
+	      do case
+	      CASE LCHTYPE=1
+	      SET COLOR TO &C2 / &C1
+		 @ 12,15 SAY   "úZúYú["
+	      CASE LCHTYPE=2
+	      SET COLOR TO &C2 / &C1
+		 @ 12,7  SAY   "úZúYúYúYúYúYú["
+	      CASE LCHTYPE=3
+	      SET COLOR TO &C2 / &C1
+		 @ 12,15 SAY   "úZúYú["
+	      CASE LCHTYPE=4
+	      SET COLOR TO &C2 / &C1
+		 @ 12,7  SAY   "úZúYúYúYúYúYú["
+	      CASE LCHTYPE=5
+	      SET COLOR TO &C2 / &C1
+		  @ 12,7  SAY	"úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+	      ENDCASE
+	      SET COLOR TO &C7 +/ &C1
+
+	      CLEACHMEM(1)
+	      IF LCHTYPE=1 .OR. LCHTYPE=3
+	      CLEACHW(1)
+
+	      ENDIF
+	      IF VAL(TPCOB)-PANDIC =1
+	      PPFLOR2=PFLOR2+SDRB*PERFLR
+	      ELSE
+	      PPFLOR2=PFLOR2
+	      ENDIF
+	      IF SWB&TPCOB<0
+		 SWB&TPCOB=ABS(SWB&TPCOB)
+		IF NVUSE > 5
+		  IF DISCH1=1
+		  DISAA=0.5
+		  ELSE
+		  DISAA=1
+		  ENDIF
+		POVKG1=POVKG1*NVUSE/(NVUSE-DISAA)
+		ENDIF
+	      DO CASE
+	      CASE LCHTYPE=1 .OR. LCHTYPE=3
+		MOVKG1=POVKG1
+	      CASE LCHTYPE=2 .OR. LCHTYPE=4 .OR. LCHTYPE=5
+		MOVKG0=POVKG1
+	      ENDCASE
+	      ELSE
+		POVKG1=SPOVKG1
+		DO CASE
+		CASE LCHTYPE=1 .OR. LCHTYPE=3
+		  MOVKG1=SMOVKG1
+		CASE LCHTYPE=2 .OR. LCHTYPE=4 .OR. LCHTYPE=5
+		  MOVKG0=SMOVKG0
+		ENDCASE
+	      ENDIF
+	      SETW1(1,(SWB&TPCOB*PER-PPFLOR2)*2048/POVKG1)
+	      SETW2(1,(SWB&TPCOB*PER-ERKG2)*2048/POVKG1)
+	      SETOK(1)
+	      DOUT(1,1)
+	      STP2=3
+	   ENDCASE
+      CASE STP2=3
+	   IF LCHTYPE=4
+	   WDSP1=1
+	   ENDIF
+	     IF STOPTM2=0
+	       STOPTM2=SECONDS()
+	       STOP2 =INT((CHENDATA(1))*POVKG1/PER/2048)
+	     ELSEIF SECONDS()-STOPTM2 >=2
+	       STOPTM2=SECONDS()
+	       IF (INT((CHENDATA(1))*POVKG1/PER/2048)-STOP2) < STOPB
+	       DOUT3(1,1)
+	       ELSE
+	       DOUT3(1,0)
+	       STOPTM2=0
+	       ENDIF
+	     ENDIF
+	   IF RDOK2(1)=0
+	     STOPTM2=0
+	       DOUT3(1,0)
+		      PUBL EWB&TPCOB
+	      EWB&TPCOB=INT((CHENDATA(1) )*POVKG1/PER/2048)
+	      @  9,16 SAY EWB&TPCOB  PICT "9999"
+	      @  4,16 SAY 0  PICT "9999"
+	      IF WBFOK=1
+	      WBFOK1=1
+	      ELSE
+	      WBFOK=1
+	      ENDIF
+	      SET COLOR TO &C2 / &C1
+	      @  7,15 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	   *  @  4,16 SAY  0 PICT "9999"
+		 IF   LCHTYPE=5
+		      STP2=0
+		      STP3=2
+		      SETDLA(0,(EWA&TPCOB+EWB&TPCOB)*2048/POVKG1)
+		      TPCOB=LTRIM(STR(INT(VAL(TPCOB)-1)))
+		      PUBL EWB&TPCOB
+		      EWB&TPCOB=0
+		 ELSE
+		      STP2=4
+		 ENDIF
+	      * POVKG1=SPOVKG1
+	   ENDIF
+       CASE STP2=4  .AND. DIN(8)=1   .AND. DRTKF=0
+	      * POVKG1=SPOVKG1
+	    IF	(LCHTYPE=1 .OR. LCHTYPE=3) .AND. TOTANK1=1
+	    DRTKF=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+	    ELSEIF   (LCHTYPE=2 .OR. LCHTYPE=4) .AND. TOTANK0=1
+	     *	POVKG0=SPOVKG0
+	    DRTKF=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+
+      CASE STP2=4   .AND. DIN(8)=0  .AND. DIN(11)=1
+	   DO CASE
+	    CASE  (LCHTYPE=1 .OR. LCHTYPE=3) .AND. TOTANK1=1 .AND. (DRSTB<=DRNO) .AND. (TOTDR1>0)
+	    TOTDR1=TOTDR1-1
+	      TOTANK1=0
+	   STP2=5
+	      DOUT2(1,1)
+	      SET COLOR TO &C2 / &C1
+	      @ 12,15 SAY   "úLúKúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+	      SETZERTM(1,PZERTM2)
+SETZER(1,INT(((PZER2/MOVKG1))*PER*2048)+2048)
+	      SETZEROK(1)
+	    CASE  (LCHTYPE=2 .OR. LCHTYPE=4) .AND. TOTANK0=1 .AND. (DRSTA<=DRNO) .AND. (TOTDR1>0)
+	    TOTDR1=TOTDR1-1
+	      TOTANK0=0
+	     DOUT2(0,1)
+	   WDSP1=0
+	      SET COLOR TO &C2 / &C1
+	     @ 12,7  SAY   "úLúPúPúKúPúPúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+
+	      SET COLOR TO &C7 +/ &C1
+	     SETZERTM(0,PZERTM1)
+SETZER(0,INT(((PZER1/MOVKG0))*PER*2048)+2048)
+	     SETZEROK(0)
+	   STP2=5
+	   ENDCASE
+      CASE STP2=5
+	      IF  LCHTYPE=1 .OR. LCHTYPE=3
+		 IF  RDZEROK(1)=0
+	 * MOVKG1=SMOVKG1
+	 POVKG1=SPOVKG1
+	 MOVKG1=SMOVKG1
+	    TOTDR1=TOTDR1+1
+	    DRNO=DRNO+1
+		 CLEACHMEM(1)
+	      SET COLOR TO &C2 / &C1
+		 @ 12,15 SAY   "úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+		 WBZOK=1
+		 TPCOB=LTRIM(STR(INT(VAL(TPCOB)-1)))
+		 PUBL EWB&TPCOB
+		 EWB&TPCOB=0
+		 STP2=0
+		 ENDIF
+	      ELSE
+		 IF  RDZEROK(0)=0
+	      @  9,8  SAY  0 PICT "9999"
+	      @  9,16 SAY  0 PICT "9999"
+	 * MOVKG0=SMOVKG0
+	 POVKG0=SPOVKG0
+	 POVKG1=SPOVKG1
+	 MOVKG0=SMOVKG0
+		 CLEACHMEM(0)
+		 CLEACHMEM(1)
+		 SETDLA(0,0)
+	      SET COLOR TO &C2 / &C1
+		 @ 12,7  SAY   "úLúPúPúPúPúPúO"
+	      SET COLOR TO &C7 +/ &C1
+		 TOTDR1=TOTDR1+1
+		 DRNO=DRNO+1
+		 WAZOK=1
+		 WBZOK=1
+		 TPCOB=LTRIM(STR(INT(VAL(TPCOB)-1)))
+		 PUBL EWB&TPCOB
+		 EWB&TPCOB=0
+		 STP2=0
+		 ENDIF
+	      ENDIF
+   ENDCASE
+
+   DO CASE
+      CASE STP3=1
+	   IF  LCHTYPE=1 .OR. LCHTYPE=3
+	      IF  DIN(2)=0
+
+	      STP3=2
+	      ENDIF
+	   ELSE
+	      IF  DIN(1)=0
+	      STP3=2
+	      ENDIF
+	   ENDIF
+      CASE STP3=2   .and. din(14)=1
+	   DRCF=0
+	   DO CASE
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOC)-PANDIC >0) .AND. SWC&TPCOC=0
+	      DO CASE
+		 CASE LCHTYPE=1 .OR. LCHTYPE=2
+		      IF LCHTYPE=1
+		      TOTANK2=0
+		      ELSE
+		      TOTANK1=0
+		      ENDIF
+
+		      STP3=0
+		      WCZOK=1
+		      PUBL EWC&TPCOC
+		      EWC&TPCOC=0
+
+		 CASE  LCHTYPE=3.OR. LCHTYPE=4
+		      STP3=0
+		      STP4=2
+		      PUBL EWC&TPCOC
+		      EWC&TPCOC=0
+		 CASE LCHTYPE=5
+		      STP3=0
+		      STP4=2
+		      PUBL EWC&TPCOC
+		      EWC&TPCOC=0
+		      SETDLA(0,(EWA&TPCOB+EWB&TPCOB)*2048/POVKG0)
+	      ENDCASE
+	      IF WCFOK=1
+	      WCFOK1=1
+	      ELSE
+	      WCFOK=1
+	      ENDIF
+
+	      TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+	      PUBL EWC&TPCOC
+	      EWC&TPCOC=0
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOC)-PANDIC >0) .AND. SWC&TPCOC<>0
+	      IF SWD&TPCOC=0
+	      if  val(tpcoc)-PANDIC  = 1
+	      xx=discl
+	      else
+	      xx=1
+	      endif
+
+	      if xx_1 <> 4
+	      @  4,24 SAY  (ABS(SWC&TPCOC)-PWATER * xx)   PICT "9999"
+	      ENDIF
+	      XPWA=PWATER * xx
+	      ELSE
+	      XPWA=0
+	      if xx_1 <> 4
+	      @  4,24 SAY  ABS(SWC&TPCOC)   PICT "9999"
+	      ENDIF
+	      ENDIF
+
+	      SET COLOR TO &C2 / &C1
+	      @  7,23 SAY   "úLúKúO"
+	      do case
+	      CASE LCHTYPE=1
+	      SET COLOR TO &C2 / &C1
+		 @ 12,23 SAY   "úZúYú["
+	      CASE LCHTYPE=2
+	      SET COLOR TO &C2 / &C1
+		 @ 12,23 SAY   "úZúYú["
+	      CASE LCHTYPE=3
+	      CLEACHW(2)
+	      SET COLOR TO &C2 / &C1
+		 @ 12,23  SAY	"úZúYúYúYúYúYú["
+	      CASE LCHTYPE=4
+	      CLEACHW(1)
+	      SET COLOR TO &C2 / &C1
+		 @ 12,23 SAY   "úZúYúYúYúYúYú["
+	      CASE LCHTYPE=5
+	      SET COLOR TO &C2 / &C1
+		  @ 12,7  SAY	"úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+	      ENDCASE
+	      SET COLOR TO &C7 +/ &C1
+	      disc2_s3=disc2
+	      IF VAL(TPCOC)-PANDIC =1
+		PPFLOR3=PFLOR3+SDRC*PERFLR
+		IF MOD(NVUSE,RATVOL)<>0
+		* LUSTPP1=ABS(SWC&TPCOC)/(ABS(SWC&TPCOC)+DISC2*MOD(NVUSE,RATVOL)/RATVOL)
+		* LUSTPP1=ABS(SWC&TPCOC)/(ABS(SWC&TPCOC)+DISC2*MOD(NVUSE,RATVOL)/RATVOL)
+		* POVKG2=SPOVKG2*LUSTPP1
+		  disc2_s3=DISC2*MOD(NVUSE,RATVOL)/RATVOL
+		ELSE
+		 *LUSTPP1=ABS(SWC&TPCOC)/(ABS(SWC&TPCOC)+DISC2)
+		 *POVKG2=SPOVKG2*LUSTPP1
+		  disc2_s3=DISC2
+		ENDIF
+	      ELSE
+	       *LUSTPP1=ABS(SWC&TPCOC)/(ABS(SWC&TPCOC)+DISC2)
+	       *POVKG2=SPOVKG2*LUSTPP1
+		PPFLOR3=PFLOR3
+	      ENDIF
+
+	      IF SWC&TPCOC<0
+		SWC&TPCOC=ABS(SWC&TPCOC)
+		IF NVUSE > 5
+		   IF DISCH1=1
+		   DISAA=0.5
+		   ELSE
+		   DISAA=1
+		   ENDIF
+		POVKG2= POVKG2*NVUSE/(NVUSE-DISAA)
+		ENDIF
+	      ENDIF
+	      DO CASE
+	      CASE LCHTYPE=1 .OR. LCHTYPE=3
+		MOVKG2=POVKG2
+	      CASE LCHTYPE=2 .OR. LCHTYPE=4
+	       MOVKG1=POVKG2
+	      CASE LCHTYPE=5
+		MOVKG0=POVKG2
+	      ENDCASE
+	      IF SWD&TPCOC=0
+		if  val(tpcoc)-PANDIC  = 1
+		  xx=discl
+		else
+		  xx=1
+		endif
+		PWATER0=PWATER * xx
+		if  val(tpcoc)-PANDIC  = 1
+		  xx=discl
+		else
+		  xx=1
+		endif
+		SETW1(2,((SWC&TPCOC + disc2_s3 -(PWATER * xx))*PER-PPFLOR3)*2048/POVKG2)
+		SETW2(2,((SWC&TPCOC + disc2_s3 -(PWATER * xx))*PER-ERKG3)*2048/POVKG2)
+	      ELSE
+		SETW1(2,((SWC&TPCOC + disc2_s3 -PCON)*PER-PPFLOR3)*2048/POVKG2)
+		SETW2(2,((SWC&TPCOC + disc2_s3 -PCON)*PER-ERKG3)*2048/POVKG2)
+	      ENDIF
+	      SETOK(2)
+	      DOUT(2,1)
+	      STP3=3
+	   ENDCASE
+      CASE STP3=3
+	   IF STOPTM3=0
+	     STOPTM3=SECONDS()
+	     STOP3 =INT((CHENDATA(2))*POVKG2/PER/2048)
+	   ELSEIF SECONDS()-STOPTM3 >=2
+	     STOPTM3=SECONDS()
+	     IF (INT((CHENDATA(2))*POVKG2/PER/2048)-STOP3) < STOPC
+	     DOUT3(2,1)
+	     ELSE
+	     DOUT3(2,0)
+	     STOPTM3=0
+	     ENDIF
+	   ENDIF
+
+	   IF SWD&TPCOC=0
+	   if  val(tpcoc)-PANDIC  = 1
+	   xx=discl
+	   else
+	   xx=1
+	   endif
+	   IF  (PWATER * xx)-PWATER0 <>0
+	   ADJWATER(0,(PWATER0-(PWATER * xx))*2048/POVKG2)
+	   PWATER0=PWATER * xx
+	   ENDIF
+	      if xx_1 <> 4
+	   @  4,24 SAY	(SWC&TPCOC-(PWATER * xx))   PICT "9999"
+	   ENDIF
+	   ENDIF
+	   IF RDOK2(2)=0
+	     DOUT3(2,0)
+	     STOPTM3=0
+		      PUBL EWC&TPCOC
+	      EWC&TPCOC=INT((CHENDATA(2) )*POVKG2/PER/2048)-disc2_s3
+	      IF SWD&TPCOC=0
+	      if  val(tpcoc)-PANDIC  = 1
+	      xx=discl
+	      else
+	      xx=1
+	      endif
+	      PUBL  MKWATER&TPCOC
+	      MKWATER&TPCOC =PWATER  * xx
+	      ENDIF
+	      IF WCFOK=1
+	      WCFOK1=1
+	      ELSE
+	      WCFOK=1
+	      ENDIF
+	      if xx_1 <> 4
+	      @  4,24 SAY  0  PICT "9999"
+	      ENDIF
+	      @  9,24 SAY  EWC&TPCOC  PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,23 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+		 DO CASE
+		 CASE LCHTYPE=1  .OR. LCHTYPE=2
+		    STP3=4
+		 CASE LCHTYPE=3  .OR. LCHTYPE=4
+		      STP3=0
+		      STP4=2
+		      IF LCHTYPE=3
+		      SETDLA(2,(EWC&TPCOC)*2048/POVKG2)
+		      ELSE
+		     SETDLA(1,(EWC&TPCOC)*2048/POVKG2)
+		    * MOVKG1=SMOVKG1
+		      ENDIF
+		      TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		      PUBL EWC&TPCOC
+		      EWC&TPCOC=0
+		 CASE  LCHTYPE=5
+		      STP3=0
+		      STP4=2
+		      SETDLA(0,(EWA&TPCOC+EWB&TPCOC+EWC&TPCOC +disc2_s3)*2048/POVKG2)
+		      TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		      PUBL EWC&TPCOC
+		      EWC&TPCOC=0
+		ENDCASE
+	      * POVKG2=SPOVKG2
+	   ENDIF
+       CASE STP3=4  .AND. DIN(8)=1   .AND. DRTKF=0
+	      * POVKG2=SPOVKG2
+	    IF	(LCHTYPE=1 .OR. LCHTYPE=3) .AND. TOTANK2=1
+	    DRTKF=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+	    ELSEIF   (LCHTYPE=2 .OR. LCHTYPE=4) .AND. TOTANK1=1
+	    DRTKF=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+      CASE STP3=4   .AND. DIN(8)=0    .AND. DIN(11)=1
+	       *  POVKG2=SPOVKG2
+	      IF  LCHTYPE=1  .AND. TOTANK2=1  .AND. (DRSTC<=DRNO) .AND. (TOTDR1>0)
+	      TOTDR1=TOTDR1-1
+	    DRTKF=0
+	      TOTANK2=0
+	   STP3=5
+	      DOUT2(2,1)
+	      SET COLOR TO &C2 / &C1
+	      @ 12,23 SAY   "úLúKúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+	      SETZERTM(2,PZERTM3)
+SETZER(2,INT(((PZER3/MOVKG2))*PER*2048)+2048)
+	      SETZEROK(2)
+	   ELSEIF LCHTYPE=2  .AND. TOTANK1=1  .AND. (DRSTB<=DRNO) .AND. (TOTDR1>0)
+	   TOTDR1=TOTDR1-1
+	    DRTKF=0
+	      TOTANK1=0
+	     DOUT2(1,1)
+	   STP3=5
+	      SET COLOR TO &C2 / &C1
+	     @ 12,23 SAY   "úLúKúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+	     SETZERTM(1,PZERTM2)
+SETZER(1,INT(((PZER2/MOVKG0))*PER*2048)+2048)
+	     SETZEROK(1)
+	   ENDIF
+      CASE STP3=5
+	    IF LCHTYPE=1 .OR. LCHTYPE=2
+	       IF LCHTYPE=1
+		WDC=2
+		WDD="2"
+	       ELSE
+		WDC=1
+		WDD="1"
+	       ENDIF
+	       IF STOPTML3=0
+		 STOPTML3=SECONDS()
+		 STOPL3 =INT((WDATA(WDC)-2048)*MOVKG&WDD/PER/2048)
+	       ELSEIF SECONDS()-STOPTML3 >=2
+		 STOPTML3=SECONDS()
+		 IF (INT((WDATA(WDC)-2048)*MOVKG&WDD/PER/2048) -STOPL3) < STOPLC
+		 DOUT3(4,1)
+		 ELSE
+		 DOUT3(4,0)
+		 STOPTML3=0
+		 ENDIF
+	       ENDIF
+	       ENDIF
+
+	      IF  LCHTYPE=1
+		  IF  RDZEROK(2)=0
+		 DOUT3(4,0)
+	 * MOVKG2=SMOVKG2
+	 POVKG2=SPOVKG2
+	 MOVKG2=SMOVKG2
+		 STOPTML3=0
+		  TOTDR1=TOTDR1+1
+		  DRNO=DRNO+1
+		 CLEACHMEM(2)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,23 SAY	"úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+		  WCZOK=1
+		  STP3=0
+		  TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		  PUBL EWC&TPCOC
+		  EWC&TPCOC=0
+		  ENDIF
+	      ELSEIF LCHTYPE=2
+		  IF  RDZEROK(1)=0
+	 POVKG2=SPOVKG2
+	 MOVKG1=SMOVKG1
+		 DOUT3(4,0)
+		 STOPTML3=0
+	  *MOVKG1=SMOVKG1
+		  TOTDR1=TOTDR1+1
+		  DRNO=DRNO+1
+		 CLEACHMEM(2)
+		  STP3=0
+	      SET COLOR TO &C2 / &C1
+		  @ 12,23 SAY	"úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+		  WCZOK=1
+		  TPCOC=LTRIM(STR(INT(VAL(TPCOC)-1)))
+		  PUBL EWC&TPCOC
+		  EWC&TPCOC=0
+		  ENDIF
+	      ENDIF
+
+   ENDCASE
+
+   DO CASE
+      CASE STP4=1
+	   IF  LCHTYPE=1
+	      IF  DIN(3)=0
+	      STP4=2
+	      ENDIF
+	   ELSE
+	      IF  DIN(2)=0
+	      STP4=2
+	      ENDIF
+	   ENDIF
+      CASE STP4=2  .and. din(14)=1
+	   DRDF=0
+	   DO CASE
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOD)-PANDIC >0) .AND. SWD&TPCOD=0
+	      DO CASE
+		 CASE LCHTYPE=1 .OR. LCHTYPE=2
+		       IF LCHTYPE=1
+		       TOTANK3=0
+		       ELSE
+		       TOTANK2=0
+		       ENDIF
+		      STP4=0
+		      WDZOK=1
+		      PUBL EWD&TPCOD
+		      EWD&TPCOD=0
+		      TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+		      PUBL EWD&TPCOD
+		      EWD&TPCOD=0
+		 CASE LCHTYPE=3 .OR. LCHTYPE=4
+		      STP4=0
+		      IF EWC&TPCOD<>0
+		      STP4=4
+		      ENDIF
+		      PUBL EWD&TPCOD
+		      EWD&TPCOD=0
+		 CASE  LCHTYPE=5
+		      STP4=0
+		      IF EWA&TPCOD<>0 .OR.EWB&TPCOD<>0 .OR.EWC&TPCOD<>0
+		      STP4=4
+		      ENDIF
+		      PUBL EWD&TPCOD
+		      EWD&TPCOD=0
+	      ENDCASE
+	      IF WDFOK=1
+	      WDFOK1=1
+	      ELSE
+	      WDFOK=1
+	      ENDIF
+	   CASE NEXTOK1=1  .AND. (VAL(TPCOD)-PANDIC >0) .AND. SWD&TPCOD<>0
+	      if  val(tpcoc)-PANDIC  = 1
+	      xx=discl
+	      else
+	      xx=1
+	      endif
+	      if xx_1 <> 5
+	      @  4,32 SAY  (ABS(SWD&TPCOD)-(PWATER * xx))   PICT "9999"
+	      ENDIF
+
+	      SET COLOR TO &C2 / &C1
+	      @  7,31 SAY   "úLúKúO"
+	      do case
+	      CASE LCHTYPE=1
+	      CLEACHW(3)
+		 @ 12,31 SAY   "úZúYú["
+	      CASE LCHTYPE=2
+	      CLEACHW(2)
+		 @ 12,31 SAY   "úZúYú["
+	      CASE LCHTYPE=3
+		 @ 12,23  SAY	"úZúYúYúYúYúYú["
+	      CASE LCHTYPE=4
+		 @ 12,23 SAY   "úZúYúYúYúYúYú["
+	      CASE LCHTYPE=5
+		  @ 12,7  SAY	"úZúYúYúYúYúYúYúYúYúYúYúYúYúYú["
+	      ENDCASE
+	      SET COLOR TO &C7 +/ &C1
+
+	      CLEACHMEM(3)
+	      IF VAL(TPCOD)-PANDIC =1
+	      PPFLOR4=PFLOR4+SDRD*PERFLR
+	      ELSE
+	      PPFLOR4=PFLOR4
+	      ENDIF
+	      IF SWD&TPCOD<0
+		 SWD&TPCOD=ABS(SWD&TPCOD)
+		IF NVUSE > 5
+		  IF DISCH1=1
+		  DISAA=0.5
+		  ELSE
+		  DISAA=1
+		  ENDIF
+		POVKG3=SPOVKG3*NVUSE/(NVUSE-DISAA)
+		ENDIF
+		ELSE
+		  POVKG3=SPOVKG3
+		ENDIF
+	      DO CASE
+	      CASE LCHTYPE=1
+		MOVKG3=POVKG3
+	      CASE LCHTYPE=2 .OR. LCHTYPE=3
+		MOVKG2=POVKG3
+	      CASE LCHTYPE=4
+		MOVKG1=POVKG3
+	      CASE LCHTYPE=5
+		MOVKG0=POVKG3
+	      ENDCASE
+	      if  val(tpcoc)-PANDIC  = 1
+	      xx=discl
+	      else
+	      xx=1
+	      endif
+	      PWATER0=PWATER	* xx
+	      SETW1(3,((SWD&TPCOD-(PWATER * xx))*PER-PPFLOR4)*2048/POVKG3)
+	      SETW2(3,((SWD&TPCOD-(PWATER * xx))*PER-ERKG4)*2048/POVKG3)
+	      SETOK(3)
+	      DOUT(3,1)
+	      STP4=3
+	   ENDCASE
+      CASE STP4=3
+	   IF LCHTYPE=4  .OR. LCHTYPE=3
+	      WDSP2=1
+	   ENDIF
+	   IF STOPTM4=0
+	     STOPTM4=SECONDS()
+	     STOP4 =INT((CHENDATA(3))*POVKG3/PER/2048)
+	   ELSEIF SECONDS()-STOPTM4 >=2
+	     STOPTM4=SECONDS()
+	     IF (INT((CHENDATA(3))*POVKG3/PER/2048)-STOP4) < STOPD
+	     DOUT3(3,1)
+	     ELSE
+	     DOUT3(3,0)
+	     STOPTM4=0
+	     ENDIF
+	   ENDIF
+	   if  val(tpcod)-PANDIC  = 1
+	   xx=discl
+	   else
+	   xx=1
+	   endif
+
+	   IF  (PWATER * xx)-PWATER0 <>0
+	   ADJWATER(1,(PWATER0-(PWATER * xx))*2048/POVKG3)
+	   PWATER0=PWATER * xx
+	   ENDIF
+	      if xx_1 <> 5
+	   @  4,32 SAY	(SWD&TPCOD-(PWATER * xx))   PICT "9999"
+	   ENDIF
+	   IF RDOK2(3)=0
+	     DOUT3(3,0)
+	     STOPTM4=0
+		      PUBL EWD&TPCOD
+	      EWD&TPCOD=INT((CHENDATA(3) )*POVKG3/PER/2048)
+	      PUBL  MKWATER&TPCOD
+	      MKWATER&TPCOD =PWATER * xx
+	      IF WDFOK=1
+	      WDFOK1=1
+	      ELSE
+	      WDFOK=1
+	      ENDIF
+	      if xx_1 <> 5
+	      @  4,32 SAY  0 PICT "9999"
+	      ENDIF
+	      @  9,32 SAY  EWD&TPCOD PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,31 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      STP4=4
+	     *	POVKG3=SPOVKG3
+	   ENDIF
+
+       CASE STP4=4  .AND. DIN(8)=1   .AND. DRTKF=0
+	   FLS=0
+	   DO CASE
+	   CASE  LCHTYPE=1   .AND. TOTANK3=1
+	   FLS=1
+	    DRTKF=1
+	    CASE     (LCHTYPE=2 .OR. LCHTYPE=3) .AND. TOTANK2=1
+	   FLS=1
+	    DRTKF=1
+	    CASE     LCHTYPE=4	.AND. TOTANK1=1
+	   FLS=1
+	    DRTKF=1
+	    CASE     LCHTYPE=5	.AND. TOTANK0=1
+	   FLS=1
+	    DRTKF=1
+	    ENDCASE
+	    IF FLS=1
+	      SET COLOR TO &C2 */ &C1
+	@ 13,42 SAY "újúKúk"
+	      SET COLOR TO &C7 +/ &C1
+	    ENDIF
+      CASE STP4=4   .AND. DIN(8)=0  .AND. DIN(11)=1
+		* POVKG3=SPOVKG3
+	       *  MOVKG1=SMOVKG1
+	      DO CASE
+	      CASE  LCHTYPE=1  .AND. TOTANK3=1	  .AND. (DRSTD<=DRNO) .AND. (TOTDR1>0)
+		  TOTDR1=TOTDR1-1
+		  STP4=5
+		  TOTANK3=0
+		  DOUT2(3,1)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,31 SAY	"úLúKúO"
+		  IF TANKSTP=0
+		  @ 13,42 say  "ú^ú]ú_"
+		  ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+		  SETZERTM(3,PZERTM4)
+SETZER(3,INT(((PZER4/MOVKG3))*PER*2048)+2048)
+		  SETZEROK(3)
+	      CASE  LCHTYPE=2  .AND. TOTANK2=1	 .AND. (DRSTC<=DRNO) .AND. (TOTDR1>0)
+		  TOTDR1=TOTDR1-1
+		      STP4=5
+		      TOTANK2=0
+		  DOUT2(2,1)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,31 SAY	"úLúKúO"
+		  IF TANKSTP=0
+		  @ 13,42 say  "ú^ú]ú_"
+		  ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+		  SETZERTM(2,PZERTM3)
+SETZER(2,INT(((PZER3/MOVKG2))*PER*2048)+2048)
+		  SETZEROK(2)
+	      CASE  LCHTYPE=3  .AND. TOTANK2=1	.AND. (DRSTC<=DRNO) .AND. (TOTDR1>0)
+		  TOTDR1=TOTDR1-1
+		* POVKG2=SPOVKG2
+		      STP4=5
+		      TOTANK2=0
+		  DOUT2(2,1)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,23 SAY	"úLúPúPúKúPúPúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+		  SETZERTM(2,PZERTM3)
+SETZER(2,INT(((PZER3/MOVKG2))*PER*2048)+2048)
+		  SETZEROK(2)
+	      CASE  LCHTYPE=4  .AND. TOTANK1=1	 .AND. (DRSTB<=DRNO) .AND. (TOTDR1>0)
+	       *  POVKG2=SPOVKG2
+		  TOTDR1=TOTDR1-1
+		      STP4=5
+		      TOTANK1=0
+		  DOUT2(1,1)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,23 SAY	"úLúPúPúKúPúPúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+		  SETZERTM(1,PZERTM2)
+SETZER(1,INT(((PZER3/MOVKG1))*PER*2048)+2048)
+		  SETZEROK(1)
+	      CASE  LCHTYPE=5  .AND. TOTANK0=1
+		* POVKG2=SPOVKG2
+		      TOTANK0=0
+		  DOUT2(0,1)
+	      SET COLOR TO &C2 / &C1
+		  @ 12,7  SAY	"úLúPúPúPúPúPúPúKúPúPúPúPúPúPúO"
+	   IF TANKSTP=0
+	   @ 13,42 say	"ú^ú]ú_"
+	   ENDIF
+	   TOTANK=1
+	      SET COLOR TO &C7 +/ &C1
+		  SETZERTM(0,PZERTM1)
+SETZER(0,INT(((PZER1/MOVKG0))*PER*2048)+2048)
+		  SETZEROK(0)
+		      STP4=5
+	      ENDCASE
+      CASE STP4=5
+	      if xx_1 <> 4
+	      @  4,32 SAY  0 PICT "9999"
+	      ENDIF
+		 DO CASE
+		   CASE LCHTYPE=1
+		     WDC=3
+		WDD="3"
+		   CASE LCHTYPE=2 .OR.	 LCHTYPE=3
+		     WDC=2
+		WDD="2"
+		   CASE LCHTYPE=4
+		     WDC=1
+		WDD="1"
+		   CASE LCHTYPE=5
+		     WDC=0
+		WDD="0"
+		 ENDCASE
+		 IF STOPTML4=0
+		   STOPTML4=SECONDS()
+		   STOPL4 =INT((WDATA(WDC)-2048)*MOVKG&WDD/PER/2048)
+		 ELSEIF SECONDS()-STOPTML4 >=2
+		   STOPTML4=SECONDS()
+		   IF (INT((WDATA(WDC)-2048)*MOVKG&WDD/PER/2048) -STOPL4) < STOPLD
+		   DOUT3(13,1)
+		   ELSE
+		   DOUT3(13,0)
+		   STOPTML4=0
+		   ENDIF
+		 ENDIF
+
+	   DO CASE
+	   CASE  LCHTYPE=1
+	      IF  RDZEROK(3)=0
+		 DOUT3(13,0)
+		 STOPTML4=0
+	  MOVKG3=SMOVKG3
+	 POVKG3=SPOVKG3
+		  TOTDR1=TOTDR1+1
+		  DRNO=DRNO+1
+		 CLEACHMEM(3)
+		  STP4=0
+	      SET COLOR TO &C2 / &C1
+	      @ 12,31 SAY   "úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+	      WDZOK=1
+	      TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+	      PUBL EWD&TPCOD
+	      EWD&TPCOD=0
+	      ENDIF
+	   CASE  LCHTYPE=2
+	      IF  RDZEROK(2)=0
+		 DOUT3(13,0)
+		 STOPTML4=0
+	  MOVKG2=SMOVKG2
+	 POVKG3=SPOVKG3
+		 CLEACHMEM(3)
+		 TOTDR1=TOTDR1+1
+		 DRNO=DRNO+1
+	      SET COLOR TO &C2 / &C1
+	      @ 12,31 SAY   "úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+		  STP4=0
+	      WDZOK=1
+	      TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+	      PUBL EWD&TPCOD
+	      EWD&TPCOD=0
+	      ENDIF
+	   CASE  LCHTYPE=3
+	      IF  RDZEROK(2)=0
+		  WDSP2=0
+		   DOUT3(13,0)
+		   STOPTML4=0
+	   MOVKG2=SMOVKG2
+	   POVKG3=SPOVKG3
+	   POVKG2=SPOVKG2
+		 TOTDR1=TOTDR1+1
+		 DRNO=DRNO+1
+		 CLEACHMEM(3)
+		 CLEACHMEM(2)
+		 SETDLA(2,0)
+		  STP4=0
+	      SET COLOR TO &C2 / &C1
+	      @ 12,23 SAY   "úLúPúPúPúPúPúO"
+	      SET COLOR TO &C7 +/ &C1
+	      WCZOK=1
+	      WDZOK=1
+	      TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+	      PUBL EWD&TPCOD
+	      EWD&TPCOD=0
+	      ENDIF
+	   CASE  LCHTYPE=4
+	      IF  RDZEROK(1)=0
+	      @  9,24 SAY  0 PICT "9999"
+	      @  9,32 SAY  0 PICT "9999"
+		   DOUT3(13,0)
+		   STOPTML4=0
+		  WDSP2=0
+	   MOVKG1=SMOVKG1
+	   POVKG3=SPOVKG3
+	   PONKG2=SPOVKG2
+		 CLEACHMEM(2)
+		 CLEACHMEM(3)
+		 TOTDR1=TOTDR1+1
+		 DRNO=DRNO+1
+		 SETDLA(1,0)
+		  STP4=0
+	      SET COLOR TO &C2 / &C1
+	      @ 12,23 SAY   "úLúPúPúPúPúPúO"
+	      SET COLOR TO &C7 +/ &C1
+	      WCZOK=1
+	      WDZOK=1
+	      TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+	      PUBL EWD&TPCOD
+	      EWD&TPCOD=0
+	      ENDIF
+	   CASE  LCHTYPE=5
+	      IF  RDZEROK(0)=0
+		 DOUT3(13,0)
+		 STOPTML4=0
+		 MOVKG0=SMOVKG0
+		 POVKG0=SPOVKG0
+		 POVKG1=SPOVKG1
+		 POVKG2=SPOVKG2
+		 POVKG3=SPOVKG3
+		 CLEACHMEM(0)
+		 CLEACHMEM(1)
+		 CLEACHMEM(2)
+		 CLEACHMEM(3)
+		 SETDLA(0,0)
+		 STP4=0
+		 SET COLOR TO &C2 / &C1
+		 @ 12,7  SAY   "úLúPúPúPúPúPúPúPúPúPúPúPúPúPúO"
+		 SET COLOR TO &C7 +/ &C1
+		 WAZOK=1
+		 WBZOK=1
+		 WCZOK=1
+		 WDZOK=1
+		 TPCOD=LTRIM(STR(INT(VAL(TPCOD)-1)))
+		 PUBL EWA&TPCOD
+		 PUBL EWB&TPCOD
+		 PUBL EWC&TPCOD
+		 PUBL EWD&TPCOD
+		 EWA&TPCOD=0
+		 EWB&TPCOD=0
+		 EWC&TPCOD=0
+		 EWD&TPCOD=0
+	      ENDIF
+	  ENDCASE
+   ENDCASE
+
+   DO CASE
+      CASE STP5=1
+	   PKLCH=LTRIM(STR(KLCHN+1,5,0))
+	   IF  DIN(KLCHN)=0
+
+	   STP5=2
+	   ENDIF
+      CASE STP5=2 .and. din(14)=1
+	   DREF=0
+	   DO CASE
+	   CASE NEXTOK2=1  .AND. (VAL(TPCOE)-PANDIC >0) .AND. SWE&TPCOE=0
+	       CHKLCHN=LTRIM(STR(KLCHN,5,0))
+	      TOTANK&CHKLCHN=1
+		      STP5=0
+		      PUBL EWE&TPCOE
+		      EWE&TPCOE=0
+		      PUBL  NKWATER&TPCOE
+		      NKWATER&TPCOE =0
+	      WEZOK=1
+	      WEFOK=1
+	      TPCOE=LTRIM(STR(VAL(TPCOE)-1,5,0))
+	      PUBL EWE&TPCOE
+	      EWE&TPCOE=0
+	   CASE NEXTOK2=1  .AND. (VAL(TPCOE)-PANDIC >0) .AND. SWE&TPCOE<>0
+	       if  val(tpcoe)-PANDIC  = 1
+	       xx=discu
+	       else
+	       xx=1
+	       endif
+	      if xx_1 <> 6
+	      @  4,50 SAY  (ABS(SWE&TPCOE)+(PWATER * xx))   PICT "9999"
+	      endif
+	      SET COLOR TO &C2 / &C1
+	      @  7,49 SAY   "úLúKúO"
+		    @ 12,49 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+
+	      CLEACHMEM(4)
+	      CLEACHW(KLCHN)
+	      IF VAL(TPCOE)-PANDIC =1
+	      PPFLOR5=PFLOR5+SDRE*PERFLR
+	      ELSE
+	      PPFLOR5=PFLOR5
+	      ENDIF
+	      IF SWE&TPCOE<0
+		 SWE&TPCOE=ABS(SWE&TPCOE)
+		IF SVUSE > 5
+		POVKG4=SPOVKG4*SVUSE/(SVUSE-1*NDISC1)
+		MOVKG4=SMOVKG4*SVUSE/(SVUSE-1*NDISC1)
+		ENDIF
+	      ENDIF
+	      PWATER1=PWATER	* xx
+	      SETW1(4,((SWE&TPCOE+(PWATER * xx))*PER-PPFLOR5)*2048/POVKG4)
+	      SETW2(4,((SWE&TPCOE+(PWATER * xx))*PER-ERKG5)*2048/POVKG4)
+	      SETOK(4)
+	      DOUT(4,1)
+	      STP5=3
+	   ENDCASE
+      CASE STP5=3
+	   if  val(tpcoe)-PANDIC  = 1
+	   xx=discu
+	   else
+	   xx=1
+	   endif
+	   IF  (PWATER * xx)-PWATER1 <>0
+	   ADJWATER(2,((PWATER * xx)-PWATER1)*2048/POVKG4)
+	   PWATER1=PWATER * xx
+	   ENDIF
+	      if xx_1 <> 6
+	   @  4,50 SAY	(SWE&TPCOE+(PWATER * xx))   PICT "9999"
+	   endif
+	   IF RDOK2(4)=0
+		      PUBL EWE&TPCOE
+	      EWE&TPCOE=INT((CHENDATA(4))*POVKG4/PER/2048)
+	      PUBL  NKWATER&TPCOE
+	      NKWATER&TPCOE =PWATER * xx
+	      WEFOK=1
+	      SET COLOR TO &C2 / &C1
+	      @  7,49 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      STP5=4
+	      * POVKG4=SPOVKG4
+	   ENDIF
+      CASE STP5=4    .AND. DIN(9)=0  .AND. DIN(12)=1
+	    CHKLCHN=LTRIM(STR(KLCHN,5,0))
+	   IF  TOTANK&CHKLCHN=0
+	       DLYW=SECONDS()
+	       STP5=41
+	   ENDIF
+
+      CASE STP5=41   .AND. DIN(9)=0 .AND. DIN(12)=1  .AND. DELAYW <= ABS(SECONDS()-DLYW)
+		POVKG4=SPOVKG4
+	    CHKLCHN=LTRIM(STR(KLCHN,5,0))
+	   IF  TOTANK&CHKLCHN=0       &&TANK IS  FULL
+	   TOTANK&CHKLCHN=1
+	   PKLCH=LTRIM(STR(KLCHN+1,5,0))
+	   DOUT2(KLCHN,1)
+	   DOUT(4,0)
+	      SET COLOR TO &C2 / &C1
+	   @ 12,49 SAY	 "úLúKúO"
+    @  7,49 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	   SETZERTM(KLCHN,PZERTM&PKLCH)
+	   SETZER(KLCHN,(((PZER5/MOVKG4))*2048)+2048)
+
+	   SETZEROK(KLCHN)
+	   STP5=5
+	   ENDIF
+      CASE STP5=5
+	   t=inkey()
+	   IF  RDZEROK(KLCHN)=0   .or.	t=-7
+	   DOUT2(KLCHN,0)
+	   MOVKG4=SMOVKG4
+		 CLEACHMEM(4)
+	      SET COLOR TO &C2 / &C1
+	   @ 12,49 SAY	 "úLúPúO"
+	      SET COLOR TO &C7 +/ &C1
+	   WEZOK=1
+	   TPCOE=LTRIM(STR(VAL(TPCOE)-1,5,0))
+	   PUBL EWE&TPCOE
+	   EWE&TPCOE=0
+	   STP5=0
+	   ENDIF
+   ENDCASE
+   if stp5=4 .or. stp5=41
+      if  val(tpcoe)-PANDIC  = 1
+      xx=discu
+      else
+      xx=1
+      endif
+      IF VAL(TPCOE)-PANDIC =1
+      PPFLOR5=PFLOR5+SDRE*PERFLR
+      ELSE
+      PPFLOR5=PFLOR5
+      ENDIF
+      xxb= ((SWE&TPCOE+(PWATER * xx))*PER-PPFLOR5)*2048/POVKG4
+     if rdok2(4)=0 .and.    (  xxb  >	(WDATA(KLCHN+0)-2000)  )
+     SET COLOR TO &C2 / &C1
+     @	7,49 SAY   "úLúKúO"
+     SET COLOR TO &C7 +/ &C1
+     PWATER1=PWATER    * xx
+     SETW1(4,((SWE&TPCOE+(PWATER * xx))*PER-PPFLOR5)*2048/POVKG4)
+     SETW2(4,((SWE&TPCOE+(PWATER * xx))*PER-ERKG5)*2048/POVKG4)
+     SETOK(4)
+     DOUT(4,1)
+     endif
+     if rdok2(4)=1   .and.    (  xxb  >  INT(CHENDATA(4)) )
+       DOUT(4,1)
+       if  val(tpcoe)-PANDIC  = 1
+	 xx=discu
+       else
+	 xx=1
+       endif
+       IF  (PWATER * xx)-PWATER1 <>0
+	 ADJWATER(2,((PWATER * xx)-PWATER1)*2048/POVKG4)
+	 PWATER1=PWATER * xx
+       ENDIF
+       if xx_1 <> 6
+	 @  4,50 SAY  (SWE&TPCOE+(PWATER * xx))   PICT "9999"
+       endif
+     else
+       SET COLOR TO &C2 / &C1
+       @  7,49 SAY   "úZúYú["
+       SET COLOR TO &C7 +/ &C1
+       DOUT(4,0)
+     endif
+     endif
+
+   DO CASE
+      CASE STP6=1
+	   PKLCH=LTRIM(STR(INT(KLCHN+2)))
+	   IF  DIN(KLCHN+1)=0
+	   STP6=2
+	   ENDIF
+      CASE STP6=2 .and. din(14)=1
+	   DRFF=0
+	   DO CASE
+	   CASE NEXTOK2=1  .AND. (VAL(TPCOF)-PANDIC >0) .AND. SWF&TPCOF=0
+		IF  UCHTYPE=1
+		     CHKLCHN=LTRIM(STR(INT(KLCHN+1)))
+		    TOTANK&CHKLCHN=1
+		    STP6=0
+		      PUBL EWF&TPCOF
+		    EWF&TPCOF=0
+		    WFZOK=1
+		    WFFOK=1
+		    TPCOF=LTRIM(STR(INT(VAL(TPCOF)-1)))
+		    PUBL EWF&TPCOF
+		    EWF&TPCOF=0
+		 ELSE
+		    STP6=0
+		    STP7=2
+		      PUBL EWF&TPCOF
+		    EWF&TPCOF=0
+		    SETDLA(klchn+1,0)
+		    WFZOK=1
+		    WFFOK=1
+		  ENDIF
+	   CASE NEXTOK2=1  .AND. (VAL(TPCOF)-PANDIC >0) .AND. SWE&TPCOF<>0
+	      @  4,58 SAY  ABS(SWF&TPCOF)  PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,57 SAY   "úLúKúO"
+		do case
+		CASE UCHTYPE=1
+		   @ 12,57 SAY	 "úZúYú["
+		CASE UCHTYPE=2
+		   @ 12,57  SAY   "úZúYúYúYúYúYú["
+		CASE UCHTYPE=3
+		   @ 12,57 SAY	 "úZúYúYúYúYúYúYúYúYúYú[ "
+		ENDCASE
+	      SET COLOR TO &C7 +/ &C1
+
+	      CLEACHMEM(5)
+	      CLEACHW(KLCHN +1)
+	      IF VAL(TPCOF)-PANDIC =1
+	      PPFLOR6=PFLOR6+SDRF*PERFLR
+	      PPFLOR3=PFLOR3+SDRC*PERFLR
+	      IF MOD(sVUSE,RATVOL)<>0
+		 IF (ABS(SWF&TPCOF)-DISC2*MOD(sVUSE,RATVOL)/RATVOL) >0
+		 LUSTPP1=ABS(SWF&TPCOF)/(ABS(SWF&TPCOF)-DISC2*MOD(sVUSE,RATVOL)/RATVOL)
+		 ELSE
+		 LUSTPP1=1
+		 ENDIF
+		  POVKG5=SPOVKG5*LUSTPP1
+	      ELSE
+		 IF (ABS(SWF&TPCOF)-DISC2) >0
+		 LUSTPP1=ABS(SWF&TPCOF)/(ABS(SWF&TPCOF)-DISC2)
+		 ELSE
+		 LUSTPP1=1
+		 ENDIF
+		  POVKG5=SPOVKG5*LUSTPP1
+	      ENDIF
+	      ELSE
+		 IF (ABS(SWF&TPCOF)-DISC2) >0
+		 LUSTPP1=ABS(SWF&TPCOF)/(ABS(SWF&TPCOF)-DISC2)
+		 ELSE
+		 LUSTPP1=1
+		 ENDIF
+	      POVKG5=SPOVKG5*LUSTPP1
+	      PPFLOR6=PFLOR6
+	      ENDIF
+	      IF SWF&TPCOF<0
+		 SWF&TPCOF=ABS(SWF&TPCOF)
+		IF SVUSE > 5
+		  IF DISCH1=1
+		  DISAA=0.5
+		  ELSE
+		  DISAA=1
+		  ENDIF
+		POVKG5=POVKG5*SVUSE/(SVUSE-DISAA)
+		ENDIF
+	      ENDIF
+		MOVKG5=POVKG5
+
+	      SETW1(5,((SWF&TPCOF+PCON)*PER-PPFLOR6)*2048/POVKG5)
+	      SETW2(5,((SWF&TPCOF+PCON)*PER-ERKG6)*2048/POVKG5)
+	      SETOK(5)
+	      DOUT(5,1)
+	      STP6=3
+	   ENDCASE
+      CASE STP6=3
+	   IF STOPTM6=0
+	     STOPTM6=SECONDS()
+	     STOP6 =INT((CHENDATA(5))*POVKG5/PER/2048)
+	   ELSEIF SECONDS()-STOPTM6 >=2
+	     STOPTM6=SECONDS()
+	     IF (INT((CHENDATA(5))*POVKG5/PER/2048)-STOP6) < STOPF
+	     DOUT3(5,1)
+	     ELSE
+	     DOUT3(5,0)
+	     STOPTM6=0
+	     ENDIF
+	   ENDIF
+
+	   IF RDOK2(5)=0
+	     STOPTM6=0
+	     DOUT3(5,0)
+		      PUBL EWF&TPCOF
+	      EWF&TPCOF=INT((CHENDATA(5) )*POVKG5*PERCON/PER/2048)
+	      WFFOK=1
+	      @  4,58 SAY  0 PICT "9999"
+	      SET COLOR TO &C2 / &C1
+	      @  7,57 SAY   "úZúYú["
+	      SET COLOR TO &C7 +/ &C1
+	      IF UCHTYPE=1
+	      STP6=4
+	      ELSE
+	      ST.                    ·”‹+äu    ..                   ·”‹+–*    å6=0
+	      CHKLCHN=LTRIM(STR(IåT(KLCHN+1)))
+	      SETDLA((KLåHN+1),(EWF&TPCOF)*2048/POVKG5)å	      STP7=2
+		    TPCOF=LTRIå(STR(INT(VAL(TPCOF)-1)))
+		   åWF&TPCOF=0
+	      ENDIF
+	  * åOVKG5=SPOVKG5
+	   ENDIF
+    CåSE   STP6=4  .AND. DIN(9)=0
+	 å  CHKLCHN=LTRIM(STR(INT(KLCHN+1å))
+	   IF  TOTANK&CHKLCHN=0
+	å      DLYCO1=SECONDS()
+	      åSTP6=41
+	   ENDIF
+
+     CASEå  STP6=41  .AND. DIN(9)=0  .ANDå DIN(12)=1   .AND. DELAYCO1 <= åSECONDS()-DLYCO1)
+	  * POVKG5=åPOVKG5
+	    CHKLCHN=LTRIM(STR(åNT(KLCHN+1)))
+	   IF  TOTANK&CåKLCHN=0
+	   TOTANK&CHKLCHN=1
+å   PKLCH=LTRIM(STR(INT(KLCHN+2)å)
+	   DOUT2(KLCHN+1,1)
+	     åSET COLOR TO &C2 / &C1
+	   @ 1å,57 SAY	 "úLúKúO"
+	      SET CåLOR TO &C7 +/ &C1
+	   SETZERTMåKLCHN+1,PZERTM&PKLCH)
+	   SETZåR(KLCHN+1,(((PZER6/MOVKG5))*204å)+2048)
+	   SETZEROK(KLCHN+1)å	   STP6=5
+	   ENDIF
+      CAåE STP6=5
+	   IF STOPTML6=0
+	 å   STOPTML6=SECONDS()
+	     STåPL6 =INT((WDATA(KLCHN+1)-2048)*åOVKG5/PER/2048)
+	   ELSEIF SECåNDS()-STOPTML6 >=2
+	     STOPTåL6=SECONDS()
+	     IF (INT((WDåTA(KLCHN+1)-2048)*MOVKG5/PER/20å8) -STOPL6) < STOPLF
+	     DOUå3(14,1)
+	     ELSE
+	     DOUTå(14,0)
+	     STOPTML6=0
+	    åENDIF
+	   ENDIF
+
+	   IF  RDZåROK(KLCHN+1)=0
+	      DOUT3(14å0)
+	      STOPTML6=0
+	 MOVKG5åSMOVKG5
+	 POVKG5=SPOVKG5
+		 CåEACHMEM(5)
+	      SET COLOR TOå&C2 / &C1
+	   @ 12,57 SAY	 "úLåPúO"
+	      SET COLOR TO &C7 +å &C1
+	   WFZOK=1
+	   TPCOF=LTåIM(STR(INT(VAL(TPCOF)-1)))
+	  åPUBL EWF&TPCOF
+	   EWF&TPCOF=0å
+	   STP6=0
+	   ENDIF
+   ENDCåSE
+
+   DO CASE
+      CASE STå7=1
+	   PKLCH=LTRIM(STR(INT(KLåHN+3)))
+	   IF  DIN(KLCHN+2)=0å
+	   STP7=2
+	   ENDIF
+      CåSE STP7=2 .and. din(14)=1
+	   åRGF=0
+	   DO CASE
+	   CASE NEåTOK2=1  .AND. (VAL(TPCOG)>0) .AåD. SWG&TPCOG=0
+		     STP7=0
+å	     STP9=2
+		       PUBL EWGåTPCOG
+		     EWG&TPCOG=0
+		  å  WGZOK=1
+		     WGFOK=1
+	   åCASE NEXTOK2=1  .AND. (VAL(TPCOå)>0) .AND. SWG&TPCOG<>0
+		 SETåCOLOR TO &C5 / &C1
+		  @ 2,65 åAY "¤ôªd¢±"
+	      SET COLOR Tå &C7 +/ &C1
+	       @  4,66 SAå  ABS(SWG&TPCOG)    PICT "9999"å
+	       @ 6,66 SAY "    "
+	  å    SET COLOR TO &C2 / &C1
+	  å    @  7,65 SAY   "úLúKúO"
+	  å    do case
+	       CASE UCHTYåE=1
+		  @ 12,65 SAY	"úZúYú["
+å       CASE UCHTYPE=2
+		  @ 12å57  SAY	 "úZúYúYúYúYúYú["
+	   å   CASE UCHTYPE=3
+		  @ 12,57 åAY	"úZúYúYúYúYúYúYúYúYúYú[ "
+	å      ENDCASE
+	       SET COLOå TO &C7 +/ &C1
+	       IF UCHTåPE =1
+	       CLEACHW(KLCHN +2å
+	       ENDIF
+	       IF VALåTPCOG)=1
+	       PPFLOR7=PFLORå+SDRG*PERFLR
+	       ELSE
+	  å    PPFLOR7=PFLOR7
+	       ENDåF
+	       IF SWG&TPCOG<0
+		  åWG&TPCOG=ABS(SWG&TPCOG)
+		 IF åVUSE > 5
+		    IF DISCH1=1
+		å   DISAA=0.5
+		    ELSE
+		   åDISAA=1
+		    ENDIF
+		     POåKG6=SPOVKG6*SVUSE/(SVUSE-DISAA)å
+		    ENDIF
+		 ELSE
+		 POVKGå=SPOVKG6
+		 ENDIF
+	       DO åASE
+	       CASE UCHTYPE=1
+		åMOVKG6=POVKG6
+	       CASE UCHåYPE=2 .OR.UCHTYPE=3
+		 MOVKG5=åOVKG6
+	       ENDCASE
+	      åSETW1(6,(SWG&TPCOG*PER-PPFLOR7)å2048/POVKG6)
+	       SETW2(6,(åWG&TPCOG*PER-ERKG7)*2048/POVKG6å
+	       SETOK(6)
+	       DOUå(6,1)
+	       STP7=3
+	    ENDåASE
+      CASE STP7=3
+	   IF åTOPTM7=0
+	     STOPTM7=SECONDSå)
+	     STOP7 =INT((CHENDATA(6å)*POVKG6/PER/2048)
+	   ELSEIF åECONDS()-STOPTM7 >=2
+	     STOåTM7=SECONDS()
+	     IF (INT((CåENDATA(6))*POVKG6/PER/2048)-STOå7) < STOPG
+	     DOUT3(6,1)
+	å    ELSE
+	     DOUT3(6,0)
+	  å  STOPTM7=0
+	     ENDIF
+	   EåDIF
+
+	   IF RDOK2(6)=0
+	    åSTOPTM7=0
+	     DOUT3(6,0)
+		å     PUBL EWG&TPCOG
+	      EWGåTPCOG=INT(CHENDATA(6)*POVKG6/PEå/2048)
+	      @ 6,66 SAY EWG&TåCOG  PICT "9999"
+	      WGFOK=å
+	      @  4,66 SAY  0 PICT "9å99"
+	      SET COLOR TO &C2 / åC1
+	      @  7,65 SAY   "úZúYúå"
+	      SET COLOR TO &C7 +/ &å1
+
+	      STP7=0
+	      STP9å2
+	      SETDLA((KLCHN+2),CHENåATA(6))
+	  * POVKG6=SPOVKG6
+	å   TPCOG=LTRIM(STR(INT(VAL(TPCOå)-1)))
+	    PUBL EWG&TPCOG
+	 å  EWG&TPCOG=0
+	   ENDIF
+   ENåCASE
+
+
+
+    DO CASE
+      åCASE STP9=2
+	    DRGF=0
+	    åO CASE
+	    CASE NEXTOK2=1  .AåD. (VAL(TPCOI)-PANDIC >0) .AND.åSWI&TPCOI=0
+		      CHKLCHN=LTåIM(STR(INT(KLCHN+2)))
+		     TåTANK&CHKLCHN=1
+		       PUBL EåI&TPCOI
+		     EWI&TPCOI=0
+		å    WIZOK=1
+		     WIFOK=1
+		å    PUBL EWI&TPCOI
+		     EWI&åPCOI=0
+		       IF SWG&TPCOI<>å
+		       STP9=4
+		       ELSå
+		       STP9=0
+		       TPCåI=LTRIM(STR(INT(VAL(TPCOI)-1)))å
+		       ENDIF
+
+	    CASE NEåTOK2=1  .AND. (VAL(TPCOI)-PANDIå >0) .AND. SWI&TPCOI<>0
+		    å SET COLO TO GR+	/ &C1
+		     å@ 2,65 SAY "¤ôªd¢²"
+		     SETåCOLOR TO &C2 / &C1
+	       @  å,66 SAY  ABS(SWI&TPCOI)    PICTå"9999"
+	       SET COLOR TO &Cå / &C1
+	       @  7,65 SAY   "åLúKúO"
+	       do case
+	     å CASE UCHTYPE=1
+		  @ 12,65 SAå	"úZúYú["
+	       CASE UCHTYPEå2
+		  @ 12,57  SAY	 "úZúYúYúYúåúYú["
+	       CASE UCHTYPE=3
+å	  @ 12,57 SAY	"úZúYúYúYúYúYúYúåúYúYú[ "
+	       ENDCASE
+	   å   SET COLOR TO &C7 +/ &C1
+	  å    IF VAL(TPCOG)=1
+	       PPåLOR9=PFLOR9+SDRG*PERFLR
+	     å ELSE
+	       PPFLOR9=PFLOR9
+å       ENDIF
+
+	       IF SWI&åPCOI<0
+		  SWI&TPCOI=ABS(SWI&TåCOI)
+		 IF SVUSE > 5
+		    IFåDISCH1=1
+		    DISAA=0.5
+		  å ELSE
+		    DISAA=1
+		    ENDåF
+		 POVKG8=SPOVKG8*SVUSE/(SVUåE-DISAA)
+		  ENDIF
+		 ELSE
+	å POVKG8=SPOVKG8
+		 ENDIF
+	   å   DO CASE
+	       CASE UCHTYPå=1
+		 MOVKG6=POVKG8
+	       CåSE UCHTYPE=2 .OR.UCHTYPE=3
+		 åOVKG5=POVKG8
+	       ENDCASE
+å       SETDLA((KLCHN + 2 ),EWG&åPCOI*2048/Movkg6)
+	       SETWå(6,(SWI&TPCOI*PER-PPFLOR9)*2048åPOVKG8+PZI*2048/SPOVKG8)
+	    å  SETW2(6,(SWI&TPCOI*PER-ERKG9)å2048/POVKG8+PZI*2048/SPOVKG8)
+å       SETOK(6)
+	       SETOK(å)
+	       DOUT(10,1)
+	       åTP9=3
+	    ENDCASE
+       CASå STP9=3
+	    IF STOPTM9=0
+	  å   STOPTM9=SECONDS()
+	      STåP9 =INT((CHENDATA(6))*POVKG6/PEå/2048)
+	    ELSEIF SECONDS()-SåOPTM9 >=2
+	      STOPTM9=SECONåS()
+	      IF (INT((CHENDATA(6å)*POVKG6/PER/2048)-STOP9) < STOåI
+	      DOUT3(8,1)
+	      ELåE
+	      DOUT3(8,0)
+	      STåPTM9=0
+	      ENDIF
+	    ENDIå
+
+	    IF RDOK2(6)=0
+	      åTOPTM9=0
+	      DOUT3(8,0)
+		å      PUBL EWI&TPCOI
+	       EåI&TPCOI=INT(CHENDATA(6)*POVKG8/åER/2048)
+	       WIFOK=1
+	   å   @  4,66 SAY  0 PICT "9999"
+å       SET COLOR TO &C2 / &C1
+å       @  7,65 SAY   "úZúYú["
+å       DOUT(10,0)
+	       SET åOLOR TO &C7 +/ &C1
+	       IF åCHTYPE=1  .OR. UCHTYPE=2
+	    å  STP9=4
+	       ELSE
+	      åSTP9=0
+	       STP8=2
+	      åSETDLA((KLCHN+1),(EWF&TPCOF+EWGåTPCOG)*2048/POVKG6)
+	       ENåIF
+	  *  POVKG8=SPOVKG8
+	  * åPOVKG6=SPOVKG6
+	    ENDIF
+	 CåSE	STP9=4	.AND. DIN(9)=0
+	    å  CHKLCHN=LTRIM(STR(INT(KLCHN+2å))
+		IF  TOTANK&CHKLCHN=0
+		 å  DLYCO2=SECONDS()
+		    STP9=å1
+		ENDIF
+
+	  CASE	 STP9=41 å.AND. DIN(9)=0  .AND. DIN(12)=1å  .AND. DELAYCO2 <= (SECONDS()-åLYCO2)
+	  * POVKG6=SPOVKG6
+	 å* POVKG8=SPOVKG8
+	    IF UCHTYåE=1
+	       CHKLCHN=LTRIM(STR(åNT(KLCHN+2)))
+	      IF  TOTANå&CHKLCHN=0
+	      TOTANK&CHKLCåN=1
+	      PKLCH=LTRIM(STR(INTåKLCHN+3)))
+	      DOUT2(KLCHN+å,1)
+	       SET COLOR TO &C2 /å&C1
+	      @ 12,65 SAY   "úLúKåO"
+	       SET COLOR TO &C7 +/å&C1
+	      SETZERTM(KLCHN+2,PZåRTM&PKLCH)
+	      SETZER(KLCHNå2,(PZER&PKLCH*2048/MOVKG6)+2048å
+	      SETZEROK(KLCHN+2)
+	  å   STP9=5
+	      ENDIF
+	    EåSE
+		CHKLCHN=LTRIM(STR(INT(KLCåN+1)))
+	       IF  TOTANK&CHKLåHN=0
+	       TOTANK&CHKLCHN=1å	      PKLCH=LTRIM(STR(INT(KLCHå+2)))
+	      DOUT2(KLCHN+1,1)å	       SET COLOR TO &C2 / &C1å	      @ 12,57 SAY    "úLúPúPúKåPúPúO"
+	       SET COLOR TO &Cå +/ &C1
+	      SETZERTM(KLCHN+å,PZERTM&PKLCH)
+	      SETZER(KåCHN+1,(PZER&PKLCH*2048/MOVKG5)+å048)
+	      SETZEROK(KLCHN+1)å	      STP9=5
+	    ENDIF
+	   åENDIF
+       CASE STP9=5
+	   åIF UCHTYPE=1
+	      IF  RDZEROå(KLCHN+2)=0
+	      MOVKG6=SMOVåG6
+	      POVKG6=SPOVKG6
+	   å  CLEACHMEM(6)
+	      SETDLA((åLCHN+2),0)
+	      SET COLOR TOå&C2 / &C1
+	      @ 12,65 SAY  å"úLúPúO"
+	      SET COLOR TO &å7 +/ &C1
+	      WGZOK=1
+	    å WIZOK=1
+	      TPCOI=LTRIM(STå(INT(VAL(TPCOI)-1)))
+	      PUåL EWI&TPCOI
+	      EWI&TPCOI=0å
+	      STP9=0
+	      ENDIF
+	å   ELSE
+	      IF  RDZEROK(KLCåN+1)=0
+	      MOVKG5=SMOVKG5
+å      POVKG6=SPOVKG6
+	      SEåDLA((KLCHN+1),0)
+	      CLEACHåEM(5)
+	      CLEACHMEM(6)
+	  å   SET COLOR TO &C2 / &C1
+	   å  @ 12,57 SAY   "úLúPúPúPúPúPúOå
+	      SET COLOR TO &C7 +/ &Cå
+	      WFZOK=1
+	      WGZOK=å
+	      TPCOI=LTRIM(STR(INT(VAå(TPCOI)-1)))
+	      PUBL EWI&TåCOI
+	      EWI&TPCOI=0
+	     åSTP9=0
+	      @ 6,66 SAY "    å
+	    ENDIF
+	    ENDIF
+    EåDCASE
+   DO CASE
+      CASE SåP8=1  .and. din(14)=1
+	   IF UåHTYPE=1
+	     PKLCH=LTRIM(STR(åLCHN+4,5,0))
+	     IF  DIN(KLCåN+3)=0
+	     STP8=2
+	     ENDåF
+	   ELSE
+	     PKLCH=LTRIM(åTR(KLCHN+3,5,0))
+	     IF  DINåKLCHN+2)=0
+	     STP8=2
+	    åENDIF
+	   ENDIF
+      CASE STå8=2
+	   DRHF=0
+	   DO CASE
+	å  CASE NEXTOK2=1  .AND. (VAL(TPåOH)-PANDIC >0) .AND. SWH&TPCOH=å
+		IF  UCHTYPE=3
+		    IF EWFåTPCOH<>0  .OR. EWG&TPCOH<>0
+		å     STP8=4
+		      PUBL EWH&TåCOH
+		      EWH&TPCOH=0
+		   å  WHZOK=1
+		      WHFOK=1
+		 å  ELSE
+		      STP8=0
+		     åTPCOG=LTRIM(STR(VAL(TPCOG)-1,5,å))
+		      PUBL EWG&TPCOG
+		 å    EWG&TPCOG=0
+		    ENDIF
+	å ELSE
+		    STP8=0
+		      PUåL EWH&TPCOH
+		    EWH&TPCOH=0å		    TPCOH=LTRIM(STR(VAL(TPCOHå-1,5,0))
+		      PUBL EWH&TPCOå
+		    EWH&TPCOH=0
+		    WHZOå=1
+		    WHFOK=1
+		  ENDIF
+	å  CASE NEXTOK2=1  .AND. (VAL(TPåOH)-PANDIC >0) .AND. SWH&TPCOH<å0
+	      @  4,74 SAY  ABS(SWH&åPCOH)*100	PICT "9999"
+	      SåT COLOR TO &C2 / &C1
+	      @ å7,73 SAY   "úLúKúO"
+	      do åase
+	      CASE UCHTYPE=1
+		 å 12,73 SAY   "úZúYú["
+		CLEACHå(KLCHN + 3)
+	      CASE UCHTYPå=2
+		 @ 12,73 SAY   "úZúYú["
+å	CLEACHW(KLCHN + 2)
+	      CASå UCHTYPE=3
+		 @ 12,57 SAY   "úåúYúYúYúYúYúYúYúYúYú[ "
+	      åNDCASE
+	      SET COLOR TO &C7å+/ &C1
+	      IF VAL(TPCOH)-PAåDIC =1
+	      PPFLOR8=PFLOR8+SåRH*PERFLR
+	      ELSE
+	      åPFLOR8=PFLOR8
+	      ENDIF
+	 å    IF SWH&TPCOH<0
+		 SWH&TPCOå=ABS(SWH&TPCOH)
+		IF SVUSE > 5å
+		POVKG7=SPOVKG7*SVUSE/(SVUSE-å*NDISC1)
+		ENDIF
+	      DO CAåE
+	      CASE UCHTYPE=1
+		MOVåG7=POVKG7
+	      CASE UCHTYPE=å
+		MOVKG6=POVKG7
+	      CASE åCHTYPE=3
+		MOVKG5=POVKG7
+	   å  ENDCASE
+	      ENDIF
+	     åSETW1(7,(SWH&TPCOH*PER-PPFLOR8)å2048/POVKG7)
+	      SETW2(7,(SåH&TPCOH*PER-ERKG8)*2048/POVKG7)å
+	      SETOK(7)
+	      DOUT(7å1)
+	      STP8=3
+	   ENDCASEå      CASE STP8=3
+	   IF STOPTå8=0
+	     STOPTM8=SECONDS()
+	å    STOP8 =INT((CHENDATA(7))*POåKG7/PER/2048)
+	   ELSEIF abs(SåCONDS()-STOPTM8) >=2
+	     STOåTM8=SECONDS()
+	     IF ((INT((åHENDATA(7))*POVKG7/PER/2048)-STåP8) < STOPG ) .and. din(15)=0
+å     DOUT3(7,1)
+	     ELSE
+	 å   DOUT3(7,0)
+	     STOPTM8=0å	     ENDIF
+	   ENDIF
+	   IF åDOK2(7)=0
+	     STOPTM8=0
+	  å  DOUT3(7,0)
+
+		      PUBL EWå&TPCOH
+	      EWH&TPCOH=INT((CåENDATA(7))*POVKG7*100/PER/2048 å/100
+	      WHFOK=1
+       * å    @  4,74 SAY  0 PICT "9999"å	      SET COLOR TO &C2 / &C1
+å      @  7,73 SAY   "úZúYú["
+	å     SET COLOR TO &C7 +/ &C1
+	å     STP8=4
+	   *POVKG7=SPOVKGå
+	   ENDIF
+      CASE STP8=4 å .AND. DIN(12)=1   .AND. (  DINå9)=0  .or. (DRfme=3	))
+	    POåKG7=SPOVKG7
+	   DO CASE
+	   CåSE  UCHTYPE=1
+	       CHKLCHN=åTRIM(STR(KLCHN+3,5,0))
+	      åF  TOTANK&CHKLCHN=0
+	      TOTåNK&CHKLCHN=1
+	     PKLCH=LTRIMåSTR(KLCHN+4,5,0))
+	     DOUT2(åLCHN+3,1)
+	      SET COLOR TO åC2 / &C1
+	     @ 12,73 SAY   "åLúKúO"
+	      SET COLOR TO &C7å+/ &C1
+	     SETZERTM(KLCHN+3,åZERTM&PKLCH)
+	   SETZER(KLCHN+å,(PZER8/MOVKG7*2048)+2048)
+	  å  SETZEROK(KLCHN+3)
+	     STP8å5
+	     ENDIF
+	   CASE  UCHTYåE=2
+	      CHKLCHN=LTRIM(STR(KåCHN+2,5,0))
+	     IF  TOTANK&CåKLCHN=0
+	     TOTANK&CHKLCHN=1å
+	     PKLCH=LTRIM(STR(KLCHN+3,å,0))
+	     DOUT2(KLCHN+2,1)
+	å     SET COLOR TO &C2 / &C1
+	 å   @ 12,73 SAY   "úLúKúO"
+	   å  SET COLOR TO &C7 +/ &C1
+	   å SETZERTM(KLCHN+2,PZERTM&PKLCH)å
+	   SETZER(KLCHN+2,(((PZER8/MOåKG6))*2048)+2048)
+	     SETZERåK(KLCHN+2)
+	     STP8=5
+	    åENDIF
+	   CASE  UCHTYPE=3
+	  å   CHKLCHN=LTRIM(STR(KLCHN+1,5,å))
+	     IF  TOTANK&CHKLCHN=0å	     TOTANK&CHKLCHN=1
+	     PåLCH=LTRIM(STR(KLCHN+2,5,0))
+	 å   DOUT2(KLCHN+1,1)
+	      SETåCOLOR TO &C2 / &C1
+	     @ 12,å7 SAY    "úLúPúPúPúPúKúPúPúPúPúå"
+	      SET COLOR TO &C7 +/ &å1
+	     SETZERTM(KLCHN+1,PZERTå&PKLCH)
+	   SETZER(KLCHN+1,(((åZER6/MOVKG5))*2048)+2048)
+	   å SETZEROK(KLCHN+1)
+	     STP8=å
+	     ENDIF
+	   ENDCASE
+   å  CASE STP8=5
+	   DO CASE
+	  åCASE UCHTYPE=1
+	     IF  RDZERåK(KLCHN+3)=0
+	       MOVKG7=SMåVKG7
+	       CLEACHMEM(7)
+	  å    SET COLOR TO &C2 / &C1
+	  å    @ 12,73 SAY   "úLúPúO"
+	  å    SET COLOR TO &C7 +/ &C1
+	 å     WHZOK=1
+	       TPCOH=LTRåM(STR(VAL(TPCOH)-1,5,0))
+	    å  PUBL EWH&TPCOH
+	       EWH&TåCOH=0
+	       STP8=0
+	       åF DRFME=3
+	       STP8=99
+	  å    ENDIF
+	     ENDIF
+	   CASå UCHTYPE=2
+	     IF  RDZEROK(KåCHN+2)=0
+		MOVKG6=SMOVKG6
+		CåEACHMEM(7)
+		SET COLOR TO &C2 å &C1
+		@ 12,73 SAY   "úLúPúO"å		SET COLOR TO &C7 +/ &C1
+		WHåOK=1
+		TPCOH=LTRIM(STR(VAL(TPCåH)-1,5,0))
+		PUBL EWH&TPCOH
+	åEWH&TPCOH=0
+		STP8=0
+		IF DRFåE=3
+		STP8=99
+		ENDIF
+	     åNDIF
+	   CASE UCHTYPE=3
+	    åIF  RDZEROK(KLCHN+1)=0
+	      åMOVKG5=SMOVKG5
+	       CLEACHMåM(5)
+	       CLEACHMEM(6)
+	  å    CLEACHMEM(7)
+	       SETDLå((KLCHN+1),0)
+	       SET COLOå TO &C2 / &C1
+	       @ 12,57 åAY   "úLúPúPúPúPúPúPúPúPúPúO "å	       SET COLOR TO &C7 +/ &C1å
+	       WFZOK=1
+	       WGZOKå1
+	       WHZOK=1
+	       TPCåH=LTRIM(STR(VAL(TPCOH)-1,5,0))å	       PUBL EWH&TPCOH
+	      åEWH&TPCOH=0
+	       STP8=0
+	 å     IF DRFME=3
+	       STP8=9å
+	       ENDIF
+	     ENDIF
+	å  ENDCASE
+   ENDCASE
+
+
+   Iå (WAFOK=1 .OR. WAFOK1=1).AND.(WåFOK=1 .OR. WBFOK1=1) .AND.(WCFOå=1 .OR. WCFOK1=1) .AND.(WDFOK=1å.OR. WDFOK1=1)
+     FWA&DOWNPRå=EWA&TPCO1
+     FWB&DOWNPRT=EWå&TPCO1
+     FWC&DOWNPRT=EWC&TPåO1
+     FWD&DOWNPRT=EWD&TPCO1å     RWA&DOWNPRT=SWA&TPCO1
+   å RWB&DOWNPRT=SWB&TPCO1
+     RWå&DOWNPRT=SWC&TPCO1
+     RWD&DOåNPRT=SWD&TPCO1
+     DOWNPRT=LTåIM(STR(INT(VAL(DOWNPRT)-1)))
+ å   IF VAL(DOWNPRT)<=0
+     DOWåPRT="3"
+     ENDIF
+     DOWNOå=1
+     IF WAFOK=1
+     WAFOKå0
+     ELSE
+     WAFOK1=0
+  å  ENDIF
+     IF WBFOK=1
+     åBFOK=0
+     ELSE
+     WBFOK1=å
+     ENDIF
+     IF WCFOK=1
+å    WCFOK=0
+     ELSE
+     WCåOK1=0
+     ENDIF
+     IF WDFOå=1
+     WDFOK=0
+     ELSE
+  å  WDFOK1=0
+     ENDIF
+     DOåT2(9,1)
+    DOUT2(10,0)
+   ENåIF
+   IF WAZOK=1 .AND.WBZOK=1 åAND.WCZOK=1 .AND.WDZOK=1 .AND. åOWNOV=1
+       TOTDR1=TOTDR
+ å     DRNO=1
+       IF VAL(TPCOå)>1
+       DOWNSKP=1
+       TåCO1=LTRIM(STR(INT(VAL(TPCO1)-1)å)
+       ELSE
+       TPCO1="0å
+       NEXTOK=0
+       NEXTOå1=0
+       DOWNSKP=0
+     *	 å  @ 0,26 SAY	0  PICT  "999999"å       ENDIF
+       WAZOK=0
+ å     WBZOK=0
+       WCZOK=0
+ å     WDZOK=0
+    DOWNZER=1
+  å DOUT2(10,1)
+    DOUT2(9,0)
+ å ENDIF
+
+
+   DO CASE
+  CASE	åOWNOV=1  .AND. DOWNZER=1
+	DOWNåV=0
+	DOWNZER=0
+	DOWNZTM=SECONåS()
+	DOWNCALF=1
+   CASE DOWNCåLF=1
+
+      IF DIN(10)=0  .orå DIN(11)=0
+      IF  CONSTPF=0å
+      CONSTPF=1
+      PCONVTMå=SECONDS()
+      ENDIF
+      åLSE
+      IF  CONSTPF=1
+     åCONSTPF=0
+      DOWNZTM=DOWNZTå+SECONDS()-PCONVTM1
+      ENDIå
+      IF  OFF_LONG <>0
+     å DOWNZTM=DOWNZTM + OFF_LONG
+  å   ENDIF
+       @ 4,43 say  (påonvtm-SECONDS()+DOWNZTM)	  pictå"99"
+      IF SECONDS()-DOWNZTå >=PCONVTM
+       DOWNCALF=0
+å      @ 4,43 say   PCONVTM PICTå"99"
+       TANKSTP=1
+      EåDIF
+      ENDIF
+   ENDCASE
+å      IF WEFOK=1 .AND.WFFOK=1 .åND.WGFOK=1 .AND.WHFOK=1.AND.WIFåK=1
+	  @ 15,12  say	MRATNO PICå "9999"
+	  @ 16,12  say	SVUSE åPICT "99.9"
+	  IF VAL(TPCO2)>1å
+	  TOTVUSE=TOTVUSE+RATVOL
+	  åvusexx=ratvol
+	  @ 17,12 SAY TOTVUSE PICT "99.9"
+		DOUT3(12,0å
+	 ELSE
+	  nvusexx=SVUSE-TOTVåSE
+	 TOTVUSE=SVUSE
+	 @ 17,12 åAY TOTVUSE PICT "99.9"
+	ENDIFå	IF LAGDATE=DATE()
+	LAGW=LAGW+åvusexx
+	ELSE
+	LAGW=NVUSExx
+	åAGDATE=DATE()
+	ENDIF
+	SAVE TOåLAGDATA9 ALL LIKE LAG*
+	@ 0,26åSAY  LAGW   PICT  "9999.9"
+
+ å     WEFOK=0
+       WFFOK=0
+ å     WGFOK=0
+       WHFOK=0
+ å     WIFOK=0
+       UPOV=1
+  å    DOUT2(11,1)
+       DOUT2(1å,0)
+      ENDIF
+
+      DO CAåE
+      CASE   UPOV=1
+	    UPåVSTP=3
+      CASE  UPOVSTP=3  åAND. WEZOK=1 .AND.WFZOK=1 .AND.åGZOK=1 .AND.WHZOK=1 .AND.WIZOK=å
+	   IF DRFME=3
+	   DO CASE
+å   CASE  UCHTYPE=1
+		 NNN=LTRIå(STR(KLCHN+3,5,0))
+		 TOTANK&NåN=0
+	   CASE  UCHTYPE=2
+		 NNå=LTRIM(STR(KLCHN+2,5,0))
+		 TOåANK&NNN=0
+	   ENDCASE
+	   stpå=0
+	   ENDIF
+	 UPOVSTP=0
+	WEåOK=0
+	WFZOK=0
+	WGZOK=0
+	WHZOå=0
+	WIZOK=0
+	UPZER=1
+	SETOK1å10)
+	DOUT2(12,1)
+	DOUT2(11,0)å
+	   UPSKP=1
+	   if val(tpco2)å=0
+	   nextok2=0
+	   endif
+ å    ENDCASE
+   DO CASE
+   CASå TANKSTP=1  .AND. UPOV=1   .ANDå DIN(9)=1 .AND. TOMIX=1 .AND.  åRMF=0
+     DRMF=1
+	      SET åOLOR TO &C2 */ &C1
+     @ 18,4å SAY "úLúPúPúPúPúPúPúPúPúPúPúPúåúPúPúPúPúO "
+	      SET COLOR åO &C7 +/ &C1
+   CASE TANKSTP=1å .AND. UPOV=1   .AND. DIN(9)=0 åAND. DIN(12)=1 .AND. TOMIX=1
+	åDRMF=0
+		IF VAL(TPCO3) <=0
+		åPCO3=TPCO
+		ENDIF
+	     IF VAå(TPCO2)>0
+	     PUBL TOTW1,TOTåA,TOTWB,TOTWC,TOTWD,TOTWE,TOTWFåTOTWG,TOTWH,TOTWI
+	     TOTW1=åWA&UPPRT+FWB&UPPRT+FWC&UPPRT+FWå&UPPRT+EWE&TPCO2+EWF&TPCO2+EWG&åPCO2+EWH&TPCO2 +EWI&TPCO2
+	   å TOTWA=TOTWA+FWA&UPPRT
+	     TåTWB=TOTWB+FWB&UPPRT
+	     TOTWå=TOTWC+FWC&UPPRT
+	     TOTWD=TåTWD+FWD&UPPRT
+	     TOTWE=TOTWå+EWE&TPCO2
+	     TOTWF=TOTWF+EåF&TPCO2
+	     TOTWG=TOTWG+EWG&åPCO2
+	     TOTWH=TOTWH+EWH&TPCå2
+	     TOTWI=TOTWI+EWI&TPCO2å	     prtno=prtno+1
+
+   IF (HåOK=1) .AND.( FILE("C:\LUW1.DBF"å=.T.)  .and.(INT(DISKSPACE( DAAå)/1024) >50 )
+	     sele 1
+	 å   APPE BLAN
+	     repl ST1 WIåH FWA&UPPRT,ST2 WITH FWB&UPPRT,åAD1 WITH FWC&UPPRT,SAD2 WITH FWå&UPPRT,WA WITH EWE&TPCO2,CO1 WIåH EWF&TPCO2,CO2 WITH EWG&TPCO2,åE WITH EWH&TPCO2  ,CO3 WITH EWIåTPCO2
+	     REPL SCANO WITH toåvuse,LTANDO WITH NKWATER&TPCO2,åATNO WITH MKWATER&TPCO2
+	     åCTIME=TIME()
+	     REPL  LUTIMå WITH ACTIME,LUDATE WITH DATE()å
+   ELSE
+   ACTIME=TIME()
+   åDOK=0
+   ENDIF
+		IF RDLPT(0)=å44
+		SET PRINT TO Lpt1
+		SET åEVI TO PRINT
+		? CHR(27) + "SPå;"
+		@ (PROW()+1),4	SAY  PRTNOåPICT "999"
+		@ PROW(),8  SAY  åCTIME
+		@ PROW(),17 SAY ABS(  åWA&UPPRT)   PICT "9999"
+		@ PRåW(),23 SAY ABS( RWB&UPPRT)     å PICT "9999"
+		  IF RWD&UPPRT=å
+		  PKWATER=MKWATER&TPCO2
+		å ELSE
+		  PKWATER=0
+		  ENDIFå
+		@ PROW(),29 SAY ABS( RWC&UPPåT) -PKWATER      PICT "9999"
+	å  IF RWD&UPPRT<>0
+		  QKWATER=åKWATER&TPCO2
+		  ELSE
+		  QKWåTER=0
+		  ENDIF
+		@ PROW(),35åSAY ABS( RWD&UPPRT) -QKWATER   å   PICT "9999"
+		@ PROW(),41 SåY ABS( SWE&TPCO2)+NKWATER&TPCO2å    PICT "9999"
+		@ PROW(),48 åAY ABS(  SWF&TPCO2)   PICT "999å"
+		@ PROW(),55 SAY ABS(  SWG&åPCO2)   PICT "9999"
+		@ PROW()å61 SAY ABS(  SWI&TPCO2)   PICT å9999"
+		@ PROW(),68 SAY ABS(  åWH&TPCO2)   PICT "99.99"
+		@ (åROW()+1),11 SAY  TOTVUSE	 PICT å99.9"
+		@ PROW(),17 SAY  FWA&UåPRT   PICT "9999"
+		@ PROW(),2å SAY  FWB&UPPRT   PICT "9999"
+å	@ PROW(),29 SAY  FWC&UPPRT   PåCT "9999"
+		@ PROW(),35 SAY  FåD&UPPRT   PICT "9999"
+		UPPRT=åTRIM(STR(INT(VAL(UPPRT)-1)))
+	åIF VAL(UPPRT)<=0
+		UPPRT="3"
+å	ENDIF
+		@ PROW(),41 SAY  EWE&åPCO2   PICT "9999"
+		@ PROW(),å8 SAY  EWF&TPCO2   PICT "9999"å		@ PROW(),55 SAY  EWG&TPCO2   åICT "9999"
+		@ PROW(),61 SAY  EWI&TPCO2   PICT "9999"
+		@ PROå(),68 SAY  EWH&TPCO2   PICT "99å99"
+		@ PROW(),75 SAY  TOTW1	 åICT "99999"
+		@ PROW(),1 SAY "å;"
+		SET DEVI TO SCRE
+		ENDIå
+	 ENDIF
+	   TPCO2=LTRIM(STR(åNT(VAL(TPCO2)-1)))
+	    IF VALåTPCO2)<=0
+	    NEXOK=0
+	    NåXOK2=0
+	    NEXTOK=0
+	    PRCåND1=2
+
+	    TOTWK=TOTWA+TOTWBåTOTWC+TOTWD+TOTWE+TOTWF+TOTWG+TåTWH+TOTWI
+	     IF RDLPT(0)=14å
+	       SET PRINT TO Lpt1
+	 å     SET DEVI TO PRINT
+	      å? CHR(27) + "SP1;"
+	      @ PRåW()+1,3 SAY	 "¢w¢w¢w¢w¢w¢w¢w¢w¢å¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢å¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w"
+	 å    @ PROW()+1,15 SAY  TOTWA	 PåCT "999999"
+	      @ PROW(),21åSAY  TOTWB   PICT "999999"
+	  å   @ PROW(),27 SAY  TOTWC   PICå "999999"
+	      @ PROW(),33 SåY  TOTWD   PICT "999999"
+	    å @ PROW(),39 SAY  TOTWE PICT "9å9999"
+	      @ PROW(),46 SAY  åOTWF PICT "999999"
+	      @ PRåW(),53 SAY  TOTWG PICT "999999"å
+	      @ PROW(),60 SAY  TOTWI åICT "999999"
+	      @ PROW(),6å SAY  TOTWH PICT "999.99"
+	   å  @ PROW(),73 SAY  TOTWK PICT "å999999"
+	      @ PROW()+1,1 SAå	  "  "
+	      @ PROW()+1,1 SAå	  "  "
+	    @ PROW(),1 SAY  "å;"
+	      SET DEVI TO SCRE
+	å    ENDIF
+	    IF RDLPT(1)=144å.AND. NSCANO2<>0
+	      SET PRåNT TO Lpt2
+	      SET DEVI TO åRINT
+	      @ PROW(),2  SAY  CåR(27)+"C"+CHR(33)
+	      ? CHRå27) + "SP2;"
+	      SETPRC(0,PåOL())
+	      @ 1,6  say  "Úz¹Få
+	      @ 3,3 say  "¹Å«n¤j¾ô©Ýåe¤uµ{"
+	      @ 3,32  say nscaåo2 pict	 "9999"
+	      @ 4,27 åAY  val(SUBSTR(DTOC(DATE()),7,2å)-11    pict "99"
+	      @ PROå(),32 SAY  SUBSTR(DTOC(DATE()),å,2)
+	      @ PROW(),37 SAY  SUåSTR(DTOC(DATE()),4,2)
+	      @åPROW()+1,3 say	"·s¶ó"
+	      @åPROW(),25 say  "·sÀç¥«ªF¤s¸ô23¸å(·s¶ó)"
+	      @ PROW()+2,8  SåY mratno	PICT "9999999"
+	     å@ PROW(),32   SAY  ntando      åICT "9999999"
+	      @ PROW()+å,8+(7-LEN(RTRIM(MCARNO)))   SAYåmCARNO
+	      @ PROW(),32 SAY åTOTWA   PICT "9999999"
+	      å PROW()+2,8  SAY nscano2 PICT "å999999"
+	      @ PROW(),32 SAYå TOTWB   PICT "9999999"
+	     å@ (PROW()+2),8  SAY  TOTVUSE   å PICT "99999.9"
+	      @ PROW(å,32 SAY  (TOTWC+TOTWD)   PICT "å999999"
+	      @ PROW()+2,32 SåY  TOTWE	 PICT "9999999"
+	    å @ PROW()+2,8  SAY  TIME()
+	  å   @ PROW(),32 SAY  (TOTWF+TOTWå+TOTWI)   PICT "9999999"
+	    å @ PROW()+2,32 SAY  TOTWH	 PICTå"9999.99"
+	      @ PROW()+6,32åSAY  TOTWK PICT "9999999"
+	   å  EJEC
+	      SET PRINT TO Lptå
+	     SET DEVI TO SCRE
+	    å ? CHR(27) + "SP1;"
+	    endifå
+
+   IF (HDOK=1) .AND.( FILE("å:\LUW1.DBF")=.T.)  .and.(INT(DIåKSPACE( DAA )/1024) >50 )
+	   åSELE 7
+	     APPEN BLAN
+	    åREPL TST1 WITH TOTWA,TST2 WITH åOTWB,TSAD1 WITH TOTWC,TSAD2 WITå TOTWD,TWA WITH TOTWE,TCO1 WITHåTOTWF,TCO2 WITH TOTWG,TCO3 WITHåTOTWI,TCO3 WITH TOTWI,TME WITH åOTWH, TOTW WITH TOTWK,LUDATE WIåH	DATE()
+	     REPL SCANO WITHåNSCANO2,TTVUSE WITH   TOTVUSE,RåTNO WITH MRATNO
+	     COMMIT
+å ELSE
+    HDOK=0
+  ENDIF
+
+	å   TOTVUSE=0
+
+	    TOTWA=0
+	å   TOTWB=0
+	    TOTWC=0
+	    åOTWD=0
+	    TOTWE=0
+	    TOTWå=0
+	    TOTWG=0
+	    TOTWH=0å	    TOTWI=0
+	    ENDIF
+
+	UPåV=0
+	MIXSTP=1
+	TOMIX=0
+	SETDåOP()
+	IF VAL(TPCO3)>0
+	DOUT(1å,0)
+	PRCEND=1
+	ENDIF
+       åout(8,1)
+	SETMIX()
+	TOTANK=0å	 SET COLOR TO 0/7
+	 @ 7,44 SAå  PDROP1 PICT "99"
+	      SET åOLOR TO &C2 / &C1
+	@ 13,42 SAYå"ú^ú]ú_"
+	@ 13,42 SAY "újúKúk"å
+     @ 18,43 SAY "úZúYúYúYúYúYåYúYúYúYúYúYúYúYúYúYúYú[ "
+	   å  SET COLOR TO &C7 +/ &C1
+	MIXåTM=SECONDS()
+	TANKSTP=2
+	DO CåSE
+	CASE  UCHTYPE=1
+	      IFåSWE1<>0
+	      NNN=LTRIM(STR(IåT(KLCHN)))
+	      TOTANK&NNN=0å
+	      ENDIF
+	      IF SWF1<>å
+	      NNN=LTRIM(STR(INT(KLCHå+1)))
+	      TOTANK&NNN=0
+	  å   ENDIF
+	      IF SWG1<>0  .Oå. SWI1<>0
+	      NNN=LTRIM(STRåINT(KLCHN+2)))
+	      TOTANK&NåN=0
+	      ENDIF
+	      IF SWå1<>0
+	      NNN=LTRIM(STR(INT(åLCHN+3)))
+	      TOTANK&NNN=0å		 IF DRFME <>3
+		 TOTANK&NNN=å
+		 ENDIF
+	      ENDIF
+	CASEå UCHTYPE=2
+	      NNN=LTRIM(STå(INT(KLCHN)))
+	      TOTANK&NNå=0
+	      NNN=LTRIM(STR(INT(KLåHN+1)))
+	      TOTANK&NNN=0
+	å     NNN=LTRIM(STR(INT(KLCHN+2)å)
+	      TOTANK&NNN=0
+	CASE  åCHTYPE=3
+	      NNN=LTRIM(STR(åNT(KLCHN)))
+	      TOTANK&NNN=å
+	      NNN=LTRIM(STR(INT(KLCHå+1)))
+	      TOTANK&NNN=0
+	ENåCASE
+
+   CASE TANKSTP=2
+	IF åDOK1(13)=0
+	      SET COLOR TOå&C2 / &C1
+	@ 13,42 SAY "ú^ú]ú_å
+	TANKSTP=3
+	SET COLOR TO 0/7å
+	@ 9,44 SAY  PDRCL PICT "99"
+å      SET COLOR TO &C7 +/ &C1
+å@ 7,44 SAY  PDROP1 PICT "99"
+	åNDIF
+   CASE TANKSTP=3
+      åIF  RDOK1(14)=0
+	      SET COLåR TO &C2 / &C1
+	@ 13,42 SAY "úåúKúk"
+	TANKSTP=4
+	SET COLOR Tå 0/7
+	@ 11,44 SAY  PDROP2 PICTå"99"
+	      SET COLOR TO &C7 +å &C1
+	@ 9,44 SAY  PDRCL PICT "å9"
+	NNN=KLCHN-1
+	DO WHILE NNNå=0
+	      NNNG=LTRIM(STR(INT(NåN)))
+	STOR  1 TO  TOTANK&NNNGå	NNN=NNN-1
+	ENDDO
+       ENDIå
+   CASE TANKSTP=4
+       IF åDOK2(14)=0
+	@ 11,44 SAY  PDROPå PICT "99"
+	      SET COLOR TOå&C2 / &C1
+	IF TOTANK=0
+	  @ 1å,42 SAY "úG--úH"
+	ELSE
+	  @ 1å,42 SAY "ú^ú]ú_"
+	ENDIF
+	    å SET COLOR TO &C7 +/ &C1
+	@ 11å44 SAY  PDROP2 PICT "99"
+	TANKåTP=0
+       ENDIF
+   ENDCASEå   DO CASE
+   CASE MIXSTP=1
+ å   IF   SECONDS()-MIXSTM<=PMIXTå
+     @ 17,51 SAY (SECONDS()-MåXSTM)   PICT "999"
+     ENDIFå     IF RDOK2(10)=1 .AND. RDOK2å15)=0
+     MIXSTP=21
+     ENDåF
+     IF   abs(SECONDS()-MIXSåM) <=PMIXTM
+       @ 17,51 SAYå(SECONDS()-MIXSTM)	PICT "999"
+å    ELSEif  INT((MIXA()-2048)*PåVKG9/2048) <= pmixa
+       MIXåTP=21
+     ENDIF
+   CASE MIXSåP=21 .AND. DIN(13)=1
+	DOUT(9,1å
+	UPZER=0
+	@ 17,51 SAY "   "å		   SET COLOR TO &C2 / &C1
+	@å18,43 SAY "úLúPúPúPúPúPúPúPúKúPåPúPúPúPúPúPúPúO"
+		   SET COLOå TO &C7 +/ &C1
+	 IF VAL(TPCO3)å1
+	 DOUT3(12,1)
+	 ENDIF
+	 MIåSTP=2
+       MIXSTM=SECONDS()å   CASE MIXSTP=2
+	       IF   åECONDS()-MIXSTM<=PMIXOP
+		  IFåDIN(13)=0
+		   dout(9,0)
+		  åIXSTM=SECONDS()
+		  mixstp=21å		  ENDIF
+	       @ 17,64 SAY åSECONDS()-MIXSTM)	PICT "999"
+	å      ELSE
+		MIXSTP=0
+	    @ å7,64 SAY "   "
+	      DOUT(9,0å
+		       SET COLOR TO &C2 / &å1
+	      @ 18,43 SAY "úLúPúPúPåPúPúPúPúPúPúPúPúPúPúPúPúPúO "
+å	       SET COLOR TO &C7 +/ &C1å
+	      DOUT3(12,0)
+	      TOMåX=1
+	      TPCO3=LTRIM(str(INTåVAL(TPCO3)-1)))
+	      IF VAL(åPCO3)<=0
+	      PRCEND=0
+	   å  IF VAL(TPCO1)<=0	.AND.  VAL(TåCO2)=0
+	      @ 15,12 CLEA TO å7,19
+	   IF DISCH1=0
+	   @ 18å16 SAY " ,"
+	   ENDIF
+	      åNDIF
+	      ENDIF
+	    ENDIFå
+   ENDCASE
+   IF  OFF_LONG <å0
+     OFF_LONG=0
+     SETMEMåHEXTODEC("284"),INT(PDROP1*INTNå))
+     SETMEM(HEXTODEC("286")åINT(PDRCL*INTNO))
+     SETMEM(åEXTODEC("288"),INT(PDROP2*INTNOå)
+     SETMEM(HEXTODEC("28A"),åNT(PMIXTM*INTNO))
+   ENDIF
+  åENDIF
+  IF NEXTOK=0  .or. nextåK1=0 .OR. NEXTOK2=0
+     DO CAåE
+     CASE NEXSTP=1
+	 SELE 2å
+	 LOCA FOR RATNO=ARATNO
+	   Iå .NOT. EOF() .AND.  AVUSE <>0  åAND. DSPCASE<>(-2)
+	   SELE 3å	   PACK
+	   SELE 2
+	 * @ 15,å2  say  ARATNO PICT "99.9"
+	 *å@ 16,12  say  AVUSE	PICT "99.9"å
+	   NSCANO1=ASCANO
+	   NVUSE=åVUSE
+	   MVUSE=AVUSE
+	   PUBLåMVUSE
+	   NRATNO=ARATNO
+	   NåARNO=ACARNO
+	   MTANDO=ATANDOå	   LAGCNO1=LAGCNO2
+	   LAGCNOå=LAGCNO3
+	   LAGCNO3=LAGCNO4
+å   LAGCNO4=LAGCNO5
+	   LAGcno5åSUBSTR(LTRIM(STR(ASCANO))+"    å,1,4)+"        " + ACARNO
+	SAVå TO LAGDATA9 ALL LIKE LAG*
+	  åNEXSTP=2
+	   TEST=MOD(AVUSE,RAåVOL)
+	      IF TEST=0
+	      åPCO=LTRIM(STR(INT(AVUSE/RATVOL)å)
+		    PERFLR=0
+		    discl=å
+		    discl_1=1
+	      ELSEå	      TPCO=LTRIM(STR(INT(AVUSEåRATVOL)+1))
+		    PERFLR=(RATVåL-TEST)/0.5
+	      discl = intå test  * 10  / ratvol ) /10
+	 å    discl_1=discl
+	      ENDIFå
+	   PUBL discl,discl_1,discu
+å    TPCO1=TPCO
+	    TPCOA=TPCOå
+	    TPCOB=TPCO
+	    TPCOC=TPåO
+	    TPCOD=TPCO
+	    IF DISå1=1 .or. disch1=1
+	      LUPUSå-1
+	      DISC1=0
+
+	    ELSEå
+	      LUPUS=1
+	    ENDIF
+	 å  SW1=ST1*LUPUS
+	    SW2=ST2*LåPUS
+	    SW3=SAD1*LUPUS
+	    åW4=SAD2 *LUPUS
+	    SW5=WA *LUåUS
+	    SW6=CO1*LUPUS
+	    SWå=CO2*LUPUS
+	    SW8=ME *LUPUSå	    SW9=CO3 *LUPUS
+	  SELE 3å	  SET DELE ON
+	  GOTO TOP
+	 åAVUSE=VUSE
+	  ARATNO=RATNO
+	 åif avuse<>0
+	  ASCANO=SCANO
+	å ACARNO=CARNO
+	  endif
+	  ATAåDO=TANDO
+	  @ 23,16 SAY ASCANOå PICT "9999"
+	  @ 23,28 SAY ACåRNO
+	  @ 23,48 SAY ARATNO  PICå "9999"
+	  @ 23,64 SAY AVUSE  åPICT "99.9"
+	  @ 23,74 SAY ATAåDO  PICT "9999"
+	  DELET
+	  SåT DELE OFF
+	   ENDIF
+	 SELEC åLUDBF
+	 GOTO LURECNO
+     CASå NEXSTP=2
+	     IF NEXTOK1=0
+å	 NEXTOK=1
+		 DOWNSKP=1
+		DO åHILE VAL(TPCO1) > 0
+		    PUBLå MKWATER&TPCO1
+		    MKWATER&TåCO1=0
+		   IF NVUSE>=RATVOL
+	å   PUBLIC SWA&TPCO1,SWB&TPCO1,SåC&TPCO1,SWD&TPCO1
+		    SWA&TPåO1=SW1*RATVOL
+		    SWB&TPCO1=åW2*RATVOL
+		    SWC&TPCO1=SW3*åATVOL
+		    SWD&TPCO1=SW4*RATVåL
+		    TPCO1=LTRIM(STR(INT(VAå(TPCO1)-1)))
+		    NVUSE=NVUSEåRATVOL
+		   ELSE
+		   PUBLIC åWA&TPCO1,SWB&TPCO1,SWC&TPCO1,SWå&TPCO1
+		    SWA&TPCO1=SW1*NVUåE
+		    SWB&TPCO1=SW2*NVUSE
+	å    SWC&TPCO1=SW3*NVUSE
+		    åWD&TPCO1=SW4*NVUSE
+		    TPCO1åLTRIM(STR(INT(VAL(TPCO1)-1)))
+å	  ENDIF
+		ENDDO
+	      TPCO1åTPCO
+	 NVUSE=MVUSE
+      PUBLåEWA&TPCO1,EWB&TPCO1,EWC&TPCO1,EåD&TPCO1
+	     NEXTOK1=1
+	   EåDIF
+
+	 IF NEXTOK2=0
+	     PEåFLRO=PERFLR
+   IF (HDOK=1) .ANå.( FILE("C:\LUW1.DBF")=.T.)  .aåd.(INT(DISKSPACE( DAA )/1024) >å0 )
+	 SELE 1
+	 APPEN BLAN
+REåL ST1 WITH ABS(SW1),ST2 WITH ABå(SW2),SAD1 WITH ABS(SW3),SAD2 WåTH ABS(SW4),WA WITH ABS(SW5),COå WITH ABS(SW6),CO2 WITH ABS(SW7å, CO3 WITH ABS(SW9),ME WITH ABSåSW8),CARNO WITH upper(NCARNO),RåTNO WITH NRATNO,SCANO1 WITH MVUåE,LUDATE WITH DATE()
+REPL LTANåO WITH  MTANDO ,scano2   with  åscano1
+   ELSE
+     HDOK=0
+ å ENDIF
+ @ 18,12  SAY  INT(DISKåPACE( DAA )/1024)   PICT "9999"å
+	 MRATNO=NRATNO
+		PANDIC=0
+	åmcarno=ncarno
+	    IF RDLPT(0)å144
+	     SET PRINT TO Lpt1
+	å    SET DEVI TO PRINT
+	     ? åHR(27) + "SP1;"
+	       @ PROWå)+5,2 SAY   " ¤é´Á :    ¦~    ¤å    ¤é                         å                     "
+	      å@ PROW(),10 SAY	val(SUBSTR(DTOCåDATE()),7,2))-11    pict "99"
+å       @ PROW(),17 SAY	SUBSTR(DåOC(DATE()),1,2)
+	       @ PROWå),23 SAY	SUBSTR(DTOC(DATE()),4,å)
+	       @ PROW(),34 SAY	"¨®¸å:"
+	       @ PROW(),41  SAY  NåARNO
+	       @ PROW(),61 SAY	"åt¤ñ:"
+	       @ PROW(),66 SAY	åRATNO	PICT "9999"
+	       @ PRåW()+1,3 SAY   "¢w¢w¢w¢w¢w¢w¢w¢wåw¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢wåw¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w"
+	å      @ PROW()+1,3 SAY   "  NO.å   ®É¶¡   ¥Û1   ¥Û2   ¬â1   ¬â2å   ¤ô  ¤ôªd1  ¤ôªd2  ¤ôªd3  ÃÄ¾å  Á`­«"
+	       @ PROW()+1,3 SåY   "¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢wåw¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢wåw¢w¢w¢w¢w¢w¢w¢w¢w"
+	     @ PROå(),1 SAY  "~;"
+	     SET DEVIåTO SCRE
+	       ENDIF
+	 NEXTOå=1
+	 FNEXTL=1
+	 FNEXTU=1
+	  åPRTNO=0
+	 NEXTOK2=1
+	 NEXSTP=å
+	 TPCO2=TPCO
+	 svuse=mvuse
+å DO WHILE VAL(TPCO2) > 0
+	    åUBL  NKWATER&TPCO2
+	    NKWATEå&TPCO2=0
+	 IF MVUSE>=RATVOL
+	å   PUBLIC SWE&TPCO2,SWF&TPCO2,SåG&TPCO2,SWH&TPCO2,SWI&TPCO2
+	 å  SWE&TPCO2=SW5*RATVOL
+	    SWå&TPCO2=SW6*RATVOL
+	    SWG&TPCå2=SW7*RATVOL
+	    SWH&TPCO2=SWå*RATVOL
+	    SWI&TPCO2=SW9*RATåOL
+	    TPCO2=LTRIM(STR(INT(VAå(TPCO2)-1)))
+	    MVUSE=MVUSE-åATVOL
+	 ELSE
+	    PUBLIC SWE&åPCO2,SWF&TPCO2,SWG&TPCO2,SWH&TPåO2 ,SWI&TPCO2
+	    SWE&TPCO2=Så5*MVUSE
+	    SWF&TPCO2=SW6*MVUåE
+	    SWG&TPCO2=SW7*MVUSE
+	 å  SWH&TPCO2=SW8*MVUSE
+	    SWIåTPCO2=SW9*MVUSE
+	    TPCO2=LTRåM(STR(INT(VAL(TPCO2)-1)))
+	 ENåIF
+       ENDDO
+
+       TPCOå=TPCO
+      PUBL EWE&TPCO2,EWFåTPCO2,EWG&TPCO2,EWH&TPCO2 ,EWI&åPCO2
+       NSCANO2=NSCANO1
+ å     TPCOE=TPCO
+       TPCOF=TåCO
+       TPCOG=TPCO
+       TåCOH=TPCO
+       NTANDO=MTANDOå       TPCOI=TPCO
+   

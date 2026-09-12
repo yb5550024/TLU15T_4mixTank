@@ -1,0 +1,1104 @@
+#line 1 "\clip52e\INCLUDE\INKEY.CH"
+#line 3 "LUFUNC.PRG"
+FUNCTION   fget_dec
+PARAMETERS  xsrc    
+xint=len(alltrim(str(int(val(xsrc)),10,0)))
+x_dec=len(xsrc)-xint
+if x_dec >0
+  x_dec=x_dec-1
+endif
+RETU x_dec
+
+
+
+FUNCTION fSeek_C
+PARAMETERS  f_dbfn,f_recname,f_seek,ret_rec,f_retu,ABSOL
+ISSEEK=-1
+actano=select(dbf())
+dbSelectArea( f_dbfn )
+IF EMPTY(DBF())=.F.
+   __dbLocate( {||  ALLTRIM(f_seek) ==ALLTRIM( &f_recname)},,,, .F. )
+     if  eof()=.T.  .AND. (ABSOL<>1)
+       __dbLocate( {||  f_seek $ &f_recname},,,, .F. )
+     endif
+   if eof()=.F.
+     ISSEEK=RECNO()
+     f_retu=&ret_rec
+   endif
+ENDIF
+dbSelectArea( actano )
+retu  ISSEEK
+
+FUNCTION fSeek_2C
+PARAMETERS  f_dbfn,f_recname1,f_seek1,f_recname2,f_seek2,ret_rec1,ret_rec2,f_ret1,f_ret2
+ISSEEK=-1
+actano=select(dbf())
+dbSelectArea( f_dbfn )
+if empty(f_recname2)=.F.
+  __dbLocate( {||  (    alltrim(&f_recname1)==alltrim(f_seek1))  .AND.      (  alltrim(&f_recname2)==alltrim(f_seek2))},,,, .F. )
+else
+  __dbLocate( {||  (    alltrim(&f_recname1)==alltrim(f_seek1))},,,, .F. )
+endif
+if eof()=.F.
+  ISSEEK=RECNO()
+   f_ret1=&ret_rec1
+   IF EMPTY(ret_rec2)=.F.
+     f_ret2=&ret_rec2
+   ENDIF
+endif
+dbSelectArea( actano )
+retu  ISSEEK
+
+FUNCTION   fgetserno
+PARAMETERS  xlen,xindex
+xserno =substr(str(year(date()),4,0),-2,2)
+xn=int(month(date()))
+xserno=xserno    + fsubstr(xn,-2,"0",0)
+xn=int(day(date()))
+xserno=xserno    + fsubstr(xn,-2,"0",0)
+xserno=xserno  + fsubstr(xindex,-(xlen-6),"0",0)
+RETU  xserno
+
+FUNCTION  fSelectNo
+  workno=select(dbf())
+RETU  workno
+
+FUNCTION fTimeTON
+PARAMETERS  P_TIME
+TTON=(VAL(SUBSTR(P_TIME,1,2)) *3600 ) +(VAL(SUBSTR(P_TIME,4,2)) *60 )+VAL(SUBSTR(P_TIME,7,2))
+RETU  TTON
+
+FUNCTION fctoTime
+PARAMETERS  xh,xm,xs
+if valtype(xh)="C"
+   xh=INT(val(xh))
+endif
+xh=INT(mod(xh,24))
+xh=alltrim(str(xh,2,0))
+xh=fsubstr(xh,-2,"0",0)
+
+if valtype(xM)="C"
+   xM=INT(val(xM))
+endif
+xm=INT(mod(xm,60))
+xm=alltrim(str(xm,2,0))
+xm=fsubstr(xm,-2,"0",0)
+if valtype(xS)="C"
+   xS=INT(val(xS))
+endif
+xs=INT(mod(xs,60))
+xs=alltrim(str(xs,2,0))
+xs=fsubstr(xs,-2,"0",0)
+
+xret=xh+":"+xm +":" + xs
+RETU   xret
+
+FUNCTION  FNTOTIME
+PARAMETERS p_hn,p_mn,p_sn,p_tots
+if p_tots >=0
+   p_hn=INT(p_TOTS/3600)
+   p_mn=INT(MOD(p_TOTS,3600)/60)
+   p_sn=MOD(p_TOTS,60)
+endif
+xret=FSUBSTR(p_hn,-2,"0",-2) +":" + FSUBSTR(p_mn,-2,"0",-2) +":" + FSUBSTR(p_sn,-2,"0",-2)
+
+RETU  XRET
+
+FUNCTION    FSUBSTR
+PARAMETERS  S_S,XLEN,FC,S_DECN
+if empty(s_s)=.T.
+   S_S=0
+   XRET_S=SPACE(ABS(XLEN))
+   IF EMPTY(S_DECN)=.T.
+      S_DECN=0
+   ENDIF
+   if s_s=0  .AND.  s_decn <0
+     s_s=FC
+     XRET_S=PADR(S_S,ABS(XLEN),FC)
+   endif
+ELSE
+   if empty(s_s)=.T.
+     RETU  SPACE(XLEN)
+   endif
+
+   IF EMPTY(S_DECN)=.T.
+      S_DECN=0
+   ENDIF
+   IF S_DECN <0
+     S_DECN=0
+   ENDIF
+   IF VALTYPE(S_S)="N"
+     S_S=ALLTRIM(STR(S_S,10,S_DECN))
+   ELSEIF VALTYPE(S_S)="D"
+     S_S=DTOc(S_S)
+   ENDIF
+   S_S=ALLTRIM(S_S)
+   if empty(s_s)=.T.
+      XRET_S=SPACE(ABS(XLEN))
+   ELSE
+     IF XLEN >0
+       XRET_S=PADR(S_S,XLEN,FC)
+     ELSE
+       XRET_S=PADL(S_S,ABS(XLEN),FC)
+     ENDIF
+   ENDIF
+endif
+RETU  XRET_S
+
+FUNCTION    INSERT_SA
+PARAMETERS  sa_date,sa_time
+DSP_SCALL=0
+LUSTP_EN=0
+
+DO RST_FUNC1
+F7_FUNC="0"
+F5_FUNC="0"
+X_MAXSTEP=8
+ACTW_EN=0
+
+X3_stdm :=array(7,gs_tot+uwc_tot+1)   
+X3_stdERR :=array(2,gs_tot+uwc_tot+1) 
+X3_TITL :=array(3,gs_tot+uwc_tot+1)
+
+
+
+
+
+C11="B"
+C12="W+"
+C13="R+"
+C14="W+"
+C15="R"
+C15="GR+"
+C17="W+"
+IF T=-2
+  PAHPRO=0
+ELSE
+  PAHPRO=1
+ENDIF
+dbSelectArea( "3" )
+__dbPack()
+if ( !.F. ) ; dbClearRel() ; end ; dbSetRelation( "DBF15", {|| US2}, "US2" )
+US2_1="        "
+SetColor( "&C7 +/ &C1" )
+LUDBF="3"
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+TNSTP=0
+dbGoTop()
+XX1=2
+SCRCC=1
+YY1=21
+
+Scroll( 20, 2, 22, 77 ) ; SetPos( 20, 2 )
+Scroll( 24, 2, 24, 77 ) ; SetPos( 24, 2 )
+SCRNO=21
+_A_DSPX :={7,7,7,30,30,30,48,7,30,33,36,0,0,0,0,0,0,0,0,0,48,48,48}
+_A_DSPY :={19,20,21,19,20,21,19,22,22,22,22,0,0,0,0,0,0,0,0,0,21,20,21}
+SetColor( "&C6 / &C1" )
+DevPos( 18, 0 ) ; DevOut( "╔══════════════════════════════════════╗" )
+
+DevPos( 19, 37 ) ; DevOut( _F3TXT_A[1] )
+DevPos( 19, 46 ) ; DevOut( _F3TXT_A[2] )
+DevPos( 19, 55 ) ; DevOut( _F3TXT_A[3] )
+
+
+
+
+DevPos( 19, 0 ) ; DevOut( "║ NO.:                  米數:         工    地:                              ║" )
+DevPos( 20, 0 ) ; DevOut( "║車號:               坍   度:         強    度:                              ║" )
+DevPos( 21, 0 ) ; DevOut( "║配比:              客戶代號:         客戶名稱:                              ║" )
+DevPos( 22, 0 ) ; DevOut( "║日期:               時   間:  :  :                                            ║" )
+
+
+IF LU_COUNT=1
+  DevPos( 22, 4 ) ; DevOut( "單價:" )
+ENDIF
+DevPos( 23, 0 ) ; DevOut( "╚══════════════════════════════════════╝" )
+IF  STAR=1
+  DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-資料查詢    Esc-結束     ,  Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥" )
+ELSE
+  SetColor( "gr +/ &C1" )
+  DevPos( 24, 0 ) ; DevOut( "∥  F1-資料查詢    F7-報表列印  ,  ESC- 結束 F5-重量                       ∥" )
+  SetColor( "&C7 +/ &C1" )
+ENDIF
+SetColor( "gr +/ &C1" )
+
+
+
+
+
+
+SetColor( "&C7 +/ &C1" )
+XMIX_SEC=PMIXTM
+dbSelectArea( "3" )
+IF  PAHPRO=1
+  dbGoBottom()
+  IF  !  EOF()  .AND. VUSE <>0
+    DevPos( _A_DSPY[1], _A_DSPX[1] ) ; DevOut( SCANO )   
+    DevPos( _A_DSPY[2], _A_DSPX[2] ) ; DevOut( CARNO )   
+    DevPos( _A_DSPY[3], _A_DSPX[3] ) ; DevOut( RATNO )   
+    DevPos( _A_DSPY[4], _A_DSPX[4] ) ; DevOutPict( VUSE, "99.9" )
+    DevPos( _A_DSPY[5], _A_DSPX[5] ) ; DevOutPict( TANDO, "9999" )
+    DevPos( _A_DSPY[6], _A_DSPX[6] ) ; DevOut( US2 )        
+    DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( P1701 )
+    DevPos( _A_DSPY[21], _A_DSPX[21] ) ; DevOut( SUBSTR(US2_2,1,24) )
+    DevPos( _A_DSPY[22], _A_DSPX[22] ) ; DevOut( S_STRO )
+
+
+
+
+    IF    LU_COUNT=1
+      DevPos( 22, _A_DSPX[13] ) ; DevOutPict( U_PRICE, "99999" )
+    ENDIF
+    dbSkip(1)
+    SCRNO=SCRNO
+  ENDIF
+  XSCANO=SPACE(17)
+  XCARNO=SPACE(7)
+  XCARDRV =SPACE(8)
+  XCARW =0
+  XRATNO =space(9)
+  XVUSE  =0
+  XTANDO =0
+  XUS2=SPACE(8)
+  XUS3=0
+  XTOT_CAR=0
+  XUS2_1=SPACE(24)
+  xus2_2=space(24)
+  XADDR_NO=SPACE(10)
+  XU_PRICE=0
+  XSTRO =space(10)
+  IF  EOF()
+    dbAppend()
+  ENDIF
+ELSE
+  XSCANO  =ASCANO
+  XCARNO  =ACARNO
+  XCARDRV =ACARDRV
+
+  XCARW =ACARW
+  XRATNO  =ARATNO
+  XVUSE   =AVUSE
+  XTANDO  =ATANDO
+  XUS2      =  AUS2
+  XUS2_1  =  AUS2_1
+  XADDR_NO=APOSITION
+  XUS2_2  =  AUS2_2
+  XUS3      =  AUS3
+  XU_PRICE=AU_PRICE
+  XTOT_CAR=ATOT_CAR
+  XSTRO=ASTRO
+  SCRNO=21
+
+ENDIF
+TLP=1
+TLP_1=1
+while TLP=1
+  TLP_1=1
+  while (TLP_1 >= 1)  .AND.  (TLP_1 <=X_MAXSTEP)
+    SetColor( "&C7 +/ &C1" )
+    DevPos( _A_DSPY[1], _A_DSPX[1] ) ; DevOut( XSCANO )
+    DevPos( _A_DSPY[2], _A_DSPX[2] ) ; DevOut( XCARNO )
+    DevPos( _A_DSPY[3], _A_DSPX[3] ) ; DevOut( XRATNO )
+    DevPos( _A_DSPY[4], _A_DSPX[4] ) ; DevOutPict( XVUSE, "99.9" )
+    DevPos( _A_DSPY[5], _A_DSPX[5] ) ; DevOutPict( XTANDO, "9999" )
+    DevPos( _A_DSPY[6], _A_DSPX[6] ) ; DevOut( XUS2 )
+    DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( XADDR_NO )
+    DevPos( _A_DSPY[8], _A_DSPX[8] ) ; DevOut( sa_date )
+    DevPos( _A_DSPY[9], _A_DSPX[9] ) ; DevOut( sa_time )
+    DevPos( _A_DSPY[21], _A_DSPX[21] ) ; DevOut( SUBSTR(XUS2_1,1,24) )
+    DevPos( _A_DSPY[22], _A_DSPX[22] ) ; DevOut( XSTRO )
+    IF    LU_COUNT=1
+      DevPos( 22, _A_DSPX[13] ) ; DevOutPict( XU_PRICE, "99999" )
+    ENDIF
+    dbSelectArea( "3" )
+    DO CASE
+    CASE TLP_1=1
+      PGM=" "
+      P_FUNC=" "
+      R_C=XSCANO
+      _D_TYPE=VALTYPE(R_C)
+      C_PICT="XXXXXXXXXXXXXXXXX"
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XSCANO,"&_D_TYPE",C_L,0,TLP_1,"&P_FUNC")
+
+      XSCANO  =SUBSTR(SPACE(17)+ALLTRIM(UPPER(XPX)),-17,17)
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOut( XSCANO )
+    CASE TLP_1=2
+      PGM="FIND_1201"
+      P_FUNC="FIND_1201"
+      R_C=XCARNO
+      _D_TYPE=VALTYPE(R_C)
+      C_PICT="XXXXXXX"
+      X_DEC=0
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XCARNO,"&_D_TYPE",C_L,X_DEC,TLP_1,"&P_FUNC")
+
+
+      XCARNO  =SUBSTR(ALLTRIM(UPPER(XPX))+SPACE(7),1,7)
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOut( XCARNO )
+      xcarno=alltrim(xcarno)
+      dbSelectArea( "10" )
+      __dbLocate( {|| alltrim(XCARNO)== alltrim(P12100)},,,, .F. )
+      IF  EOF()=.T.
+    __dbLocate( {|| XCARNO $ P12100},,,, .F. )
+      endif
+      IF  EOF()=.F.
+    XCARNO =p12100
+    XCARDRV=P12102
+    XCARW=P12103
+      ENDIF
+      XCARNO=FSUBSTR(XCARNO,7," ")
+      SetColor( "&C7 +/ &C1" )
+    CASE TLP_1=3
+      PGM=" "
+      P_FUNC=" "
+      R_C=XRATNO
+      _D_TYPE=VALTYPE(R_C)
+      C_PICT="XXXXXXXXX"
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      X2_RATNO=XRATNO
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XRATNO,"&_D_TYPE",C_L,0,TLP_1,"&P_FUNC")
+
+
+      XRATNO   =Fsubstr(XRATNO,9," ")
+      IF X2_RATNO <> XRATNO
+    xRATNO=alltrim(xRATNO)
+    dbSelectArea( "2" )
+    __dbLocate( {|| alltrim(XRATNO)==alltrim(RATNO)},,,, .F. )
+    IF EOF()=.T.
+      __dbLocate( {|| XRATNO $  RATNO},,,, .F. )
+    endif
+    IF EOF()=.F.
+      XSTRO=S_STRO
+      XRATNO=RATNO
+      XMIX_SEC=MIXSEC
+    ELSE
+      XRATNO=SPACE(9)
+      XSTRO=SPACE(10)
+      XMIX_SEC=PMIXTM
+    ENDIF
+      ENDIF
+      XRATNO   =Fsubstr(XRATNO,9," ")
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOut( XRATNO )
+      DevPos( _A_DSPY[22], _A_DSPX[22] ) ; DevOut( XSTRO )
+    CASE TLP_1=4
+      PGM=" "
+      P_FUNC=" "
+      R_C=XVUSE
+      _D_TYPE=VALTYPE(R_C)
+      C_PICT="99.9"
+      X_DEC=1
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XVUSE,"&_D_TYPE",C_L,X_DEC,TLP_1,"&P_FUNC")
+
+
+
+      if  xvuse >= 30
+    xvuse=10
+      endif
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOutPict( XVUSE, "99.9" )
+    CASE TLP_1=5
+      PGM=" "
+      P_FUNC=" "
+      R_C=XTANDO
+      _D_TYPE=VALTYPE(R_C)
+      C_PICT="9999"
+      C_L=LEN(C_PICT)
+      X_DEC=0
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XTANDO,"&_D_TYPE",C_L,X_DEC,TLP_1,"&P_FUNC")
+
+
+
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOutPict( XTANDO, "9999" )
+    CASE TLP_1=6
+      PGM="FIND_1103"
+      P_FUNC="FIND_1103"
+      R_C=XUS2
+      _D_TYPE=VALTYPE(R_C)
+      C_L=LEN(R_C)
+      C_PICT="XXXXXXXX"
+      X_DEC=0
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XUS2,"&_D_TYPE",C_L,X_DEC,TLP_1,"&P_FUNC")
+
+
+      XUS2   =FSUBSTR(UPPER(XUS2),8," ")
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[XTLP_1] ) ; DevOut( XUS2 )
+      IF  XUS2="    "
+    XUS2_1=SPACE(24)
+
+      ENDIF
+      dbSelectArea( "11" )
+      __dbLocate( {|| P1501=XUS2},,,, .F. )
+      IF EOF()=.F.
+      XUS2_1=P1502
+      ENDIF
+      DevPos( _A_DSPY[XTLP_1], _A_DSPX[7] ) ; DevOut( XUS2 )
+      DevPos( _A_DSPY[23], _A_DSPX[23] ) ; DevOut( SUBSTR(XUS2_1,1,24) )
+
+
+
+      dbSelectArea( "3" )
+    CASE TLP_1=7
+      PGM="FIND_ADD_"
+      P_FUNC="FIND_ADD_"
+      R_C=XADDR_NO
+      _D_TYPE=VALTYPE(R_C)
+      C_L=LEN(R_C)
+      C_PICT="XXXXXXXXXX"
+      X_DEC=0
+      C_L=LEN(C_PICT)
+      XTLP_1=TLP_1
+      CHRN=XADDR_NO
+      TLP_1=READ_A(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,@XADDR_NO,"&_D_TYPE",C_L,X_DEC,TLP_1,"&P_FUNC")
+
+
+
+      XADDR_NO=FSUBSTR(XADDR_NO,10," ")
+      if xADDR_NO   <> chrn
+    dbSelectArea( "13" )
+    __dbLocate( {|| P1701 =XADDR_NO},,,, .F. )
+    XUS2_2=P1702
+    XU_PRICE=U_PRICE
+      ENDIF
+      DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( XADDR_NO )
+      SetColor( "&C7 +/ &C1" )
+    CASE TLP_1=8
+      SetKey( 5, NIL )
+      SetKey( 24, NIL )
+      SetKey( 28, NIL )
+      SetCursor( if(Upper("On") == "ON", 1, 0) )
+      SetColor( "&c7 + /&c1,N/w+" )
+      Set( 28, "ON" )
+      sa_th=substr(sa_time,1,2)
+      sa_tm=substr(sa_time,4,2)
+      sa_ts=substr(sa_time,7,2)
+      SetPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; AAdd( GetList, _GET_( sa_date, "sa_date",,, ):display() )
+      SetPos( _A_DSPY[TLP_1+1], _A_DSPX[TLP_1+1] ) ; AAdd( GetList, _GET_( sa_th, "sa_th", "99",, ):display() )
+      SetPos( _A_DSPY[TLP_1+2], _A_DSPX[TLP_1+2] ) ; AAdd( GetList, _GET_( sa_tm, "sa_tm", "99",, ):display() )
+      SetPos( _A_DSPY[TLP_1+3], _A_DSPX[TLP_1+3] ) ; AAdd( GetList, _GET_( sa_ts, "sa_ts", "99",, ):display() )
+      ReadModal(GetList) ; GetList := {}
+      Set( 28, "OFF" )
+      SetCursor( if(Upper("Off") == "ON", 1, 0) )
+      sa_time=fctotime(sa_th,sa_tm,sa_ts)
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOut( sa_date )
+      DevPos( _A_DSPY[TLP_1+1], _A_DSPX[TLP_1+1] ) ; DevOut( sa_time )
+      if lastkey()=5
+    tlp_1=tlp_1-1
+      else
+       if empty(alltrim(xratno))=.T.
+      tlp_1=3
+       elseif xvuse=0
+      tlp_1=4
+       else
+      tlp_1=1
+       endif
+
+      endif
+
+    ENDCASE
+    IF     LAST_KEY <> 27
+      TNSTP=0
+      IF TLP_1 >  X_MAXSTEP
+    if empty(alltrim(xratno))=.T.
+       tlp_1=3
+    elseif xvuse=0
+       tlp_1=4
+    else
+       tlp_1=1
+       TNSTP=LAST_KEY
+    endif
+      ENDIF
+    ELSE
+      TNSTP=LAST_KEY
+    ENDIF
+    DO CASE
+    CASE TNSTP=-6  .AND. STAR=0
+      usave="n"
+      TLP_1=0
+      TLP=0
+      TOTTXP=0
+      ascano=Xscano
+      ACARNO =XCARNO     
+      ACARW  =XCARW     
+      ARATNO =XRATNO     
+      ASTRO=XSTRO
+
+      AVUSE  =0      
+      ATANDO =XTANDO     
+      AUS2   =XUS2     
+      APOSITION=XUS2
+      ACARDRV=XCARDRV     
+      AUS3=XUS3      
+      ATOT_CAR=XTOT_CAR  
+      AUS2_1=XUS2_1     
+      AUS2_2=XUS2_2     
+      A_ADDR_NO=XADDR_NO     
+      APOSITION=XADDR_NO
+
+
+      IF  ( ALLTRIM(XRATNO) <> "0"  .AND. EMPTY(ALLTRIM(XRATNO)) <> .T.   )   .AND. ( EMPTY(ALLTRIM(XSCANO)) <> .T. )
+    dbSelectArea( "4" )
+    __dbZap()
+    dbAppend()
+    _FIELD->CDATE := SA_DATE  
+    _FIELD->scano := XSCANO    
+    _FIELD->US2_1 := XUS2_1    
+    _FIELD->US2_2 := XUS2_2    
+    _FIELD->CCARW := XCARW  
+    _FIELD->CHOUR := VAL(SUBSTR(SA_TIME,1,2))  
+    _FIELD->CMIN := VAL(SUBSTR(SA_TIME ,4,2))
+    _FIELD->CSEC := VAL(SUBSTR(SA_TIME ,7,2))
+    _FIELD->LAG_CAR := XTOT_CAR  
+    _FIELD->COUNT := XVUSE     
+    _FIELD->LAG_LAG := XUS3     
+    _FIELD->CARNO := XCARNO 
+    _FIELD->TANDO := XTANDO   
+    _FIELD->CCARDRV := XCARDRV 
+    _FIELD->US2 := XUS2  
+    _FIELD->RATNO := XRATNO     
+    _FIELD->P1701 := XADDR_NO   
+    _FIELD->S_STRO := XSTRO
+    _TOT_D_A[20,4]=1
+    X=_TOT_D_A[20,4] +2
+    sp_date=_TOT_D_A[1,X]
+    IF  ENGL=0
+      D_C1="出車資料_存檔_(Y/N) ?"
+      D_C2="確定按 Y 鍵"
+      D_C3="取消按 N 或 Esc 鍵"
+    ELSE
+      D_C1="Delete Delivery Sheet(Y/N) ?"
+      D_C2="Press Y to Exection"
+      D_C3="Press N OR Esc to Exit"
+    ENDIF
+    dl_ok=0
+    USAVE="N"
+    DL_OK=OK_ECHO(10,30,D_C1,D_C2,D_C3)
+    if  dl_ok=1
+       USAVE="Y"
+    endif
+
+    IF   ((USAVE="Y") .OR. (USAVE="y"))
+      SAVE_FILE := 1
+      lag_sno=str(val(lag_sno)+1,8,0)
+      X=_TOT_D_A[20,4] +2
+      _TOT_D_A[19,X] :=LAG_SNO
+      __MSave( "LAGDATA9", "LAG*", .T. )
+    ELSE
+      SAVE_FILE := 0
+    ENDIF
+    IF ACTW_EN=0
+
+      DO LUPRN1
+    ELSE
+
+      PNT_ACTW(@X3_STDM,@x3_stdERR,@X3_TITL,@_tot_d_a,XVUSE)
+    ENDIF
+    SAVE_FILE := 0
+      ENDIF
+      dbCommitAll()
+
+      FAULT_PNT=1
+      _TOT_D_A[20,3] :=0
+      _TOT_D_A[20,4] :=0
+    CASE    TNSTP=-4
+       Scroll( 3, 1, 17, 78 ) ; SetPos( 3, 1 )
+       D_YS=1
+       D_XS=0
+       D_YE=18
+       D_XE=79
+
+       XSCR_F5 := SaveScreen( 0, 0, Maxrow(), Maxcol() )
+       BOX_S(D_YS,D_XS,D_YE,D_XE)
+       dsp_std(xratno,xvuse,d_ys+1,d_xs+1)
+       ACTW_EN=1
+
+
+    CASE    TNSTP=23 .OR. TNSTP=27
+    TLP_1=100
+    IF  TNSTP=23 .OR. TNSTP=27
+      TLP=0
+    ENDIF
+    ENDCASE
+  ENDDO
+ENDDO
+DSP_SCALL=1
+LUSTP_EN=1
+
+DO RST_FUNC
+
+RETU
+
+FUNCTION dsp_std
+PARAMETERS  x3_ratno,x3_vuse,x3_ys,x3_xs
+
+
+
+  x3_wno=fselectno()
+  x3_tottype =gs_tot+uwc_tot
+  dbSelectArea( "2" )
+  x3_ratno=alltrim(x3_ratno)
+  __dbLocate( {||  ALLTRIM(ratno) =x3_ratno},,,, .F. )
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_stdM[1,xlp]=M&XC
+     x3_stdM[3,xlp]=x3_stdM[1,xlp]  * X3_VUSE
+     IF  EMPTY(x3_stdM[6,xlp])=.T.
+      x3_stdM[6,xlp]=0
+     ENDIF
+  next
+  dbSelectArea( "5" )
+  dbCloseArea()
+  dbUseArea( .F.,, "PAR1",, if(.F. .OR. .F., !.F., NIL), .F. )
+  dbGoto(18)   
+  x3_TITL[3,1]=X3_XS
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_TITL[2,xlp]=ALLTRIM(PA&XC)  
+     x3_TITL[3,xlp+1]=X3_TITL[3,XLP]+ LEN(x3_TITL[2,xlp]) +1
+  next
+  dbGoto(16)   
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_TITL[1,xlp]=ALLTRIM(PA&XC)
+     XNL=LEN(x3_TITL[2,xlp])+1
+     x3_TITL[1,xlp]=FSUBSTR(x3_TITL[1,xlp],XNL," ")
+  next
+
+  dbCloseArea()
+  dbUseArea( .F.,, "PAR",, if(.F. .OR. .F., !.F., NIL), .F. )
+  dbGoto(33)   
+  X4_WATER_ADJ=0
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_stdM[2,xlp]=PA&XC /100
+     IF XLP > GS_TOT
+       x3_stdM[2,xlp]=0
+     ENDIF
+     XW0=x3_stdM[3,xlp] * x3_stdM[2,xlp]
+     x3_stdM[3,xlp]= x3_stdM[3,xlp] +XW0
+     X4_WATER_ADJ= X4_WATER_ADJ +XW0
+  next
+  for xlp=GS_TOT+2  to      GS_TOT +WATER_TOT
+     x3_stdM[3,GS_TOT+1]= x3_stdM[3,GS_TOT+1] + x3_stdM[3,XLP]
+     x3_stdM[3,XLP] =0
+  NEXT
+  x3_stdM[3,GS_TOT+1]=x3_stdM[3,GS_TOT+1]- X4_WATER_ADJ
+  dbGoto(66)   
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_stdERR[1,xlp]=PA&XC /1000
+     XDIV=1
+     IF XLP > (X3_TOTTYPE -AE_TOT)
+       XDIV=100
+     ENDIF
+
+     x3_stdM[4,xlp]= INT(x3_stdM[3,xlp] *(1+x3_stdERR[1,xlp])  * XDIV)/XDIV
+     x3_stdM[5,xlp]= INT(x3_stdM[3,xlp] *(1-x3_stdERR[1,xlp])  * XDIV)/XDIV
+
+  next
+  dbGoto(70)    
+  for xlp=1  to    x3_tottype
+     xc=alltrim(str(xlp,2,0))
+     x3_stdERR[2,xlp]=PA&XC /1000
+  next
+  DSP_STDM(@X3_STDM,x3_ratno,@x3_stdERR,@X3_TITL,x3_ys,x3_xs)
+  SET_ACTW(@X3_STDM,x3_ratno,@x3_stdERR,@X3_TITL,x3_ys,x3_xs,6,3)
+  dbSelectArea( x3_wno )
+RETU
+
+FUNCTION dsp_stdM
+PARAMETERS  x4_stdM,x4_ratno,X4_STDERR,X4_TITL,x4_ys,x4_xs
+SetColor( "w+ /bl" )
+x4_tP =gs_tot+uwc_tot
+DevPos( x4_ys+1, x4_xs ) ; DevOut( "<配比重量>  配比NO.:               " )
+DevPos( x4_ys+1, x4_xs+21 ) ; DevOut( X4_RATNO )
+
+DevPos( x4_ys+3, x4_xs ) ; DevOut( "<含水率％> " )
+DevPos( x4_ys+5, x4_xs ) ; DevOut( "<誤差率％> " )
+DevPos( x4_ys+7, x4_xs ) ; DevOut( "<殘留％> " )
+DevPos( x4_ys+9, x4_xs ) ; DevOut( "<最大值 /最小值 (kG) > " )
+DevPos( x4_ys+12, x4_xs ) ; DevOut( "<實際值> " )
+
+  for xlp4=1  to  X4_TP
+    DevPos( x4_ys, X4_TITL[3,XLP4] ) ; DevOut( X4_TITL[1,XLP4] )
+  NEXT
+  SetColor( "w+ /N" )
+  for xlp4=1  to  X4_TP
+    XPICT=X4_TITL[2,XLP4]
+    IF EMPTY(XPICT)=.T.
+      XPICT="999"
+    ENDIF
+    DevPos( x4_ys+2, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDM[1,XLP4], "&XPICT" )
+  NEXT
+  for xlp4=1  to  GS_TOT
+    XPICT="99"
+    DevPos( x4_ys+4, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDM[2,XLP4] *100, "&XPICT" )
+  NEXT
+
+  for xlp4=1  to  X4_TP
+    XPICT="99.9"
+    DevPos( x4_ys+6, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDERR[1,XLP4] *100, "&XPICT" )
+    DevPos( x4_ys+8, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDERR[2,XLP4] *100, "&XPICT" )
+  NEXT
+  for xlp4=1  to  X4_TP
+    XPICT=X4_TITL[2,XLP4]
+    IF EMPTY(XPICT)=.T.
+      XPICT="999"
+    ENDIF
+    IF X4_STDM[4,XLP4]>0
+      DevPos( x4_ys+10, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDM[4,XLP4], "&XPICT" )
+    ENDIF
+    IF X4_STDM[5,XLP4]>0
+      DevPos( x4_ys+11, X4_TITL[3,XLP4] ) ; DevOutPict( X4_STDM[5,XLP4], "&XPICT" )
+    ENDIF
+
+  NEXT
+
+RETU
+
+FUNCTION SET_ACTW
+PARAMETERS  x6_stdM,x6_ratno,X6_STDERR,X6_TITL,x6_ys,x6_xs,X6_POS,X6_CHK
+  SetCursor( if(Upper("On") == "ON", 1, 0) )
+  Set( 27, "ON" )
+  Set( 28, "OFF" )
+  SetColor( "&c7 + /&c1,N/w+" )
+  x6_tP =gs_tot+uwc_tot
+  for xlp6=1  to  X6_TP
+    XPICT=X6_TITL[2,XLP6]
+    IF EMPTY(XPICT)=.T.
+      XPICT="999"
+    ENDIF
+    IF X6_STDM[X6_CHK,XLP6]>0
+      SetPos( x6_ys+13, X6_TITL[3,XLP6] ) ; AAdd( GetList, _GET_( X6_STDM[X6_POS,XLP6], "X6_STDM[X6_POS,XLP6]", "&XPICT",, ):display() )
+    ENDIF
+  NEXT
+  ReadModal(GetList) ; GetList := {}
+  SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+  CHK_ACTW6(@X6_STDM,x6_ratno,@x6_stdERR,@X6_TITL,x6_ys,x6_xs,6,3)
+RETU
+
+FUNCTION CHK_ACTW6
+PARAMETERS  x7_stdM,x7_ratno,X7_STDERR,X7_TITL,x7_ys,x7_xs,X7_POS,X7_CHK
+  SetColor( "&c7 + /&c1,N/w+" )
+  x7_tP =gs_tot+uwc_tot
+  for xlp7=1  to  X7_TP
+    XPICT=X7_TITL[2,XLP7]
+    IF EMPTY(XPICT)=.T.
+      XPICT="999"
+    ENDIF
+    IF X7_STDM[3,XLP7]>0
+      IF (X7_STDM[6,XLP7]>X7_STDM[4,XLP7]) .OR.  (X7_STDM[6,XLP7]<X7_STDM[5,XLP7])
+    SetColor( "R + /&c1,N/w+" )
+      ELSE
+    SetColor( "&c7 + /&c1,N/w+" )
+      ENDIF
+      DevPos( x7_ys+13, X7_TITL[3,XLP7] ) ; DevOutPict( X7_STDM[X7_POS,XLP7], "&XPICT" )
+    ENDIF
+  NEXT
+  SetColor( "&c7 + /&c1,N/w+" )
+RETU
+
+FUNCTION PNT_ACTW
+PARAMETERS  x8_stdM,X8_STDERR,X8_TITL,x8_tot,X8_VUSE
+  L_PRESS=3
+  XWATER_TOT=0
+  FOR XLOOP=1  TO   GS_TOT+UWC_TOT
+     X8_STDM[7,XLOOP]=0
+  NEXT
+  XWATER_TOT=0
+  FOR XLOOP=GS_TOT+1  TO   GS_TOT+WATER_TOT
+      XWATER_TOT=XWATER_TOT+x8_stdM[1,XLOOP]
+  NEXT
+  XWATER_STD=x8_stdM[3,GS_TOT+1 ]
+  XWATER_ACT=x8_stdM[6,GS_TOT+1 ]
+  FOR XLOOP=GS_TOT+1  TO   GS_TOT+WATER_TOT
+      IF  XWATER_TOT>0
+    x8_stdM[3,XLOOP]=XWATER_STD * x8_stdM[1,XLOOP]/XWATER_TOT
+    x8_stdM[6,XLOOP]=XWATER_ACT * x8_stdM[1,XLOOP]/XWATER_TOT
+      ENDIF
+  NEXT
+  get_tit_d2(@_tot_d_a)
+  PNT_TITa_p(SA_date,@_tot_d_a)
+  XA_STPN=1
+  X_STORTIME=SA_TIME
+  XA_TOTS=FTIMETON(SA_TIME )
+  MP2_B(@X8_STDM,@x8_stdERR,@X8_TITL,@A_PRESS_N0,L_PRESS,X8_VUSE)
+  X_NEXTADJ=0
+  x8TOTWACT :=ARRAy(kind)
+  for  x8_loop1=1  to  kind
+       x8TOTWACT[x8_loop1]=0
+  next
+  while (A_PRESS_N0[l_press,xa_stpn,1,5]>0)
+
+     IF  X_NEXTADJ=0
+       X_NEXTADJ=CAL_W3(XA_STPN,@A_PRESS_N0,L_PRESS,@x8_stdERR,@X8_STDM,XWATER_TOT,@X8TOTWACT)
+     ELSE
+       X_NEXTADJ=0
+     ENDIF
+     pnt_produce(XA_STPN,X_STORTIME,XMIX_SEC,A_PRESS_N0,0)
+     XSAVE=0
+     IF   ((USAVE="Y") .OR. (USAVE="y"))
+       SAVE_produce1(XA_STPN,X_STORTIME,XMIX_SEC,A_PRESS_N0,_TOT_D_A,SA_DATE)
+       XSAVE=1
+     ENDIF
+
+     pnt_remains(l_press,xa_stpn,A_PRESS_N0,0,XSAVE,X8TOTWACT )
+     xA_SEC=get_rand(10,1,1,1,1)
+     Xa_TOTS=Xa_TOTS+PMIXOP+XMIX_SEC
+     X_STORTIME=Fntotime(0,0,0,xa_tots)
+     XA_STPN=XA_STPN+1
+     IF   ((USAVE="Y") .OR. (USAVE="y"))
+       IF  (A_PRESS_N0[l_press,xa_stpn,1,5]=0)
+
+     SAVE_SADBF(XA_STPN-1,X_STORTIME,XMIX_SEC,A_PRESS_N0,_TOT_D_A,SA_DATE,X8TOTWACT)
+       ENDIF
+     ENDIF
+  ENDDO
+
+
+
+  L_PRESS=2
+
+RETU
+
+
+FUNCTION    get_tit_d2
+PARAMETERS  p_tot_d
+xpn=1
+p_tot_d[20,4]=xpn
+xpn=xpn+2
+p_tot_d[2,xpn]=alltrim(Xscano)
+p_tot_d[3,xpn]=alltrim(Xus2_1)
+p_tot_d[12,xpn]=XSTRO
+p_tot_d[13,xpn]=alltrim(Xcarno)
+p_tot_d[14,xpn]=XTando
+p_tot_d[16,xpn]=alltrim(Xus2)
+p_tot_d[18,xpn]=alltrim(Xratno)
+p_tot_d[22,xpn]=alltrim(XADDR_NO)
+retu
+
+
+PROCEDURE  MP2_B
+PARAMETERS  x9_stdM,X9_STDERR,X9_TITL,X9_PRESS,x9_LPRESS,X9_VUSE
+
+FILL_A_D4(@x9_PRESS,3,1,dimb_len,kind,11,0)
+dbSelectArea( "8" )
+MX=INT((X9_VUSE+0.4)*2)*.5
+__dbLocate( {|| (MLAV=RATVOL) .AND.(MLMV=MX)},,,, .F. )
+Xfinish=0
+xseekok=0
+IF   ! EOF()
+  xseekok=1
+endif
+  MX="1"
+  MLA_LAG=0
+  while Xfinish=0
+     if  Xseekok=1
+       if  MLA&MX >0
+     IF MLMV_1 > MLA_LAG
+       LVUSE=MLA&MX
+     ELSE
+       LVUSE=X9_VUSE -MLA_LAG
+       Xfinish=1
+     ENDIF
+       else
+     LVUSE=0
+     Xfinish=1
+       ENDIF
+     else
+       IF (X9_VUSE-MLA_LAG)>  RATVOL
+      LVUSE=RATVOL
+       ELSE
+      LVUSE= X9_VUSE-MLA_LAG
+      Xfinish=1
+       ENDIF
+     endif
+    XM_PLUS=0
+    X9_WADJ=0
+    MLA_LAG=MLA_LAG+LVUSE
+    FOR XNP=1  TO  GS_TOT+UWC_TOT
+      XNPC=LTRIM(STR(INT(XNP),2,0))
+      x9_press[X9_LPRESS,VAL(MX),XNP,1] :=X9_STDM[1,XNP] * LVUSE
+      X9ADJ=x9_press[X9_LPRESS,VAL(MX),XNP,1]    *  X9_STDM[2,XNP]
+      IF (XNP >GS_TOT)
+    X9ADJ=0
+      ENDIF
+      X9_WADJ=X9_WADJ +X9ADJ
+      x9_press[X9_LPRESS,VAL(MX),XNP,2] := X9ADJ
+      x9_press[X9_LPRESS,VAL(MX),XNP,3] := 0
+      x9_press[X9_LPRESS,VAL(MX),XNP,4] := 0
+      x9_press[X9_LPRESS,VAL(MX),XNP,5] := LVUSE
+      x9_press[X9_LPRESS,VAL(MX),XNP,6] := MLA_LAG
+    NEXT
+    XWATERT0=0
+    FOR XLP9=(GS_TOT+1) TO (GS_TOT+ WATER_TOT)
+      XWATERT0=XWATERT0+x9_press[X9_LPRESS,VAL(MX),XLP9,1]
+    NEXT
+    XWATERT0=-XWATERT0
+    IF XWATERT0 <>0
+      FOR XLP9=GS_TOT+1  TO GS_TOT+ WATER_TOT
+    x9_press[X9_LPRESS,VAL(MX),XLP9,2]=X9_WADJ * x9_press[X9_LPRESS,VAL(MX),XLP9,1]/XWATERT0
+      NEXT
+    ENDIF
+    MX=LTRIM(STR(INT(VAL(MX)+1),2,0))
+  ENDDO
+  x9_press[X9_LPRESS,VAL(MX),1,5] := 0
+  x9_press[X9_LPRESS,VAL(MX),1,6] := 0
+RETU
+
+FUNCTION  CAL_W3
+PARAMETERS XB_STPN,XB_PRESS,XB_POS,XB_STDERR,XB_STDM,XB_WATER_TOT,XB_TOTWACT
+  xB_LAST=gs_tot+uwc_tot-ae_tot
+  XB_NEXT=0
+  XWTOT=0
+  FOR XB_LOOP1 =1 TO   GS_TOT+UWC_TOT
+    XB_TOTWACT[xb_loop1]=0
+    Xw0=(XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1]+XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2])
+    XN3=XB_STDERR[2,XB_loop1]
+
+
+    XN12=0
+     XN12=XB_STDERR[2,XB_LOOP1]
+       if XB_loop1 > XB_last
+      XB_amp=100
+      XB_div=100
+       else
+      XB_amp=1
+      XB_div=1
+       endif
+       XB_w=get_rand(xw0,xn12,XB_amp,XB_div,1)
+       XB_PRESS[XB_POS,XB_STPN,XB_loop1,12]=XB_w
+       Xw0=(XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1]+XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2])
+       XB_w=get_rand(xw0,xn12,XB_amp,XB_div,1)
+       XB_PRESS[XB_POS,XB_STPN+1,XB_loop1,12]=XB_w
+       XVUSE_X=XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,5]
+       XB_ERR=(XB_STDM[6,XB_LOOP1]-XB_STDM[3,XB_LOOP1])/XB_STDM[3,XB_LOOP1]
+       IF  XVUSE_X>0
+       XB_NEXT=1
+
+       IF ABS(XB_ERR)>=XB_STDERR[1,XB_LOOP1]
+         XN3= 0.002
+         xw0=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2]
+         XB_w0=get_rand(xw0,xn3,XB_amp,XB_div,2)
+         XB_W1=INT((xw0 * (XB_STDERR[1,XB_LOOP1]-0.0025 ) *XB_AMP))/XB_AMP
+         XB_W2=Xw0+((XB_W0 +XB_W1) *abs(XB_ERR)/XB_ERR)
+         XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +xb_w2
+         XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,4]=XB_W2    + XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,12]
+         XN3= 0.002
+         xw0=XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2]
+         XB_w0=get_rand(xw0,xn3,XB_amp,XB_div,2)
+         XB_W1=INT((xw0 * (XB_STDERR[1,XB_LOOP1]-0.0025 ) *XB_AMP))/XB_AMP
+         XB_W2=Xw0+((XB_W0 +XB_W1) *abs(XB_ERR)/XB_ERR)
+         XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +xb_w2
+         XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,4]=XB_W2  + XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,12]
+
+         if XB_PRESS[XB_POS,XB_STPN+2,XB_LOOP1,5]=0
+           XB_TOTWACT[XB_LOOP1]=XB_STDM[6,XB_LOOP1]
+          endif
+
+       ELSE
+         XN3= XB_STDERR[1,XB_LOOP1]-ABS(XB_ERR)
+         IF   XVUSE_X > XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,5]
+           XW0=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] + XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2]
+           XB_w0=get_rand(xw0,xn3,XB_amp,XB_div,2)
+           XB_W1=INT((XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1]+XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2] )* XB_ERR *XB_AMP)/XB_AMP
+           XB_W2=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2]+XB_W0 +XB_W1
+           XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +xb_w2
+           XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,4]=XB_W2  + XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,12]
+
+           if XB_PRESS[XB_POS,XB_STPN+2,XB_LOOP1,5]>0
+         Xw0=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1]
+         xw0=xw0 +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2]
+         XB_W1= INT(XW0* XB_ERR *XB_AMP)/XB_AMP
+
+         XB_W2=xw0 +XB_W1 -XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,4]+XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,12]
+           else
+          XB_W2 =XB_STDM[6,XB_LOOP1]-XB_STDM[7,XB_LOOP1]+XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,12]
+           endif
+           XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,4]=XB_W2 +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,12]
+           XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +XB_w2
+         ELSE
+           XW0=XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1] + XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2]
+           XB_w0=get_rand(xw0,xn3,XB_amp,XB_div,2)
+           XB_W1=INT(XW0* XB_ERR *XB_AMP)/XB_AMP
+           XB_W2=XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2] +XB_W0 +XB_W1
+           XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,4]=XB_W2  + XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,12]
+           XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +xb_w2
+
+           if XB_PRESS[XB_POS,XB_STPN+2,XB_LOOP1,5]>0
+         Xw0=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,1]
+         xw0=xw0 +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2] +XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,2]
+         XB_W1= INT(XW0* XB_ERR *XB_AMP)/XB_AMP
+         XB_W2=xw0 +XB_W1 -XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,4]+XB_PRESS[XB_POS,XB_STPN+1,XB_LOOP1,12]
+           else
+         XB_W2 =XB_STDM[6,XB_LOOP1]-XB_STDM[7,XB_LOOP1]
+           endif
+           XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,4]=XB_W2 +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,12]
+           XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +xb_w2
+         ENDIF
+       ENDIF
+
+       ELSE
+
+
+
+
+
+
+
+
+     IF ABS(XB_ERR)>=XB_STDERR[1,XB_LOOP1]
+         xw0=XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,1] +XB_PRESS[XB_POS,XB_STPN,XB_LOOP1,2]
+
+         XB_W2=INT(xw0 * (1+ ((XB_STDERR[1,XB_LOOP1]-0.001) *abs(xb_err)/xb_err)) *XB_AMP)/XB_AMP
+         XB_PRESS[XB_POS,XB_STPN,XB_loop1,4]=xb_w2 +XB_PRESS[XB_POS,XB_STPN,XB_loop1,12]
+         XB_TOTWACT[XB_LOOP1]=XB_STDM[6,XB_LOOP1]
+     else
+       xb_w2=XB_STDM[6,XB_LOOP1]+ - XB_STDM[7,XB_LOOP1]
+       XB_PRESS[XB_POS,XB_STPN,XB_loop1,4]=xb_w2 + XB_PRESS[XB_POS,XB_STPN,XB_loop1,12]
+     endif
+     XB_STDM[7,XB_LOOP1] =XB_STDM[7,XB_LOOP1] +XB_PRESS[XB_POS,XB_STPN,XB_loop1,4]
+       ENDIF
+
+  NEXT
+RETU  XB_NEXT
+
+PROCEDURE  RST_FUNC1
+PARAMETERS  P1,P2,P3
+P_FUNC0 := P_FUNC1 := P_FUNC2 := P_FUNC3 := P_FUNC4 := P_FUNC5 := P_FUNC6 := P_FUNC7 := P_FUNC8 := P_FUNC9 := P_FUNC10 := P_FUNC11 := P_FUNC12 := P_FUNC13 := P_FUNC14 := P_FUNC15 := P_FUNC16 := " "
+
+
+
+retu
+
+FUNCTION  get_RAND_ERR
+PARAMETERS  xstd,xpercerr,xdecm
+  d_retu=0
+  if  xpercerr>0
+    D_RETU=0
+    IF XSTD >0
+      INDEX=1
+      IF  VAL(XDECM)-INT(VAL(XDECM))>0
+    INDEX=100
+      ENDIF
+      xerrMAX=INT(xstd    * xpercerr * INDEX)
+      RNDX=int(SECONDS()*100  * RAND())
+      D_RETU=- xerrMAX + MOD(RNDX,(xerrMAX * 2) +1)
+      D_RETU=D_RETU /INDEX
+    ENDIF
+  endif
+retu d_retu

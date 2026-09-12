@@ -1,0 +1,13 @@
+device=C:\WINDOWS\HIMEM.SYS
+device=C:\DOS\interlnk.exe
+install=C:\DOS\share.exe
+shell=C:\DOS\command.com C:\DOS /P/E:1024
+DOS=HIGH,UMB
+country=049,850,C:\DOS\country.sys
+devicehigh=C:\DOS\display.sys CON=(EGA,,1)
+files=50
+stacks=9,256
+NUMLOCK=ON
+lastdrive=Z
+DEVICEHIGH=C:\Windows\ifshlp.sys
+DEVICE=C:\WINDOWS\SMARTDRV.EXE /DOUBLE_BUFFER

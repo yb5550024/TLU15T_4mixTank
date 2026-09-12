@@ -1,0 +1,1104 @@
+
+DSP_SCALL=1
+C11="B"
+C12="W+"
+C13="R+"
+C14="W+"
+C15="R"
+C15="GR+"
+C17="W+"
+IF T=-2
+  PAHPRO=0
+ELSE
+  PAHPRO=1
+ENDIF
+dbSelectArea( "3" )
+__dbPack()
+if ( !.F. ) ; dbClearRel() ; end ; dbSetRelation( "DBF15", {|| US2}, "US2" )
+US2_1="        "
+SetColor( "&C7 +/ &C1" )
+LUDBF="3"
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+TNSTP=0
+dbGoTop()
+XX1=2
+SCRCC=1
+YY1=21
+Scroll( 20, 2, 22, 77 ) ; SetPos( 20, 2 )
+Scroll( 24, 2, 24, 77 ) ; SetPos( 24, 2 )
+SCRNO=21
+_A_DSPX :={7,7,7,30,30,30,48,48,48,48,73,72,0,0}
+_A_DSPY :={20,21,22,20,21,22,20,22,22,21,20,21,0}
+SetColor( "&C6 / &C1" )
+DevPos( 19, 0 ) ; DevOut( "╔══════════════════════════════════════╗" )
+
+DevPos( 20, 37 ) ; DevOut( _F3TXT_A[1] )
+DevPos( 20, 46 ) ; DevOut( _F3TXT_A[2] )
+DevPos( 20, 55 ) ; DevOut( _F3TXT_A[3] )
+
+
+
+
+DevPos( 20, 0 ) ; DevOut( "║ NO.:                  米數:         工    地:                   車次:      ║" )
+DevPos( 21, 0 ) ; DevOut( "║車號:               坍   度:         強    度:               累計米數:      ║" )
+DevPos( 22, 0 ) ; DevOut( "║配比:              客戶代號:         客戶名稱:                              ║" )
+
+
+IF LU_COUNT=1
+  DevPos( 22, 4 ) ; DevOut( "單價:" )
+ENDIF
+DevPos( 23, 0 ) ; DevOut( "╚══════════════════════════════════════╝" )
+IF  STAR=1
+  DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-資料查詢    Esc-結束     ,  Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥" )
+ELSE
+  DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-資料查詢    F7-報表列印  ,  Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥" )
+ENDIF
+SetColor( "gr +/ &C1" )
+DevPos( 24, 4 ) ; DevOut( "排程輸入" )
+DevPos( 24, 15 ) ; DevOut( "F1" )
+IF  STAR=1
+  DevPos( 24, 30 ) ; DevOut( "Esc" )
+ELSE
+  DevPos( 24, 30 ) ; DevOut( "F7" )
+ENDIF
+DevPos( 24, 46 ) ; DevOut( "Ctl-End" )
+DevPos( 24, 59 ) ; DevOut( "↑" )
+DevPos( 24, 68 ) ; DevOut( "↓" )
+SetColor( "&C7 +/ &C1" )
+dbSelectArea( "3" )
+IF  PAHPRO=1
+  dbGoBottom()
+  IF  !  EOF()  .AND. VUSE <>0
+    DevPos( _A_DSPY[1], _A_DSPX[1] ) ; DevOut( SCANO )   
+    DevPos( _A_DSPY[2], _A_DSPX[2] ) ; DevOut( CARNO )   
+    DevPos( _A_DSPY[3], _A_DSPX[3] ) ; DevOut( RATNO )   
+    DevPos( _A_DSPY[4], _A_DSPX[4] ) ; DevOutPict( VUSE, "99.9" )
+    DevPos( _A_DSPY[5], _A_DSPX[5] ) ; DevOutPict( TANDO, "9999" )
+    DevPos( _A_DSPY[6], _A_DSPX[6] ) ; DevOut( US2 )        
+    DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( P1701 )
+    DevPos( _A_DSPY[9], _A_DSPX[9] ) ; DevOut( SUBSTR(US2_2,1,24) )
+    DevPos( _A_DSPY[10], _A_DSPX[10] ) ; DevOut( S_STRO )
+
+     DevPos( _A_DSPY[11], _A_DSPX[11] ) ; DevOutPict( TOT_CAR, "99999" )
+    DevPos( _A_DSPY[12], _A_DSPX[12] ) ; DevOutPict( US3, "9999.9" )
+
+    IF    LU_COUNT=1
+      DevPos( 22, _A_DSPX[13] ) ; DevOutPict( U_PRICE, "99999" )
+    ENDIF
+    dbSkip(1)
+    SCRNO=SCRNO
+  ENDIF
+  XSCANO=SPACE(17)
+  XCARNO=SPACE(7)
+  XCARDRV =SPACE(8)
+  XCARW =0
+  XRATNO =space(9)
+  XVUSE  =0
+  XTANDO =0
+  XUS2=SPACE(8)
+  XUS3=0
+  XTOT_CAR=0
+  XUS2_1=SPACE(24)
+  xus2_2=space(24)
+  XADDR_NO=SPACE(10)
+  XU_PRICE=0
+  XSTRO =space(10)
+  IF  EOF()
+    dbAppend()
+  ENDIF
+ELSE
+  XSCANO  =ASCANO
+  XCARNO  =ACARNO
+  XCARDRV =ACARDRV
+
+  XCARW =ACARW
+  XRATNO  =ARATNO
+  XVUSE   =AVUSE
+  XTANDO  =ATANDO
+  XUS2      =  AUS2
+  XUS2_1  =  AUS2_1
+  XADDR_NO=APOSITION
+  XUS2_2  =  AUS2_2
+  XUS3      =  AUS3
+  XU_PRICE=AU_PRICE
+  XTOT_CAR=ATOT_CAR
+  XSTRO=ASTRO
+  SCRNO=21
+
+ENDIF
+TLP=1
+while TLP=1
+  TLP_1=1
+  while TLP_1 >= 1
+    SetColor( "&C7 +/ &C1" )
+    DevPos( _A_DSPY[1], _A_DSPX[1] ) ; DevOut( XSCANO )
+    DevPos( _A_DSPY[2], _A_DSPX[2] ) ; DevOut( XCARNO )
+    DevPos( _A_DSPY[3], _A_DSPX[3] ) ; DevOut( XRATNO )
+    DevPos( _A_DSPY[4], _A_DSPX[4] ) ; DevOutPict( XVUSE, "99.9" )
+    DevPos( _A_DSPY[5], _A_DSPX[5] ) ; DevOutPict( XTANDO, "9999" )
+    DevPos( _A_DSPY[6], _A_DSPX[6] ) ; DevOut( XUS2 )
+    DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( XADDR_NO )
+    DevPos( _A_DSPY[9], _A_DSPX[9] ) ; DevOut( SUBSTR(XUS2_1,1,24) )
+    DevPos( _A_DSPY[10], _A_DSPX[10] ) ; DevOut( XSTRO )
+    IF    LU_COUNT=1
+      DevPos( 22, _A_DSPX[13] ) ; DevOutPict( XU_PRICE, "99999" )
+    ENDIF
+    dbSelectArea( "3" )
+    DO CASE
+    CASE TLP_1=1
+      PGM=" "
+      NREAD(_A_DSPY[1],_A_DSPX[TLP_1] ,SUBSTR(XSCANO,1,17),17,pgm)
+      XSCANO  =SUBSTR(SPACE(17)+ALLTRIM(UPPER(XPX)),-17,17)
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOut( XSCANO )
+    CASE TLP_1=2
+      PGM="FIND_1201"
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1] ,SUBSTR(XCARNO,1,7),7,PGM)
+      XCARNO  =SUBSTR(ALLTRIM(UPPER(XPX))+SPACE(7),1,7)
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOut( XCARNO )
+      xcarno=alltrim(xcarno)
+      dbSelectArea( "10" )
+      __dbLocate( {|| XCARNO $ P12100},,,, .F. )
+      IF  EOF()=.F.
+    XCARNO =p12100
+    XCARDRV=P12102
+    XCARW=P12103
+      ENDIF
+      XCARNO=FSUBSTR(XCARNO,7," ")
+      SetColor( "&C7 +/ &C1" )
+    CASE TLP_1=3
+      PGM=" "
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1],substr(XRATNO,1,9),9,PGM)
+      XRATNO   =substr(alltrim(upper(XPX))+"         ",1,9)
+      dbSelectArea( "2" )
+      XSTRO=space(10)
+      __dbLocate( {|| RATNO=XRATNO},,,, .F. )
+      IF EOF()=.F.
+    XSTRO=S_STRO
+      ENDIF
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOut( XRATNO )
+      DevPos( _A_DSPY[10], _A_DSPX[10] ) ; DevOut( XSTRO )
+    CASE TLP_1=4
+      PGM=" "
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1],STR(XVUSE,4,1),4,PGM)
+      XVUSE  =VAL(XPX)
+      if  xvuse >= 30
+    xvuse=10
+      endif
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOutPict( XVUSE, "99.9" )
+    CASE TLP_1=5
+      PGM=" "
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1],STR(XTANDO,4,0),4,PGM)
+      XTANDO  =VAL(XPX)
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOutPict( XTANDO, "9999" )
+    CASE TLP_1=6
+      PGM="FIND_1103"
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1],SUBSTR(XUS2,1,8),8,PGM)
+      XUS2   =SUBSTR(ALLTRIM(UPPER(XPX))+SPACE(9),1,8)
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[TLP_1] ) ; DevOut( XUS2 )
+      IF  XUS2="    "
+    XUS2_1=SPACE(24)
+
+      ENDIF
+      dbSelectArea( "11" )
+      __dbLocate( {|| P1501=XUS2},,,, .F. )
+      IF EOF()=.F.
+      XUS2_1=P1502
+      ENDIF
+      DevPos( _A_DSPY[TLP_1], _A_DSPX[7] ) ; DevOut( XUS2 )
+      DevPos( _A_DSPY[8], _A_DSPX[8] ) ; DevOut( SUBSTR(XUS2_1,1,24) )
+      DevPos( SCRNO, _A_DSPX[11] ) ; DevOutPict( XTOT_CAR, "99999" )
+      DevPos( SCRNO, _A_DSPX[12] ) ; DevOutPict( XUS3, "9999.9" )
+
+      dbSelectArea( "3" )
+
+
+
+
+
+
+
+
+    CASE TLP_1=7
+      PGM="FIND_ADD_"
+      NREAD(_A_DSPY[TLP_1],_A_DSPX[TLP_1],SUBSTR(XADDR_NO,1,10),10,PGM)
+      CHRN=SUBSTR(ALLTRIM(UPPER(CHRN))+SPACE(10),1,10)
+      if xADDR_NO   <> chrn
+    xADDR_NO=chrn
+    dbSelectArea( "13" )
+    __dbLocate( {|| P1701 =XADDR_NO},,,, .F. )
+    XUS2_2=P1702
+    XU_PRICE=U_PRICE
+      ENDIF
+      DevPos( _A_DSPY[7], _A_DSPX[7] ) ; DevOut( XADDR_NO )
+      if (empty(xus2)=.F.)  .AND. (XVUSE>0)
+    _XUS3=0
+    IS_SEEK=fseek_2C(14,LAG_NA_NO,alltrim(xus2),LAG_ADDR_NO,alltrim(XADDR_NO),"LAG_LAG","LAG_CAR",@_LAG_LAG,@_LAG_CAR)
+    XUS3=xvuse
+    XTOT_CAR=1
+    IF IS_SEEL >0
+      XUS3=XUS3 +_LAG_LAG
+      XTOT_CAR=XTOT_CAR + _LAG_CAR
+    ENDIF
+    DevPos( _A_DSPY[11], _A_DSPX[11] ) ; DevOutPict( XTOT_CAR, "99999" )
+    DevPos( _A_DSPY[12], _A_DSPX[12] ) ; DevOutPict( XUS3, "9999.9" )
+      endIf
+      SetColor( "&C7 +/ &C1" )
+    CASE TLP_1=8
+      PGM=" "
+      NREAD(_A_DSPY[11],_A_DSPX[11],STR(XTOT_CAR,5,0),6,PGM)
+      IF   XTOT_CAR <> VAL(XPX)
+    dbSelectArea( "11" )
+    __dbLocate( {|| P1501=XUS2},,,, .F. )
+    IF ! EOF()
+      _FIELD->TOT_CAR := VAL(XPX)
+    ENDIF
+      ENDIF
+      XTOT_CAR    =VAL(XPX)
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[11], _A_DSPX[11] ) ; DevOutPict( XTOT_CAR, "99999" )
+    CASE TLP_1=9
+      PGM=" "
+      NREAD(_A_DSPY[12],_A_DSPX[12],STR(XUS3,6,1),6,PGM)
+      XUS3  =VAL(XPX)
+
+    dbSelectArea( "14" )
+    __dbLocate( {|| (LAG_NA_NO=XUS2)  .AND. (LAG_ADDR_NO=XADDR_NO)},,,, .F. )
+    IF EOF() .AND. XUS2 <> "    "
+      dbAppend()
+      _FIELD->LAG_NA_NO := XUS2; _FIELD->LAG_NAME := XUS2_1; _FIELD->LAG_ADDR_NO := XADDR_NO; _FIELD->LAG_ADDR := XUS2_2
+    ENDIF
+    IF ! EOF()
+      _FIELD->LAG_DATE := DATE(); _FIELD->LAG_LAG := XUS3; _FIELD->LAG_CAR := XTOT_CAR
+    ENDIF
+
+      SetColor( "&C7 +/ &C1" )
+      DevPos( _A_DSPY[12], _A_DSPX[12] ) ; DevOutPict( XUS3, "9999.9" )
+      dbCommitAll()
+    ENDCASE
+    DO CASE
+    CASE TNSTP=-6  .AND. STAR=0
+      SCRMA := SaveScreen( 0, 0, Maxrow(), Maxcol() )
+      usave="n"
+      TLP_1=0
+      TLP=0
+      TOTTXP=0
+      IF  ( ALLTRIM(XRATNO) <> "0"  .AND. EMPTY(ALLTRIM(XRATNO)) <> .T.   )   .AND. ( EMPTY(ALLTRIM(XSCANO)) <> .T. )
+    dbSelectArea( "4" )
+    __dbZap()
+    dbAppend()
+    _FIELD->CDATE := DATE() 
+    _FIELD->scano := XSCANO    
+    _FIELD->US2_1 := XUS2_1    
+    _FIELD->US2_2 := XUS2_2    
+    _FIELD->CCARW := XCARW  
+    _FIELD->CHOUR := VAL(SUBSTR(TIME(),1,2))  
+    _FIELD->CMIN := VAL(SUBSTR(TIME() ,4,2))
+    _FIELD->CSEC := VAL(SUBSTR(TIME() ,7,2))
+    _FIELD->LAG_CAR := XTOT_CAR  
+    _FIELD->COUNT := XVUSE     
+    _FIELD->LAG_LAG := XUS3     
+    _FIELD->CARNO := XCARNO 
+    _FIELD->TANDO := XTANDO   
+    _FIELD->CCARDRV := XCARDRV 
+    _FIELD->US2 := XUS2  
+    _FIELD->RATNO := XRATNO     
+    _FIELD->P1701 := XADDR_NO   
+    _FIELD->S_STRO := XSTRO
+    X=_TOT_D_A[20,4] +2
+    sp_date=_TOT_D_A[1,X]
+    do x_pno
+    IF   ((USAVE="Y") .OR. (USAVE="y"))
+      SAVE_FILE := 1
+      lag_sno=str(val(lag_sno)+1,8,0)
+      _TOT_D_A[19,X] :=LAG_SNO
+      __MSave( "LAGDATA9", "LAG*", .T. )
+    ELSE
+      SAVE_FILE := 0
+    ENDIF
+    DO LUPRN1
+    SAVE_FILE := 0
+    IF   ((USAVE="YA") .OR. (USAVE="yA"))
+      X=_TOT_D_A[20,4] +2
+      dbSelectArea( "7" )
+
+      _FIELD->LUDATE := _TOT_D_A[1,X]    
+
+      _FIELD->SCANO := _TOT_D_A[2,X]
+      _FIELD->p1702 := _TOT_D_A[4,X]
+      _FIELD->TOTW := TOTTXP    
+      _FIELD->LUTIME := _TOT_D_A[8,X]    
+      _FIELD->CARLAG := _TOT_D_A[9,X]   
+      _FIELD->TOTVUSE := XVUSE   
+      _FIELD->LAGTTW := _TOT_D_A[11,X]
+      _FIELD->CARNO := _TOT_D_A[13,X]
+      _FIELD->TANDO := _TOT_D_A[14,X]
+      _FIELD->CARDRV := _TOT_D_A[15,X]
+      _FIELD->US2 := _TOT_D_A[16,X]
+      _FIELD->SCANO2 := _TOT_D_A[17,X]       
+      _FIELD->RATNO := _TOT_D_A[18,X]
+      _FIELD->LAGNO1 := _TOT_D_A[2,X]  
+      _FIELD->U_PRICE := _TOT_D_A[21,X]
+      _FIELD->S_STRO := _TOT_D_A[12,X]
+      dbCommitAll()
+      usave="n"
+      dbSelectArea( "4" )
+      dbCommitAll()
+    endif
+      ENDIF
+      dbCommitAll()
+      RestScreen( 0, 0, Maxrow(), Maxcol(), scrma )
+      FAULT_PNT=1
+      _TOT_D_A[20,3] :=0
+      _TOT_D_A[20,4] :=0
+    CASE TNSTP=5
+      TLP_1=TLP_1 -1
+      IF TLP_1 =0
+    TLP_1=1
+    IF  PAHPRO=1
+      dbSelectArea( "3" )
+      Set( 11, "OFF" )
+      _FIELD->SCANO := XSCANO; _FIELD->CARNO := XCARNO; _FIELD->RATNO := XRATNO; _FIELD->VUSE := XVUSE; _FIELD->TANDO := XTANDO; _FIELD->us2 := XUS2; _FIELD->US3 := XUS3; _FIELD->CARDRV := XCARDRV; _FIELD->US2_1 := XUS2_1; _FIELD->us2_2 := xus2_2; _FIELD->TOT_CAR := XTOT_CAR
+      dbRecall()
+      dbSkip( -1 )
+      IF ! BOF()
+        dbDelete()
+        LURECNO=RECNO()
+        XSCANO  =SCANO
+        XCARNO  =CARNO
+        XCARDRV =CARDRV
+        XCARW =CARW
+        XRATNO  =RATNO
+        XSTRO=S_STRO
+        XVUSE   =VUSE
+        XTANDO  =TANDO
+        XUS2    =US2
+        XUS2_1  =US2_1
+        XUS2_2  =US2_2
+        XUS3    =US3
+        XU_PRICE=U_PRICE
+        XADDR_NO=P1701
+        XTOT_CAR=TOT_CAR
+
+        SCRNO=SCRNO
+        Y1=SCRNO
+        IF SCRNO <21
+          SCRNO = 21
+          SCROLL(21,2,22,77,-1)
+        ENDIF
+      ELSE
+        dbGoTop()
+      ENDIF
+    ENDIF
+      ENDIF
+    CASE TNSTP=13  .OR.  TNSTP=24   .OR. TNSTP=23 .OR. TNSTP=27
+      IF  TNSTP=23 .OR. TNSTP=27.OR. TNSTP=24
+    TLP_1=100
+    IF  TNSTP=23 .OR. TNSTP=27
+      TLP=0
+    ENDIF
+      ENDIF
+      TLP_1=TLP_1 + 1
+      IF TLP_1 >=10
+    IF  PAHPRO=0
+      ascano=Xscano
+      ACARNO =XCARNO     
+      ACARW  =XCARW      
+      ARATNO =XRATNO     
+      ASTRO=XSTRO
+      AVUSE  =XVUSE      
+      ATANDO =XTANDO     
+      AUS2     =XUS2         
+      APOSITION=XUS2
+      ACARDRV=XCARDRV    
+      AUS3=XUS3         
+      ATOT_CAR=XTOT_CAR  
+      AUS2_1=XUS2_1      
+      AUS2_2=XUS2_2      
+      A_ADDR_NO=XADDR_NO     
+      APOSITION=XADDR_NO
+      AU_PRICE=XU_PRICE
+      TLP=0
+      TLP_1=0
+    ELSE
+      TLP=1
+      TLP_1=1
+      IF  TNSTP=23 .OR. TNSTP=27
+        TLP=0
+        TLP_1=0
+      ENDIF
+      dbSelectArea( "3" )
+      Set( 11, "OFF" )
+      IF  XVUSE <>0
+        _FIELD->SCANO := XSCANO
+        _FIELD->CARW := XCARW
+        _FIELD->CARNO := XCARNO
+        _FIELD->RATNO := XRATNO
+        _FIELD->S_STRO := XSTRO
+        _FIELD->VUSE := XVUSE
+        _FIELD->TANDO := XTANDO
+        _FIELD->us2 := XUS2
+        _FIELD->US3 := XUS3
+        _FIELD->CARDRV := XCARDRV
+        _FIELD->US2_1 := XUS2_1
+        _FIELD->us2_2 := xus2_2
+        _FIELD->TOT_CAR := XTOT_CAR
+        _FIELD->U_PRICE := XU_PRICE
+        dbRecall()
+        dbSkip(1)
+        IF EOF()
+          dbAppend()
+        ENDIF
+        dbDelete()
+
+        SCRNO=SCRNO
+      ENDIF
+      LURECNO=RECNO()
+      XSCANO  =SCANO
+      XCARNO  =CARNO
+      XTOT_CAR=TOT_CAR
+      XCARW  =CARW
+      XCARDRV =CARDRV
+      XRATNO  =RATNO
+      XSTRO  =S_STRO
+      XVUSE   =VUSE
+      XTANDO  =TANDO
+      XUS2      =US2
+      XUS2_1  =US2_1
+      XUS2_2  =US2_2
+      XUS3      =US3
+      XU_PRICE=U_PRICE
+      Y1=SCRNO
+      IF SCRNO >22
+        SCRNO = 22
+        SCROLL(21,2,22,77,1)
+      ENDIF
+    ENDIF
+      ENDIF
+    ENDCASE
+  ENDDO
+ENDDO
+
+PROCEDURE  FIND_1102
+PARAMETERS  P1,P2,P3
+SetColor( "&c12 / &c11" )
+SetKey( 5, NIL )
+SetKey( 24, NIL )
+SetKey( 28, NIL )
+XPRTSCR=SAVESCREEN(19,0,24,79)
+DevPos( 19, 50 ) ; DevOut( "║員工代號─  姓   名       ║" )
+DevPos( 20, 50 ) ; DevOut( "║                          ║" )
+DevPos( 21, 50 ) ; DevOut( "║                          ║" )
+DevPos( 22, 50 ) ; DevOut( "║                          ║" )
+DevPos( 23, 50 ) ; DevOut( "║                          ║" )
+DevPos( 24, 50 ) ; DevOut( "║[↑↓]上下 [Enter]選擇    ║" )
+SetColor( "&C17 / &C15" )
+DevPos( 19, 50 ) ; DevOut( "║員工代號─  姓   名       ║" )
+DevPos( 24, 50 ) ; DevOut( "║[↑↓]上下 [Enter]選擇    ║" )
+SetColor( "&C16 / &C15" )
+DevPos( 24, 53 ) ; DevOut( "↑↓" )
+DevPos( 24, 64 ) ; DevOut( "Enter" )
+SetColor( "&C12 / &C11" )
+dbSelectArea( "12" )
+dbGoTop()
+TNO=1
+TY=20
+while ! EOF()
+  DevPos( TY, 53 ) ; DevOut( "                         " )
+  DevPos( TY, 53 ) ; DevOut( ALLTRIM(STR(TNO)) )
+  DevPos( TY, 58 ) ; DevOut( P1601 )
+  DevPos( TY, 63 ) ; DevOut( P1602 )
+  dbSkip(1)
+  TY=TY+1
+  TNO=TNO+1
+  IF  EOF() .OR. TY>=24
+    TY=TY-1
+    TNO=TNO-1
+    dbSkip( -1 )
+    XDADA=ALLTRIM(STR(TNO))
+    XDATA6=P1601
+    XDATA6_1=P1602
+    SetColor( "W+ /R+" )
+    DevPos( TY, 53 ) ; DevOut( "                         " )
+    DevPos( TY, 53 ) ; DevOut( XDADA )
+    DevPos( TY, 58 ) ; DevOut( XDATA6 )
+    DevPos( TY, 63 ) ; DevOut( XDATA6_1 )
+    SetColor( "&c12 / &c11 , &c14 / &c13" )
+    T=0
+    while T<>13 .AND. T<>27 .AND. (! EOF())  .AND. T<>18 .AND. T<>3
+      T=0
+      SetCursor( if(Upper("off") == "ON", 1, 0) )
+      while T<>5 .AND. T<>24  .AND. T<>27  .AND. T<>13  .AND. T<>18  .AND. T<>3
+    IF (T0A <>0)  .AND.  DSP_SCALL=1
+      T=T0A
+      T0A=0
+    ELSE
+      T=INKEY()
+    ENDIF
+    IF  DSP_SCALL=1
+      DO DSP2
+      IF T0A=0
+        DO LUSTP
+      ENDIF
+    ENDIF
+      ENDDO
+      dbSelectArea( "12" )
+      SetColor( "&c12 / &c11" )
+      SetCursor( if(Upper("on") == "ON", 1, 0) )
+      DO CASE
+      CASE T=5
+    IF  TNO<>1
+      DevPos( TY, 53 ) ; DevOut( "                         " )
+      DevPos( TY, 53 ) ; DevOut( XDADA )
+      DevPos( TY, 58 ) ; DevOut( XDATA6 )
+      DevPos( TY, 63 ) ; DevOut( XDATA6_1 )
+      dbSkip( -1 )
+      TY=TY-1
+      IF TY<=19
+        TY=20
+        SCROLL(20,52,23,77,-1)
+      ENDIF
+      TNO=TNO-1
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6=P1601
+      XDATA6_1=P1602
+      SetColor( "&c14 / &c13" )
+      DevPos( TY, 53 ) ; DevOut( "                         " )
+      DevPos( TY, 53 ) ; DevOut( XDADA )
+      DevPos( TY, 58 ) ; DevOut( XDATA6 )
+      DevPos( TY, 63 ) ; DevOut( XDATA6_1 )
+      SetColor( "&c12 / &c11 , &c14 / &c13" )
+      T=0
+    ENDIF
+      CASE T=24
+    dbSkip(1)
+    IF  ! EOF()
+      DevPos( TY, 53 ) ; DevOut( "                         " )
+      DevPos( TY, 53 ) ; DevOut( XDADA )
+      DevPos( TY, 58 ) ; DevOut( XDATA6 )
+      DevPos( TY, 63 ) ; DevOut( XDATA6_1 )
+      TY=TY+1
+      TNO=TNO+1
+      IF TY>=24
+        TY=23
+        SCROLL(20,52,23,77,1)
+      ENDIF
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6=P1601
+      XDATA6_1=P1602
+      SetColor( "&c14 / &c13" )
+      DevPos( TY, 53 ) ; DevOut( "                         " )
+      DevPos( TY, 53 ) ; DevOut( XDADA )
+      DevPos( TY, 58 ) ; DevOut( XDATA6 )
+      DevPos( TY, 63 ) ; DevOut( XDATA6_1 )
+      SetColor( "&c12 / &c11 , &c14 / &c13" )
+      T=0
+    ENDIF
+      CASE T=18
+    IF  TNO > TY-2
+      dbSkip( -(TY-2) )
+      TNO=TNO-TY+2
+    ELSE
+      dbSkip( -(TNO-1) )
+      TNO=1
+    ENDIF
+    TY=20
+    IF BOF()
+      dbGoTop()
+    ENDIF
+    SCROLL(20,52,23,77,0)
+      CASE T=3
+    dbSkip(1)
+    TY=20
+    TNO=TNO+1
+    SCROLL(20,52,23,77,0)
+      CASE T=13
+    xcardrv=XDATA6_1
+    CHRN   =XDATA6_1
+    dbGoBottom()
+    dbSkip( 1 )
+      CASE T=27
+    dbGoBottom()
+    dbSkip( 5 )
+      ENDCASE
+    ENDDO
+  ENDIF
+ENDDO
+dbClearFilter(NIL)
+RESTSCREEN(19,0,24,79,XPRTSCR)
+
+SetColor( "&c2 / &c1 , &c4 / &c3" )
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+SetKey( 5, {|p, l, v| upread_01(p, l, v)} )
+SetKey( 24, {|p, l, v| dnread_01(p, l, v)} )
+dbSelectArea( "3" )
+T=0
+RETURN
+
+PROCEDURE  FIND_1103
+PARAMETERS  P1,P2,P3
+SetColor( "&c12 / &c11" )
+SetKey( 5, NIL )
+SetKey( 24, NIL )
+SetKey( 28, NIL )
+XPRTSCR=SAVESCREEN(19,0,24,79)
+Scroll( 19, 0, 24, 79 ) ; SetPos( 19, 0 )
+DevPos( 19, 1 ) ; DevOut( "║客戶代號─   客    戶    名    稱         送貨地點                         ║" )
+DevPos( 19, 3 ) ; DevOut( _F3TXT_A[1] )
+DevPos( 19, 16 ) ; DevOut( SUBSTR(_F3TXT_A[2],1,2) )
+DevPos( 19, 22 ) ; DevOut( SUBSTR(_F3TXT_A[2],3,2) )
+DevPos( 19, 28 ) ; DevOut( SUBSTR(_F3TXT_A[2],5,2) )
+DevPos( 19, 34 ) ; DevOut( SUBSTR(_F3TXT_A[2],7,2) )
+DevPos( 19, 45 ) ; DevOut( _F3TXT_A[4] )
+DevPos( 20, 1 ) ; DevOut( "║                                                                           ║" )
+DevPos( 21, 1 ) ; DevOut( "║                                                                           ║" )
+DevPos( 22, 1 ) ; DevOut( "║                                                                           ║" )
+DevPos( 23, 1 ) ; DevOut( "║                                                                           ║" )
+DevPos( 24, 1 ) ; DevOut( "║[↑↓]上下 [Enter]選擇                                                     ║" )
+SetColor( "&C17 / &C15" )
+DevPos( 19, 1 ) ; DevOut( "║客戶代號─   客    戶    名    稱         送貨地點                         ║" )
+DevPos( 19, 3 ) ; DevOut( _F3TXT_A[1] )
+DevPos( 19, 16 ) ; DevOut( SUBSTR(_F3TXT_A[2],1,2) )
+DevPos( 19, 22 ) ; DevOut( SUBSTR(_F3TXT_A[2],3,2) )
+DevPos( 19, 28 ) ; DevOut( SUBSTR(_F3TXT_A[2],5,2) )
+DevPos( 19, 34 ) ; DevOut( SUBSTR(_F3TXT_A[2],7,2) )
+DevPos( 19, 45 ) ; DevOut( _F3TXT_A[4] )
+DevPos( 24, 1 ) ; DevOut( "               [↑↓]上下 [Enter]選擇                                          " )
+SetColor( "&C16 / &C15" )
+DevPos( 24, 17 ) ; DevOut( "↑↓" )
+DevPos( 24, 28 ) ; DevOut( "Enter" )
+SetColor( "&C12 / &C11" )
+dbSelectArea( "11" )
+IF CDSK=0
+  IF FILE("c:\DX1502.NTX")=.F.
+    dbCreateIndex( "C:\DX1502", "P1502", {|| P1502}, if( .F., .T., NIL ) )
+  ENDIF
+ELSE
+  IF FILE("D:\DX1502.NTX")=.F.
+    dbCreateIndex( "D:\DX1502", "P1502", {|| P1502}, if( .F., .T., NIL ) )
+  ENDIF
+ENDIF
+if !.F. ; ordListClear() ; end; ordListAdd( "DX1502" )
+dbGoTop()
+TNO=1
+TY=20
+while ! EOF()
+  DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+  DevPos( TY, 3 ) ; DevOut( ALLTRIM(STR(TNO)) )
+  DevPos( TY, 8 ) ; DevOut( P1501 )
+  DevPos( TY, 13 ) ; DevOut( P1502 )
+  DevPos( TY, 45 ) ; DevOut( SUBSTR(P1506,1,30) )
+  dbSkip(1)
+  TY=TY+1
+  TNO=TNO+1
+  IF  EOF() .OR. TY>=24
+    TY=TY-1
+    TNO=TNO-1
+    dbSkip( -1 )
+    XDADA=ALLTRIM(STR(TNO))
+    XDATA6=P1501
+    XDATA6_1=P1502
+    XDATA6_2=SUBSTR(P1506,1,30)
+    SetColor( "&c14 / &c13" )
+    DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+    DevPos( TY, 3 ) ; DevOut( XDADA )
+    DevPos( TY, 8 ) ; DevOut( XDATA6 )
+    DevPos( TY, 13 ) ; DevOut( XDATA6_1 )
+    DevPos( TY, 45 ) ; DevOut( XDATA6_2 )
+    SetColor( "&c12 / &c11 , &c14 / &c13" )
+    T=0
+    while T<>13 .AND. T<>27 .AND. (! EOF())  .AND. T<>18 .AND. T<>3
+      T=0
+      SetCursor( if(Upper("off") == "ON", 1, 0) )
+      LURECNO=RECNO()
+      while T<>5 .AND. T<>24  .AND. T<>27  .AND. T<>13  .AND. T<>18  .AND. T<>3
+    IF (T0A <>0)  .AND.  DSP_SCALL=1
+      T=T0A
+      T0A=0
+    ELSE
+      T=INKEY()
+    ENDIF
+    IF  DSP_SCALL=1
+      DO DSP2
+      IF T0A=0
+        DO LUSTP
+      ENDIF
+    ENDIF
+      ENDDO
+      SetCursor( if(Upper("on") == "ON", 1, 0) )
+      dbSelectArea( "11" )
+      dbGoto(LURECNO)
+      SetColor( "&c12 / &c11" )
+      DO CASE
+      CASE T=5
+    IF  TNO<>1
+      DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+      DevPos( TY, 3 ) ; DevOut( XDADA )
+      DevPos( TY, 8 ) ; DevOut( XDATA6 )
+      DevPos( TY, 13 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 45 ) ; DevOut( XDATA6_2 )
+      dbSkip( -1 )
+      TY=TY-1
+      IF TY<=19
+        TY=20
+        SCROLL(20, 3,23,77,-1)
+      ENDIF
+      TNO=TNO-1
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6=P1501
+      XDATA6_1=P1502
+      XDATA6_2=SUBSTR(P1506,1,30)
+      SetColor( "&c14 / &c13" )
+      DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+      DevPos( TY, 3 ) ; DevOut( XDADA )
+      DevPos( TY, 8 ) ; DevOut( XDATA6 )
+      DevPos( TY, 13 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 45 ) ; DevOut( XDATA6_2 )
+      SetColor( "&c12 / &c11 , &c14 / &c13" )
+      T=0
+    ENDIF
+      CASE T=24
+    dbSkip(1)
+    IF  ! EOF()
+      DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+      DevPos( TY, 3 ) ; DevOut( XDADA )
+      DevPos( TY, 8 ) ; DevOut( XDATA6 )
+      DevPos( TY, 13 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 45 ) ; DevOut( XDATA6_2 )
+      TY=TY+1
+      TNO=TNO+1
+      IF TY>=24
+        TY=23
+        SCROLL(20, 3,23,77,1)
+      ENDIF
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6=P1501
+      XDATA6_1=P1502
+      XDATA6_2=SUBSTR(P1506,1,30)
+      SetColor( "&c14 / &c13" )
+      DevPos( TY, 3 ) ; DevOut( "                                                                          " )
+      DevPos( TY, 3 ) ; DevOut( XDADA )
+      DevPos( TY, 8 ) ; DevOut( XDATA6 )
+      DevPos( TY, 13 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 45 ) ; DevOut( XDATA6_2 )
+      SetColor( "&c12 / &c11 , &c14 / &c13" )
+      T=0
+    ENDIF
+      CASE T=18
+    IF  TNO > TY-2
+      dbSkip( -(TY-2) )
+      TNO=TNO-TY+2
+    ELSE
+      dbSkip( -(TNO-1) )
+      TNO=1
+    ENDIF
+    TY=20
+    IF BOF()
+      dbGoTop()
+    ENDIF
+    SCROLL(20, 3,23,77,0)
+      CASE T=3
+    dbSkip(1)
+    TY=20
+    TNO=TNO+1
+    SCROLL(20, 3,23,77,0)
+      CASE T=13
+    XUS2=XDATA6
+    Xus2_1=XDATA6_1
+    dbGoBottom()
+    CHRN=XDATA6
+    dbSkip( 5 )
+      CASE T=27
+    dbGoBottom()
+    dbSkip( 5 )
+      ENDCASE
+    ENDDO
+  ENDIF
+ENDDO
+dbClearFilter(NIL)
+RESTSCREEN(19,0,24,79,XPRTSCR)
+
+SetColor( "&c2 / &c1 , &c4 / &c3" )
+
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+
+dbSelectArea( "3" )
+T=0
+RETURN
+
+PROCEDURE  FIND_1201
+PARAMETERS  P1,P2,P3
+XCOR=SETCOLOR()
+SetColor( "W+ / BL" )
+SetKey( 5, NIL )
+SetKey( 24, NIL )
+SetKey( 28, NIL )
+XPRTSCR=SAVESCREEN(19,0,24,79)
+
+
+
+
+
+
+DevPos( 19, 35 ) ; DevOut( "║車輛代號─車輛號碼 ─駕駛姓名   空重 ║" )
+DevPos( 20, 35 ) ; DevOut( "║                                     ║" )
+DevPos( 21, 35 ) ; DevOut( "║                                     ║" )
+DevPos( 22, 35 ) ; DevOut( "║                                     ║" )
+DevPos( 23, 35 ) ; DevOut( "║                                     ║" )
+DevPos( 24, 35 ) ; DevOut( "║[↑↓]上下 [Enter]選擇               ║" )
+
+
+
+SetColor( "W+ / GR" )
+DevPos( 19, 35 ) ; DevOut( "║車輛代號─車輛號碼 ─駕駛姓名   空重 ║" )
+DevPos( 24, 35 ) ; DevOut( "║[↑↓]上下 [Enter]選擇               ║" )
+SetColor( "&C16 / &C15" )
+SetColor( "GR+ / GR" )
+DevPos( 24, 46 ) ; DevOut( "↑↓" )
+DevPos( 24, 57 ) ; DevOut( "Enter" )
+DevPos( 24, 70 ) ; DevOut( "DEL" )
+SetColor( "W+ / BL" )
+dbSelectArea( "10" )
+dbGoTop()
+TNO=1
+TY=20
+while ! EOF()
+  DevPos( TY, 37 ) ; DevOut( "                                     " )
+  DevPos( TY, 53 ) ; DevOut( ALLTRIM(STR(TNO)) )
+  DevPos( TY, 40 ) ; DevOut( P12100 )
+  DevPos( TY, 52 ) ; DevOut( P12101 )
+  DevPos( TY, 62 ) ; DevOut( P12102 )
+  DevPos( TY, 72 ) ; DevOut( P12103 )
+  dbSkip(1)
+  TY=TY+1
+  TNO=TNO+1
+  IF  EOF() .OR. TY>=24
+    TY=TY-1
+    TNO=TNO-1
+    dbSkip( -1 )
+    XDADA=ALLTRIM(STR(TNO))
+    XDATA6_0=P12101
+    XDATA6=P12100
+    XDATA6_1=P12102
+    XDATA6_2=P12103
+    SetColor( "W+ / R+" )
+    DevPos( TY, 37 ) ; DevOut( "                                     " )
+
+    DevPos( TY, 40 ) ; DevOut( XDATA6 )
+    DevPos( TY, 52 ) ; DevOut( XDATA6_0 )
+    DevPos( TY, 62 ) ; DevOut( XDATA6_1 )
+    DevPos( TY, 72 ) ; DevOut( XDATA6_2 )
+    SetColor( "W+ / BL" )
+    T=0
+    while T<>13 .AND. T<>27 .AND. (! EOF())  .AND. T<>18 .AND. T<>3 .AND. T<>7
+      T=0
+      SetCursor( if(Upper("off") == "ON", 1, 0) )
+      while T<>5 .AND. T<>24  .AND. T<>27  .AND. T<>13  .AND. T<>18  .AND. T<>3 .AND. T<>7
+    IF (T0A <>0)  .AND.  DSP_SCALL=1
+      T=T0A
+      T0A=0
+    ELSE
+      T=INKEY()
+    ENDIF
+    IF  DSP_SCALL=1
+      DO DSP2
+      IF T0A=0
+        DO LUSTP
+      ENDIF
+    ENDIF
+      ENDDO
+
+      SetColor( "W+ / BL" )
+      dbSelectArea( "10" )
+      SetCursor( if(Upper("on") == "ON", 1, 0) )
+      DO CASE
+      CASE T=5
+    IF  TNO<>1
+
+      DevPos( TY, 37 ) ; DevOut( "                                     " )
+      DevPos( TY, 40 ) ; DevOut( XDATA6 )
+      DevPos( TY, 52 ) ; DevOut( XDATA6_0 )
+      DevPos( TY, 62 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 72 ) ; DevOut( XDATA6_2 )
+      dbSkip( -1 )
+      TY=TY-1
+      IF TY<=19
+        TY=20
+        SCROLL(20,52,23,77,-1)
+      ENDIF
+      TNO=TNO-1
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6_0=P12101
+      XDATA6=P12100
+      XDATA6_1=P12102
+      XDATA6_2=P12103
+      SetColor( "W+ / R+" )
+
+      DevPos( TY, 37 ) ; DevOut( "                                     " )
+      DevPos( TY, 40 ) ; DevOut( XDATA6 )
+      DevPos( TY, 52 ) ; DevOut( XDATA6_0 )
+      DevPos( TY, 62 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 72 ) ; DevOut( XDATA6_2 )
+      SetColor( "W+ / BL" )
+      T=0
+    ENDIF
+      CASE T=24
+    dbSkip(1)
+    IF  ! EOF()
+
+      DevPos( TY, 37 ) ; DevOut( "                                     " )
+      DevPos( TY, 40 ) ; DevOut( XDATA6 )
+      DevPos( TY, 52 ) ; DevOut( XDATA6_0 )
+      DevPos( TY, 62 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 72 ) ; DevOut( XDATA6_2 )
+      TY=TY+1
+      TNO=TNO+1
+      IF TY>=24
+        TY=23
+        SCROLL(20,52,23,77,1)
+      ENDIF
+      XDADA=ALLTRIM(STR(TNO))
+      XDATA6_0=P12101
+      XDATA6=P12100
+      XDATA6_1=P12102
+      XDATA6_2=P12103
+      SetColor( "W+ / R+" )
+
+      DevPos( TY, 37 ) ; DevOut( "                                     " )
+      DevPos( TY, 40 ) ; DevOut( XDATA6 )
+      DevPos( TY, 52 ) ; DevOut( XDATA6_0 )
+      DevPos( TY, 62 ) ; DevOut( XDATA6_1 )
+      DevPos( TY, 72 ) ; DevOut( XDATA6_2 )
+      SetColor( "W+ / BL" )
+      T=0
+    ENDIF
+      CASE T=18
+    IF  TNO > TY-2
+      dbSkip( -(TY-2) )
+      TNO=TNO-TY+2
+    ELSE
+      dbSkip( -(TNO-1) )
+      TNO=1
+    ENDIF
+    TY=20
+    IF BOF()
+      dbGoTop()
+    ENDIF
+    SCROLL(20,52,23,77,0)
+      CASE T=7
+    dbDelete()
+    __dbPack()
+    dbGoBottom()
+    dbSkip( 5 )
+      CASE T=3
+    dbSkip(1)
+    TY=20
+    TNO=TNO+1
+    SCROLL(20,52,23,77,0)
+      CASE T=13
+    XCARNO = substr(XDATA6,1,7)
+    CHRN   =substr(XDATA6,1,7)
+    xcardrv=XDATA6_1
+    XCARW=XDATA6_2
+    dbGoBottom()
+    dbSkip( 1 )
+      CASE T=27
+    dbGoBottom()
+    dbSkip( 5 )
+      ENDCASE
+    ENDDO
+  ENDIF
+ENDDO
+dbClearFilter(NIL)
+RESTSCREEN(19,0,24,79,XPRTSCR)
+SetColor( "&C1 / &C7 +" )
+DevPos( _A_DSPY[2], _A_DSPX[2] ) ; DevOut( XCARNO )
+
+
+SetColor( "&c2 / &c1 , &c4 / &c3" )
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+SetKey( 5, {|p, l, v| upread_01(p, l, v)} )
+SetKey( 24, {|p, l, v| dnread_01(p, l, v)} )
+dbSelectArea( "3" )
+T=0
+SetColor( "&XCOR" )
+RETURN
+
+PROCEDURE  FIND_ADD_
+PARAMETERS  P1,P2,P3
+SetColor( "&c12 / &c11" )
+RET_X1=SPACE(4)
+RET_X2=SPACE(50)
+DO  D_add_DATA WITH  "N"
+IF RET_X1 <>  SPACE(10)
+
+  XADDR_NO=FSUBSTR(RET_X2,10," ")
+  CHRN=XADDR_NO
+  XUS2_2=RET_X2
+  IF  EMPTY(RET_A[4])=.T.
+    RET_A[4] := 0
+  ENDIF
+  XU_PRICE=RET_A[4]
+    DevPos( _A_DSPy[7], _A_DSPX[7] ) ; DevOut( XADDR_NO )
+
+    IF    LU_COUNT=1
+      DevPos( 22, _A_DSPX[13] ) ; DevOutPict( XU_PRICE, "99999" )
+    ENDIF
+ENDIF
+RETU
+
+PROCEDURE  x_pno
+PARAMETERS  P1,P2,P3
+SetKey( 5, NIL )
+SetKey( 24, NIL )
+SetCursor( if(Upper("On") == "ON", 1, 0) )
+SetColor( "&c7 + /&c1,gr+/w+" )
+Scroll( 22, 4, 22, 30 ) ; SetPos( 22, 4 )
+Scroll( 23, 1, 23, 79 ) ; SetPos( 23, 1 )
+DevPos( 22, 3 ) ; DevOut( "編號:" )
+DevPos( 23, 3 ) ; DevOut( "Date:" )
+DevPos( 23, 20 ) ; DevOut( "Time:" )
+DevPos( 23, 35 ) ; DevOut( "存檔列印:" )
+x_no=lag_pno
+fx_date=date()
+fx_time=time()
+fx_h=substr(fx_time,1,2)
+fx_m=substr(fx_time,4,2)
+fx_s=substr(fx_time,7,2)
+X_NO=XSCANO
+SetPos( 22, 8 ) ; AAdd( GetList, _GET_( x_no, "x_no", "XXXXXXXXXXXXXX",, ):display() )
+fx_date=date()
+SetPos( 23, 8 ) ; AAdd( GetList, _GET_( fx_date, "fx_date",,, ):display() )
+
+SetPos( 23, 25 ) ; AAdd( GetList, _GET_( fx_h, "fx_h", "99",, ):display() )
+DevPos( 23, 27 ) ; DevOut( ":" )
+SetPos( 23, 28 ) ; AAdd( GetList, _GET_( fx_m, "fx_m", "99",, ):display() )
+DevPos( 23, 30 ) ; DevOut( ":" )
+SetPos( 23, 31 ) ; AAdd( GetList, _GET_( fx_s, "fx_s", "99",, ):display() )
+SetPos( 23, 44 ) ; AAdd( GetList, _GET_( usave, "usave", "Y",, ):display() )
+ReadModal(GetList) ; GetList := {}
+fx_time=fctoTime(fx_h,fx_m,fx_s)
+DevPos( 23, 25 ) ; DevOut( fx_time )
+
+IF (USAVE ="YA"  .OR. USAVE ="yA" )
+     pnt0_en=1
+else
+     pnt0_en=0
+endif
+_TOT_D_A[20,4] =1
+X=_TOT_D_A[20,4] +2
+_TOT_D_A[2,X]  :=x_no
+_TOT_D_A[19,X]    :=x_no
+
+_TOT_D_A[1,X]  :=fx_date
+_TOT_D_A[8,X]  :=fx_time
+Scroll( 22, 9, 22, 30 ) ; SetPos( 22, 9 )
+_FIELD->cdate := fx_date
+_FIELD->CHOUR := VAL(SUBSTR(fx_time,1,2)); _FIELD->CMIN := VAL(SUBSTR(fx_time,4,2)); _FIELD->CSEC := VAL(SUBSTR(fx_time,7,2))
+_FIELD->scano := x_no
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+RETU

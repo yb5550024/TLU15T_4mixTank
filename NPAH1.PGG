@@ -1,0 +1,59 @@
+SELE 3
+set cons on
+SET DELE OFF
+RECALL	 ALL
+DO WHILE .NOT. EOF()
+  IF SCANO=0 .OR. VUSE=0
+      DELE
+    ENDIF
+  SKIP
+ENDDO
+PACK
+GOTO TOP
+DELE
+LUDBF="3"
+XX1=6
+SCRCC=1
+YY1=23
+SCRNO=23
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+SET COLOR TO &C6 / &C1
+@ 24,0 SAY "∥ <<出車>>           Esc-取消訂單   Ctl-End 結束 ↑上一筆  ↑↑插單  ↓下一筆∥"
+SET COLOR TO  gr +/ &C1
+@ 24,5	SAY "出車"
+@ 24,22 SAY "Esc"
+@ 24,37 SAY "Ctl-End"
+@ 24,50 SAY "↑"
+@ 24,60 SAY "↑↑"
+@ 24,70 SAY "↓"
+XSCANO=ASCANO
+XCARNO=ACARNO
+XRATNO=ARATNO
+XVUSE=AVUSE
+XTANDO=TANDO
+SET COLOR TO &C1 / &C7 +
+NPAH1_DSP0(SCRNO,XSCANO,XCARNO,XRATNO,XVUSE,XTANDO)
+SET COLOR TO &C7 +/ &C1
+CHRN=STR(XSCANO,4)
+X1=16
+XP=0
+FGETNO=1
+Y1=SCRNO
+YY1=Y1
+GETNO=1
+LURECNO=RECNO()
+F3_N=1
+T1=0
+T2=0
+SET COLOR TO  &C1  /  &C7 +
+@ y1,x1 say  str(xscano,4,0)
+set colo to gr + * /bl
+@ y1,x1 say  substr(str(xscano,4,0),1,1)
+set colo to &c7 + /&c1
+T=INKEY()
+&&-----------------------------------------------------------------------------
+

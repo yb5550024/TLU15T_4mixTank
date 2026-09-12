@@ -1,0 +1,5 @@
+rem CP16A TLU16A;CP16A LUSTP16;RL16A.BAT
+echo CP16A TLU16A;CP16A LUSTP16;RL16A.BAT
+echo clipper @%1 /DdfTLU16=1  %2  %3 %4
+clipper @%1 /DdfTLU16=1  %2  %3 %4
+

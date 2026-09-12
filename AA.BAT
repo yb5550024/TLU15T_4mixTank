@@ -1,0 +1,5 @@
+DEL C:\LUW1.DBF
+DEL C:\SA.DBF
+DEL C:\*.NTX
+
+

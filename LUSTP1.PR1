@@ -1,0 +1,2361 @@
+**-----------------------------------------------------------------------------
+FUNCTION GET_DATA
+PARAMETERS  GD_PRESS
+SELE 2
+LOCA FOR RATNO=ARATNO
+IF .NOT. EOF()
+  LAST_PCS=0
+  @ 23,75 SAY ACALW_REP  PICT "99"
+  ACALW_REP=ACALW_REP-1
+  IF  ACALW_REP <0
+    ACALW_REP=0
+  ENDIF
+  NEXTOK1=1
+  LAST_PCS=0
+  NSCANO1=ASCANO
+  VUSE=AVUSE
+  RATNO=ARATNO
+  CARNO=ACARNO
+  TANDO=ATANDO
+  FILL_A_D4(A_PRESS_N0,1,1,21,12,11,0)
+  FILL_A_D2(A_PRESS_N1,GD_PRESS,GD_PRESS,18,0)
+  FILL_A_D4(A_PRESS_B0,1,1,21,12,11,0)
+  A_PRESS_N1[GD_PRESS,13] :=RATVOL
+  A_PRESS_N1[GD_PRESS,15] :=VUSE
+  FOR IX=1 TO 12
+    A_PRESS_N0[1,21,IX,1] :=77
+    A_PRESS_N0[1,21,IX,2] :=RATNO
+  NEXT
+  IF AUTOR =0
+    DO MP1
+  ELSE
+    DO MP1_1
+  ENDIF
+  actx=0
+  FOR I=1  TO GS_TOT +UWC_TOT
+    ic=ltrim(str(i,2,0))
+    if (stp&ic > 0)
+      actx=1
+      exit
+    endif
+  NEXT
+  MX=1
+  WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+    FOR I=1  TO GS_TOT +UWC_TOT
+      IC_X=ALLTRIM(STR(I,2,0))
+      X0= A_PRESS_N0[GD_PRESS,MX,I,1]
+      A_PRESS_N0[GD_PRESS,MX,I,8] := X0
+      IF MX=1
+	if( actx=0  .and.  lchtype=6)
+	   SET COLOR TO gr+/ &C1
+	   XMC_F=A_M_NAME[i,3]
+	   @  4,A_M_NAME[I,13]	SAY  x0  PICT "&XMC_F"
+	   SET COLOR TO &C7 +/ &C1
+	endif
+      endif
+    NEXT
+    MX=MX+1
+  ENDDO
+  IF W0DBF=1
+    SELE 17
+    LOCA FOR RATNO=ARATNO
+    IF	(.NOT. EOF() )	.AND.  (W0_EN=1)    .AND.  (DIN(6)=1)
+      MX=1
+      WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+	FOR I=1  TO GS_TOT +UWC_TOT
+	  IC_X=ALLTRIM(STR(I,2,0))
+	  X0= A_PRESS_N0[GD_PRESS,MX,I,1]
+	  X1= A_PRESS_N0[GD_PRESS,MX,I,5] * M&IC_X
+	  A_PRESS_N0[GD_PRESS,MX,I,1] := X1
+	  IF  LCHTYPE=16 .or. LCHTYPE=17 .or. LCHTYPE=26  .or. UCHTYPE=19   .or. UCHTYPE=30
+	    A_PRESS_B0[GD_PRESS,MX,I,1] := X1
+	  ENDIF
+
+
+	NEXT
+	MX=MX+1
+      ENDDO
+    else
+      if disc2>0
+	do case
+	case lchtype=13
+	  MX=1
+	  IF A_PRESS_N0[GD_PRESS,MX,6,8] >0
+	    WHILE  A_PRESS_N0[GD_PRESS,MX,1,5] >0
+		XDISC=DISC2  *	A_PRESS_N0[GD_PRESS,MX,1,5]
+		X0= XDISC  * A_PRESS_N0[GD_PRESS,MX,3,8]/(A_PRESS_N0[GD_PRESS,MX,3,8] +A_PRESS_N0[GD_PRESS,MX,4,8] )
+		A_PRESS_N0[GD_PRESS,MX,3,1]=A_PRESS_N0[GD_PRESS,MX,3,1]  + X0
+		X0= XDISC  *  A_PRESS_N0[GD_PRESS,MX,4,8]/(A_PRESS_N0[GD_PRESS,MX,3,8] +A_PRESS_N0[GD_PRESS,MX,4,8] )
+		A_PRESS_N0[GD_PRESS,MX,4,1]=A_PRESS_N0[GD_PRESS,MX,4,1]  + X0
+		A_PRESS_N0[GD_PRESS,MX,6,1]=A_PRESS_N0[GD_PRESS,MX,6,1]  -XDISC
+	      MX=MX+1
+	    ENDDO
+	  ENDIF
+	endcase
+      ENDIF
+    ENDIF
+    SELE 2
+  ENDIF
+  SET COLOR TO GR + * / &C1
+  @ 23,13 SAY ASCANO  PICT "99999"
+  @ 23,25 SAY ACARNO
+  @ 23,42 SAY ARATNO  PICT "9999"
+  @ 23,52 SAY AVUSE   PICT "99.9"
+  @ 23,61 SAY ATANDO  PICT "9999"
+  SET COLOR TO &C7 +/ &C1
+  &&¨®¸¹	    ACARNO
+  &&ªÅ­«	    ACARW
+  &&°t¤ñNO	    ARATNO
+  &&¦Ì¼Æ	    AVUSE
+  &&§~«×	    ATANDO
+  &&«È¤áNO	    AUS2
+  &&DRIVER NAME     ACARDRV
+  &&²Ö­p¦Ì¼Æ	    AUS3=XU
+  &&²Ö­p¨®¦¸	    ATOT_CAR
+  &&«È¤á¦WºÙ	    AUS2_1
+  &&°e³f¦a§}	    AUS2_2
+  &&³æ»ù	    AU_PRICE
+  X=_TOT_D_A[20,4]
+  IF  X =0
+    IF _TOT_D_A[20,3]=0
+      _TOT_D_A[20,4] :=1
+      X=3
+    ELSE
+      _TOT_D_A[20,4] := _TOT_D_A[20,3]
+      X=_TOT_D_A[20,3]
+      X=MOD(X,2)+1
+      _TOT_D_A[20,3] :=X
+      _TOT_D_A[20,4] := _TOT_D_A[20,3]
+      X=X+2
+    ENDIF
+  ELSE
+      X=_TOT_D_A[20,4]
+      X=MOD(X,2)+1
+      _TOT_D_A[20,3] :=X
+      *_TOT_D_A[20,4] := _TOT_D_A[20,3]
+      X=X+2
+  ENDIF
+   _TOT_D_A[2,X] :=ASCANO
+   _TOT_D_A[3,X]  :=AUS2_1
+   _TOT_D_A[4,X]  :=AUS2_2
+   _TOT_D_A[5,X]  :=0
+   _TOT_D_A[6,X]  :=ACARW
+   _TOT_D_A[7,X]  :=0
+   _TOT_D_A[8,X]  :=TIME()
+   _TOT_D_A[9,X]  :=ATOT_CAR
+   _TOT_D_A[10,X] :=AVUSE
+   _TOT_D_A[11,X] :=AUS3
+   IF FPS=77  &&  PAR.DBF 30 PA7=77  28TH C12  STRIGHT	=XX00  LB
+     _TOT_D_A[12,X] :=(INT(ARATNO /100) *100)
+   ELSE
+     _TOT_D_A[12,X] :=S_STRO
+     _TOT_D_A[14,X] :=S_TANDO
+     _TOT_D_A[17,X] :=S_MAX
+   ENDIF
+   _TOT_D_A[13,X] :=ACARNO
+   IF ATANDO <>0
+     _TOT_D_A[14,X] :=ATANDO
+   ENDIF
+   _TOT_D_A[15,X] :=ACARDRV
+   _TOT_D_A[16,X] :=AUS2
+   _TOT_D_A[18,X] :=ARATNO
+   _TOT_D_A[21,X] :=AU_PRICE
+   IF ASCANO <> 0
+    IF	LAG_REPNO1 <> ASCANO
+      LAG_REPNO1 = ASCANO
+    ENDIF
+    IF (LAGDATE=DATE() .or.  repno_cont=1   )
+      LAG_REPNO1=LAG_REPNO1+1
+    ELSE
+      LAG_REPNO1=1
+      LAGDATE=DATE()
+    ENDIF
+   ENDIF
+  IF LAG_REPNO1 >99999
+     LAG_REPNO1=1
+  ELSE
+    && LAG_REPNO1=LAG_REPNO1+1
+  ENDIF
+   LAG_REPNO=LAG_REPNO1
+   _TOT_D_A[19,X] :=LAG_REPNO
+  SAVE TO LAGDATA9 ALL LIKE LAG*
+  ASCANO=LAG_REPNO1
+  IF ACALW_REP <=0
+    AVUSE=0
+    ARATNO=0
+    SELE 3
+    SET DELE ON
+    GOTO TOP
+    IF .NOT. EOF()
+      AVUSE=VUSE
+      ARATNO=RATNO
+      ASCANO=SCANO
+      ACARNO=CARNO
+      ATANDO=TANDO
+      @ 23,13 SAY ASCANO  PICT "99999"
+      @ 23,25 SAY ACARNO
+      @ 23,42 SAY ARATNO  PICT "9999"
+      @ 23,52 SAY AVUSE   PICT "99.9"
+      @ 23,61 SAY ATANDO  PICT "9999"
+      @ 23,75 SAY ACALW_REP  PICT "99"
+      DELET
+      PACK
+      SET DELE OFF
+    ENDIF
+    @ 23,75 SAY ACALW_REP  PICT "99"
+  ENDIF
+ELSE
+  AVUSE=0
+  ARATNO=0
+  SELE 3
+  SET DELE ON
+  GOTO TOP
+  IF .NOT. EOF()
+    AVUSE=VUSE
+    ARATNO=RATNO
+    ASCANO=SCANO
+    ACARNO=CARNO
+    ATANDO=TANDO
+    * @ 23,16 SAY ASCANO  PICT "9999"
+    * @ 23,28 SAY ACARNO
+    * @ 23,48 SAY ARATNO  PICT "9999"
+    * @ 23,64 SAY AVUSE   PICT "99.9"
+    * @ 23,74 SAY ATANDO  PICT "9999"
+    DELET
+    PACK
+    SET DELE OFF
+  ENDIF
+ENDIF
+SELEC &LUDBF
+GOTO LURECNO
+ aus3=0
+ ATOT_CAR=0
+X=_TOT_D_A[20,3] +1
+IF X >=3
+  X=1
+ENDIF
+ *_TOT_D_A[20,3] := 1
+RETU
+**------3530-----------------------------------------------------------------------
+FUNCTION RDDLY	 &&­p¶q±í­«¬O§_¤j©ó³]©w­È
+PARAMETERS  RDN,WN,W_AN  &&­p¶q±íno,actdata ,³]©w­È
+*x=INT(WDATA(WN)-2048)
+*x1=INT((x)*A_M_NAME[wn+1,12]/PER/2048)
+IF INT((WDATA(WN)-2048)*A_M_NAME[wn+1,12]/PER/2048)> W_AN
+  IF  ABS(SECONDS()-RDDELAY[RDN,2]) >= RDDELAY[RDN,1]
+    RDDELAY[RDN,3] :=1
+  ELSE
+    RDDELAY[RDN,3] :=77
+  ENDIF
+ELSE
+  RDDELAY[RDN,3] :=0
+ENDIF
+RETU   && 0: <	,1:> ,77: <TIME
+**-----------------------------------------------------------------------------
+PROCEDURE  pnt_tit
+PARAMETERS  P1,P2,P3
+PRINTERTST=0
+DO  PRINTERTST	  WITH	 APORT
+IF PRINTERTST=1
+  SET CONS On
+  do case
+  case aport="1"
+    set print to lpt1
+    ? chr(27) + "SP1;"
+  case aport="2"
+    set print to lpt2
+    ? chr(27) + "SP2;"
+  case aport="3"
+    set print to lpt3
+    ? chr(27) + "SP3;"
+  endcase
+  SET CONS On
+  SET DEVI TO PRINT
+  @ PROW(),0 say   "~I;"
+  @ PROW(),0 say   "~X12;"
+  @ PROW()+2,2 SAY   " ¤é´Á :    ¦~    ¤ë    ¤é                                               "
+  X=_Tot_d_a[20,4] +2
+  @  PROW(),9	SAY  YEAR(DATE())	PICT  "9999"
+  @ PROW(),17 SAY  SUBSTR(DTOC(DATE()),1,2)
+  @ PROW(),23 SAY  SUBSTR(DTOC(DATE()),4,2)
+  @ PROW(),34 SAY  "¨®¸¹:"
+  @ PROW(),41  SAY  _Tot_d_a[13,X]
+  @ PROW(),51 SAY  "°t¤ñ:"
+  @ PROW(),56 SAY  _Tot_d_a[18,X]  PICT "9999"
+  IF  _Tot_d_a[2,X] <> 0
+    @ PROW(),66 SAY  "§Ç¸¹:"
+    @ PROW(),70 SAY  _Tot_d_a[2,X]  PICT "99999"
+  ENDIF
+  IF  (COM_E=0)  .AND.	((_Tot_d_a[2,X] <> 0)  .OR. (_Tot_d_a[14,X] <> 0))
+      @ PROW()+1,1 SAY	" "
+    IF	_Tot_d_a[14,X] <> 0
+      @ PROW(),61 SAY  "§~«×:"
+      @ PROW(),66 SAY  _Tot_d_a[14,X]  PICT "9999"
+    ENDIF
+  ENDIF
+  @ PROW()+1,1 SAY   "-----------------------------------------------------------------------------"
+  @ PROW()+1,1 SAY   "      NO.  ®É¶¡  ¦Ì¼Æ  ²Ö­p(¦Ì)        ³]©w­«¶q/¹ê»Ú­«¶q (Kg)"
+  @ PROW()+1,1 SAY   "                                                                         Á`­«"
+  FOR X=1 TO (GS_TOT+UWC_TOT)
+    xcd=SUBSTR("       "+alltrim(A_M_NAME[X,1] ),-6,6)
+    @  PROW(),6 *(X-1)+1  SAY  XCD
+  NEXT
+  @ PROW()+1,1 SAY   "-----------------------------------------------------------------------------"
+  @ PROW()+1,1 SAY  " "
+  SET DEVI TO SCRE
+endif
+RETU
+
+
+**-----------------------------------------------------------------------------
+FUNCTION TST1_LS1
+PARAMETERS  TST_M1
+IF LS1[TST_M1,1]=1
+  IF DIX(DI_ADS2,TST_M1-1)=0 .AND. RDOK2(TST_M1-1)=1
+    IF LS1[TST_M1,2]=0
+      DOUT(TST_M1-1,0)
+      LS1[TST_M1,2] :=1
+      DO CASE
+      CASE UCHTYPE=1
+	SET COLOR TO R * / &C1
+	MTANK_MARK(6,STP_FN,1)
+	SET COLOR TO &C7  / &C1
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS1[TST_M1,2]=1
+      LS1[TST_M1,2] :=0
+      DOUT(TST_M1-1,1)
+      SET COLOR TO &C2	/ &C1
+      MTANK_MARK(6,STP_FN,1)
+      SET COLOR TO &C7	/ &C1
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION TST0_LS1   &&	TEST  LS1=0  ­p¶qLS1
+PARAMETERS  TST_M1,TST_M2
+FOR XDI=TST_M1 TO TST_M2
+  IF LS1[XDI,1]=1
+    DIN_X=0
+    IF DIX(DI_ADS2,XDI-1)=1
+      DIN_X=1
+    ENDIF
+    IF DIN_X=1 .AND. RDZEROK(A_M_NAME[XDI,8])=1
+      IF LS1[XDI,2]=0
+	dout2(A_M_NAME[XDI,8],0)
+	LS1[XDI,2] :=1
+	DO CASE
+	CASE LCHTYPE=4
+	  SET COLOR TO R * / &C1
+	  MTANK_MARK(6,XDI,1)
+	  SET COLOR TO &C7  / &C1
+	ENDCASE
+      ENDIF
+    ELSE
+      IF  RDZEROK(A_M_NAME[XDI,8])=1
+	IF LS1[XDI,2]=1
+	  LS1[XDI,2] :=0
+	  *dout2(A_M_NAME[XDI,8],1)
+	  SET COLOR TO &C2 / &C1
+	  MTANK_MARK(6,XDI,0)
+	  SET COLOR TO &C7  / &C1
+	ENDIF
+      ELSE
+	*dout2(A_M_NAME[XDI,8],1)
+	FOR XDI_1=TST_M1 TO TST_M2
+	  LS1[XDI_1,2] :=0
+	  SET COLOR TO &C2 / &C1
+	  MTANK_MARK(6,XDI,0)
+	  SET COLOR TO &C7  / &C1
+	NEXT
+      ENDIF
+    ENDIF
+  ENDIF
+NEXT
+XN1=0
+FOR XDI_1=TST_M1 TO TST_M2
+  IF  LS1[XDI_1,2] =1
+    XN1=1
+    EXIT
+  ENDIF
+NEXT
+IF XN1=0
+  IF MIXAMP < MIXMAX
+    IF TST_M1 <= GS_TOT
+      dout2(A_M_NAME[TST_M1,8],1)
+    ELSE
+      IF MIXAMP > 10
+	dout2(A_M_NAME[TST_M1,8],1)
+      else
+	dout2(A_M_NAME[TST_M1,8],0)
+      endif
+    ENDIF
+  ELSE
+    dout2(A_M_NAME[TST_M1,8],0)
+  ENDIF
+ELSE
+  dout2(A_M_NAME[TST_M1,8],0)
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION TST1_LS2
+PARAMETERS  TST_M1
+IF LS2[A_M_NAME[TST_M1,8]+1,1]=1
+  IF DIX(DI_ADS3,A_M_NAME[TST_M1,8])=0 .AND. RDZEROK(A_M_NAME[TST_M1,8])=1
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=0
+      dout2(A_M_NAME[TST_M1,8],0)
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=1
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+
+	SET COLOR TO R * / &C1
+	DO CASE
+	CASE TST_M1=3
+	  @ 11,7  SAY	"úLúPúPúKúPúPúO"
+	CASE TST_M1=5
+	  @ 11,22 SAY	"úLúPúKúPúO"
+	CASE TST_M1=7
+	  @ 11,36 SAY	"úLúPúKúPúO"
+	CASE TST_M1=8
+	  @ 11,46 SAY	"úLúKúO"
+	CASE TST_M1=10
+	  @ 11,53 SAY	"úLúPúPúKúPúO"
+	CASE TST_M1=11
+	  @ 11,67 SAY	"úLúKúO"
+	CASE TST_M1=12
+	  @ 11,73 SAY	"úLúKúO"
+	ENDCASE
+	SET COLOR TO &C7  / &C1
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=1
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=0
+      dout2(A_M_NAME[TST_M1,8],1)
+      SET COLOR TO &C2	/ &C1
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+	DO CASE
+	CASE TST_M1=3
+	  @ 11,7  SAY	"úLúPúPúKúPúPúO"
+	CASE TST_M1=5
+	  @ 11,22 SAY	"úLúPúKúPúO"
+	CASE TST_M1=7
+	  @ 11,36 SAY	"úLúPúKúPúO"
+	CASE TST_M1=8
+	  @ 11,46 SAY	"úLúKúO"
+	CASE TST_M1=10
+	  @ 11,53 SAY	"úLúPúPúKúPúO"
+	CASE TST_M1=11
+	  @ 11,67 SAY	"úLúKúO"
+	CASE TST_M1=12
+	  @ 11,73 SAY	"úLúKúO"
+	ENDCASE
+      ENDCASE
+      SET COLOR TO &C7	/ &C1
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION TST0_LS2
+PARAMETERS  TST_M1
+IF LS2[A_M_NAME[TST_M1,8]+1,1]=1
+  IF DIX(DI_ADS3,A_M_NAME[TST_M1,8])=1 .AND. RDOK2(TST_M1-1)=1
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=0
+      DOUT(TST_M1-1,0)
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=1
+      DO CASE
+      CASE LCHTYPE=4 .OR. UCHTYPE=1
+	SET COLOR TO R * / &C1
+	DO CASE
+	CASE TST_M1=1 .OR.TST_M1=2 .OR.TST_M1=3
+	  @ 11,7  SAY	"úZúYúYúYúYúYú["
+	CASE TST_M1=4.OR.TST_M1=5
+	  @ 11,22 SAY	"úZúYúYúYú["
+	CASE TST_M1=6 .OR.TST_M1=7
+	  @ 11,36 SAY	"úZúYúYúYú["
+	CASE TST_M1=8
+	  @ 11,46 SAY	"úZúYú["
+	CASE TST_M1=9 .OR.TST_M1=10
+	  @ 11,53 SAY	"úZúYúYúYúYú["
+	CASE TST_M1=11
+	  @ 11,67 SAY	"úZúYú["
+	CASE TST_M1=12
+	  @ 11,73 SAY	"úZúYú["
+	ENDCASE
+	SET COLOR TO &C7  / &C1
+      ENDCASE
+    ENDIF
+    RETU
+  ELSE
+    IF LS2[A_M_NAME[TST_M1,8]+1,2]=1
+      LS2[A_M_NAME[TST_M1,8]+1,2] :=0
+      DOUT(TST_M1-1,1)
+      SET COLOR TO &C2	/ &C1
+      DO CASE
+      CASE TST_M1=1 .OR.TST_M1=2 .OR.TST_M1=3
+	@ 11,7	SAY   "úZúYúYúYúYúYú["
+      CASE TST_M1=4.OR.TST_M1=5
+	@ 11,22 SAY   "úZúYúYúYú["
+      CASE TST_M1=6 .OR.TST_M1=7
+	@ 11,36 SAY   "úZúYúYúYú["
+      CASE TST_M1=8
+	@ 11,46 SAY   "úZúYú["
+      CASE TST_M1=9 .OR.TST_M1=10
+	@ 11,53 SAY   "úZúYúYúYúYú["
+      CASE TST_M1=11
+	@ 11,67 SAY   "úZúYú["
+      CASE TST_M1=12
+	@ 11,73 SAY   "úZúYú["
+      ENDCASE
+      SET COLOR TO &C7	/ &C1
+    ENDIF
+  ENDIF
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION WEIG_RESCALL
+PARAMETERS  DSM_FN
+SW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]
+IF  SW1 >0
+  DSN_WX=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,3]
+  MNX_W=SW1/(SW1+DSN_WX) *A_M_NAME[STP_FN,9]
+  A_M_NAME[STP_FN,10] := MNX_W
+  DO CASE
+  CASE LCHTYPE=4
+    IF DSM_FN <=3
+      A_M_NAME[1,12] := MNX_W
+    ELSE
+      A_M_NAME[2,12] := MNX_W
+    ENDIF
+  ENDCASE
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION WEIG_URESCALL
+PARAMETERS  DSM_FN
+SW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]
+IF  SW1 >0
+  DSN_WX=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,3]
+  MNX_W=SW1/(SW1-DSN_WX) *A_M_NAME[STP_FN,9]
+  A_M_NAME[STP_FN,10] := MNX_W
+  DO CASE
+  CASE UCHTYPE=1
+    DO CASE
+    CASE DSM_FN=8
+      A_M_NAME[KLCHN+2,12] := MNX_W
+    CASE DSM_FN=9
+      A_M_NAME[KLCHN+3,12] := MNX_W
+    ENDCASE
+  ENDCASE
+ENDIF
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  CONVEYER
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE   CNVSTP=0
+  FOR XF=1  TO GS_TOT
+    CNVSTP=1
+    UPOV=0
+    DNOV=0
+    IF WTANK_F[XF,1]<>1
+      CNVSTP=0
+      UPOV=0
+      DNOV=0
+      EXIT
+    ENDIF
+  NEXT
+  IF CNVSTP=1
+    FOR  I=1  TO  GS_TOT
+      WTANK_F[I,1] :=0
+      WTANK_F[I,2] :=0
+    NEXT
+    X=_Tot_d_a[20,4] +2
+    @ 15,12 say _Tot_d_a[18,X]	PICT  "9999"
+    @ 16,12 say _Tot_d_a[10,X]	PICT  "99.9"
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    IF STPN&ic_x=1   .AND.   F3_RUN=0
+      @ 23,13 SAY ASCANO  PICT "99999"
+      @ 23,25 SAY ACARNO
+      @ 23,42 SAY ARATNO  PICT "9999"
+      @ 23,52 SAY AVUSE   PICT "99.9"
+      @ 23,61 SAY ATANDO  PICT "9999"
+      @ 23,75 SAY ACALW_REP  PICT "99"
+      E_STORE = 1
+      X=_TOT_D_A[20,4] +2
+      IF _TOT_D_A[2,X]=0
+	E_STORE = 0
+      ENDIF
+      IF E_STORE =1
+	*DO  PNT_TIT
+      ENDIF
+    ENDIF
+    SET CONS ON
+  ENDIF
+  SET COLOR TO &C5 +/ &C1
+  *@ 14,52 SAY "²V¦X   ²V¦X   ¶}ªù   §t¤ô"
+  *@ 15,0 SAY "1.³]©w°t¤ñ:              "
+  *@ 16,0 SAY "2.³]©w¦Ì¼Æ:              "
+  *@ 17,0 SAY "3.°õ¦æ¦Ì¼Æ:              "
+  *@ 18,0 SAY "4.ºÏºÐ®e¶q:      ,000    "
+  *@ 17,48  SAY
+  SET COLOR TO &C2 / &C1
+CASE  (CNVSTP=1 .AND. DIN(8)=0	.AND. DIN(10)=1    .AND.  DIN(11)=1 .AND.  DIN(15)=1)  &&DIN0.08=0  STORE TANK	DOOR CLOSE ,DIN0.11 °©§÷¶i®Æ
+  CNVSTP=2
+  IF UPTKSTP =0
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+  ENDIF
+  A_STOR_4(A_PRESS_N0,1,GS_TOT)
+  A_STOR_4(A_PRESS_B0,1,GS_TOT)
+  FOR  I=1  TO	GS_TOT
+    WTANK_F[I,1] :=-99
+    WTANK_F[I,2] :=-99
+    SET  COLO TO W+   /&C1
+    @  4,UPTANK[5,1]   say  UPTANK[4,1]  PICT "99"
+    SET COLOR TO &C2 / &C1
+  NEXT
+CASE CNVSTP=2
+  CNVSTP=3
+  UPTANK[4,2]=SECONDS()
+  FOR  I=1  TO	GS_TOT
+    IF	WTANK_F[I,2] <>1
+      CNVSTP=2
+      EXIT
+    ENDIF
+  NEXT
+CASE CNVSTP=3
+  IF  DIN(15)=0
+    UPTANK[4,2]=SECONDS()
+    SET COLOR TO R +/ &C1
+    @  3,UPTANK[5,1]-6	SAY "¢z¢s¢w¢w¢{"
+    @  4,UPTANK[5,1]-6	SAY "¢x¢x    ¢x"
+    @  5,UPTANK[5,1]-6	SAY "¢x¢u¢w¢w¢}"
+    @  6,UPTANK[5,1]-6	SAY "úUúV"
+    @  7,UPTANK[5,1]-6	SAY "¢x¢x"
+    @  8,UPTANK[5,1]-6	SAY "¢x¢x"
+    @  9,UPTANK[5,1]-6	SAY "¢x¢x"
+    @ 10,UPTANK[5,1]-6	SAY "¢x¢x"
+    @ 11,UPTANK[5,1]-6	SAY "úUúV"
+    @ 12,UPTANK[5,1]-6	SAY "¢x¢x"
+    @ 13,UPTANK[5,1]-6	SAY "    "
+    @ 13,UPTANK[5,1]-38  SAY "¢z¢w¢wúR¢w¢w¢w¢w¢w¢w¢wúR¢w¢w¢w¢w¢q¢t"
+    @ 14,UPTANK[5,1]-38  SAY "¢|¢w¢wúQ¢w¢w¢w¢w¢w¢w¢wúQ¢w¢w¢w¢w¢r¢}"
+    @  4,UPTANK[5,1]   say  UPTANK[4,1]  PICT "99"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    X=SECONDS()-UPTANK[4,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[4,2]
+    ENDIF
+    X=UPTANK[4,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  4,UPTANK[5,1]   say  X  PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0
+    SET  COLO TO GR+  /&C1
+    @  4,UPTANK[5,1]   say  X  PICT "99"
+    CNVSTP=4
+  ENDIF
+CASE CNVSTP=4
+  IF UPTKSTP=0
+    UPTKSTP=4
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+  ENDIF
+ENDCASE
+RETU
+**-----------------------------------------------------------------------------
+
+PROCEDURE  UP_TANK
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE UPTKSTP=4	   .AND. (DIN(12)=1) .AND. (DIN(15)=1 ) .AND.  (TANKSTP=0)
+  UPTKSTP=5
+  FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+    IF WTANK_F[XF,1]<>1
+      IF  TIME1[XF,1] <>88
+	UPTKSTP=4
+	EXIT
+      ENDIF
+    ENDIF
+    do	case
+    case  AE_TYPE=89
+      IF stp9<>7
+	UPTKSTP=4
+	EXIT
+      ENDIF
+    case  (AE_TYPE=910)  .OR.  (AE_TYPE=10  )
+      IF (stp10<>7)  .AND.  (TIME1[10,1] =88)
+	UPTKSTP=4
+	EXIT
+      ENDIF
+    ENDcase
+  NEXT
+CASE (UPTKSTP=5)  .AND. (DIN(12)=1) .AND. (DIN(15)=1 ) .AND.  (TANKSTP=0)  .AND. ((MIXAMP >10)	 )
+  TANKSTP=1
+  UPTKSTP=61
+  A_STOR_4(A_PRESS_N0,GS_TOT+1,GS_TOT+UWC_TOT)
+  A_STOR_4(A_PRESS_B0,GS_TOT+1,GS_TOT+UWC_TOT)
+  IF DIN(9)=1
+    TANKSTP=0
+    UPTKSTP=5
+    SET COLOR TO R / &C1
+    @ 18,40 SAY "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ "
+    SET COLOR TO &C2 / &C1
+  ENDIF
+CASE UPTKSTP=62
+  UPTKSTP=6
+  IF  UPTKSTP=6
+    SET COLOR TO B+ / &C1
+    @ 18,40 SAY "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ "
+    SET COLOR TO &C2 / &C1
+    UPTANK[1,2]=SECONDS()
+    SET COLOR TO GR +/ &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    DOUT(14,1)
+    SET COLOR TO &C2 / &C1
+    FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+      IF TIME1[XF,1] <>88
+	WTANK_F[XF,1] :=-99
+	WTANK_F[XF,2] :=-99
+      ENDIF
+    NEXT
+  ENDIF
+CASE UPTKSTP=61
+  UPTKSTP=62
+  STORTIME=TIME()
+  X=_TOT_D_A[20,4] +2
+  _TOT_D_A[8,X]  := STORTIME
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    E_STORE = 1
+    X=_TOT_D_A[20,4] +2
+    IF _TOT_D_A[2,X]=0
+      E_STORE = 0
+    ENDIF
+    IF (E_STORE =1)
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+
+      sele 1
+      APPE BLAN
+      REPL LUTIME  WITH  STORTIME,LUDATE WITH DATE(),LAG_VUSE WITH A_PRESS_N0[3,STPN&ic_x,1,6]
+      X=_TOT_D_A[20,4] +2
+      REPL SCANO WITH _TOT_D_A[2,X],CARNO WITH _TOT_D_A[13,X],TVUSE  WITH A_PRESS_N0[3,STPN&ic_x,1,5] ,RATNO WITH _TOT_D_A[18,X],LTANDO WITH _TOT_D_A[14,X]
+      REPL PAN_NO  WITH  STPN&ic_x
+      REPL LAGNO1  WITH  _TOT_D_A[19,X]     && SNO
+
+      IF COM_E=1
+	REPL	SCANO2	WITH  _TOT_D_A[17,X]	 && S_MAX
+      ENDIF
+      IF  STORAB_D=1
+	sele 19
+	APPE BLAN
+	REPL LUTIME  WITH  STORTIME,LUDATE WITH DATE(),LAG_VUSE WITH A_PRESS_N0[3,STPN&ic_x,1,6]
+	X=_TOT_D_A[20,4] +2
+	REPL SCANO WITH _TOT_D_A[2,X],CARNO WITH _TOT_D_A[13,X],TVUSE  WITH A_PRESS_N0[3,STPN&ic_x,1,5] ,RATNO WITH _TOT_D_A[18,X],LTANDO WITH _TOT_D_A[14,X]
+	REPL PAN_NO  WITH  STPN&ic_x,LAGNO1 WITH  _TOT_D_A[19,X]     && SNO.
+	IF COM_E=1
+	  REPL	  SCANO2  WITH	_TOT_D_A[17,X]
+	ENDIF
+      ENDIF
+    ENDIF
+  ELSE
+    ACTIME=TIME()
+    HDOK=0
+  ENDIF
+  XTW=0
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    IF (E_STORE =1)
+      *IF  STORAB_D=1
+      *  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      *  sele 19
+      *  FOR  X=1 TO (GS_TOT+UWC_TOT)
+      *    XMC_F=A_M_NAME[X,3]
+      *    XTW=XTW+A_PRESS_N0[3,STPN&ic_x,X,1]+A_PRESS_N0[3,STPN&ic_x,X,2]
+      *    XMC1=ALLTRIM(STR(X,2,0))
+      *    XTMP0 = A_PRESS_N0[3,STPN&IC_X,X,1]
+      *    IF XTMP0 >0
+      *    XTMP0 =  XTMP0 +A_PRESS_N0[3,STPN&IC_X,X,2]
+      *    ENDIF
+      *    A_PRESS_N0[3,STPN&ic_x,X,1] =A_PRESS_N0[3,STPN&ic_x,X,8]
+      *    repl TM&XMC1 WITH  XTMP0
+      *  NEXT
+      *ENDIF
+      IF  (STORAB_D=1)
+	IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+	sele 19
+	FOR  X=1 TO (GS_TOT+UWC_TOT)
+	  XMC_F=A_M_NAME[X,3]
+	  if  lchtype=16 .or. LCHTYPE=17
+	    do	adjwaterB0
+	    do case
+	    case x=1
+	      repl adjTM1 WITH	G1_WATER
+	    case x=2
+	      repl adjTM2 WITH	G2_WATER
+	    case x=3
+	      repl adjTM3 WITH	S1_WATER
+	    case x=4
+	      repl adjTM4 WITH	S2_WATER
+	    endcase
+	  endif
+	  *XTW=XTW+A_PRESS_B0[3,STPN&ic_x,X,1]+A_PRESS_B0[3,STPN&ic_x,X,2]
+	  XTW=XTW+A_PRESS_n0[3,STPN&ic_x,X,1]+A_PRESS_n0[3,STPN&ic_x,X,2]
+	  XMC1=ALLTRIM(STR(X,2,0))
+	  *XTMP0 = A_PRESS_B0[3,STPN&IC_X,X,1]
+	  XTMP0 = A_PRESS_n0[3,STPN&IC_X,X,1]
+	  IF XTMP0 >0
+	    *XTMP0 =  XTMP0 +A_PRESS_B0[3,STPN&IC_X,X,2]
+	    XTMP0 =  XTMP0 +A_PRESS_n0[3,STPN&IC_X,X,2]
+	  ENDIF
+	  repl TM&XMC1 WITH  XTMP0
+	NEXT
+      ENDIF
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      sele 1
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F=A_M_NAME[X,3]
+	IF W0DBF=1
+	  A_PRESS_N0[3,STPN&ic_x,X,1] =A_PRESS_N0[3,STPN&ic_x,X,8]
+	  A_PRESS_N0[3,STPN&ic_x,X,2] =A_PRESS_N0[3,STPN&ic_x,X,11]
+	  *A_PRESS_N0[2,STPN&ic_x,X,1] =A_PRESS_N0[3,STPN&ic_x,X,8]
+	ENDIF
+	if  lchtype=16 .or. LCHTYPE=17
+	  do  adjwater0
+	  do case
+	  case x=1
+	    repl adjTM1 WITH  G1_WATER
+	  case x=2
+	    repl adjTM2 WITH  G2_WATER
+	  case x=3
+	    repl adjTM3 WITH  S1_WATER
+	  case x=4
+	    repl adjTM4 WITH  S2_WATER
+	  endcase
+	endif
+	XTW=XTW+A_PRESS_N0[3,STPN&ic_x,X,1]+A_PRESS_N0[3,STPN&ic_x,X,2]
+	XMC1=ALLTRIM(STR(X,2,0))
+	XTMP0 = A_PRESS_N0[3,STPN&IC_X,X,1]
+	IF XTMP0 >0
+	XTMP0 =  XTMP0 +A_PRESS_N0[3,STPN&IC_X,X,2]
+	ENDIF
+	repl TM&XMC1 WITH  XTMP0
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    IF (E_STORE =1)
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      SELE 1
+      APPE BLANK
+      X=_TOT_D_A[20,4] +2
+      REPL LUTIME  WITH  STORTIME,LUDATE WITH DATE(),LAGNO1 WITH _TOT_D_A[19,X]  &&LAG_PNO
+      IF COM_E=1
+	REPL	SCANO2	WITH  _TOT_D_A[17,X]	 && S_MAX
+      ENDIF
+      if storab_d=1
+	SELE 19
+	APPE BLANK
+	X=_TOT_D_A[20,4] +2
+	REPL LUTIME  WITH  STORTIME,LUDATE WITH DATE(),LAGNO1 WITH _TOT_D_A[19,X]  &&LAG_PNO
+	IF COM_E=1
+	  REPL	  SCANO2  WITH	_TOT_D_A[17,X]	   && S_MAX
+	ENDIF
+      endif
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F=A_M_NAME[X,3]
+	XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+	A_PRESS_N0[3,STPN&IC_X,X,10]=A_PRESS_N0[3,STPN&IC_X,X,4]
+	if storab_d=1
+	  SELE 19
+	  XMC1=ALLTRIM(STR(X,2,0))
+	  *repl TM&XMC1 WITH A_PRESS_N0[3,STPN&IC_X,X,4]   *¹ê»Ú­È
+	    IF ((STANDW_ERR[X] > 0) .or. (STANDW2_ERR[X] > 0)  ) .and.	  lchtype <>30
+	      IF A_PRESS_B0[3,STPN&IC_X,X,1] =0
+		A_PRESS_B0[3,STPN&IC_X,X,4]=0
+		A_PRESS_B0[3,STPN&IC_X,X,4]=0
+	      ELSE
+		XF_DATA=A_PRESS_b0[3,STPN&IC_X,X,1]+A_PRESS_B0[3,STPN&IC_X,X,2]
+		IF (VAL(A_M_NAME[X,3])- INT( VAL(A_M_NAME[X,3]))) >0 && 99.99
+		  xerr=STANDW_ERR[X]  *100
+		  if (xerr=0)
+		      xerr= int(XF_DATA   * STANDW2_ERR[X] * 100)
+		  endif
+		  RNDX=int(SECONDS()  * RAND())
+		  XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+		  *XF_DATA1=- STANDW_ERR[X]*100 + MOD(RNDX,(STANDW_ERR[X] * 200) +1)
+		  XF_DATA1=XF_DATA1/100
+		ELSE
+		  xerr=STANDW_ERR[X]
+		  if (xerr=0)
+		      xerr= int(XF_DATA  * STANDW2_ERR[X] )
+		  endif
+		  RNDX=int(SECONDS()  * RAND())
+		  XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+		  *XF_DATA1=- STANDW_ERR[X] + MOD(RNDX,(STANDW_ERR[X] * 2) +1)
+		ENDIF
+		A_PRESS_B0[3,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+		A_PRESS_B0[2,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+	      ENDIF
+	  ENDIF
+	  *repl TM&XMC1 WITH A_PRESS_B0[3,STPN&IC_X,X,4]
+	  repl TM&XMC1 WITH A_PRESS_n0[3,STPN&IC_X,X,10]
+	endif
+	sele 1
+	XMC1=ALLTRIM(STR(X,2,0))
+	IF W0DBF=1
+	  IF (STANDW_ERR[X] > 0) .or. (STANDW2_ERR[X] > 0)
+	    IF A_PRESS_N0[3,STPN&IC_X,X,8] =0
+	      A_PRESS_N0[3,STPN&IC_X,X,4]=0
+	      A_PRESS_N0[2,STPN&IC_X,X,4]=0
+	    ELSE
+	      *A_PRESS_N0[3,STPN&IC_X,X,2]=A_PRESS_N0[1,STPN&IC_X,X,2]
+	      XF_DATA=A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+	      IF (VAL(A_M_NAME[X,3])- INT( VAL(A_M_NAME[X,3]))) >0 && 99.99
+		xerr=STANDW_ERR[X]  *100
+		if (xerr=0)
+		    xerr= int(XF_DATA	* STANDW2_ERR[X] * 100)
+		endif
+		RNDX=int(SECONDS()  * RAND())
+		XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+		*XF_DATA1=- STANDW_ERR[X]*100 + MOD(RNDX,(STANDW_ERR[X] * 200) +1)
+		XF_DATA1=XF_DATA1/100
+	      ELSE
+		xerr=STANDW_ERR[X]
+		if (xerr=0)
+		    xerr= int(XF_DATA  * STANDW2_ERR[X] )
+		endif
+		RNDX=int(SECONDS()  * RAND())
+		XF_DATA1=- xerr + MOD(RNDX,(xerr * 2) +1)
+		*XF_DATA1=- STANDW_ERR[X] + MOD(RNDX,(STANDW_ERR[X] * 2) +1)
+	      ENDIF
+	      A_PRESS_N0[3,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+	      A_PRESS_N0[2,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+	    ENDIF
+
+	  ENDIF
+	ENDIF
+	repl TM&XMC1 WITH A_PRESS_N0[3,STPN&IC_X,X,4]
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  XTW=0
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  FOR  X=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[X,3]
+    XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,4]
+  NEXT
+  IF A_PRESS_N0[3,STPN&IC_X+1,1,5]  =0
+    XTWA=0
+    XTWBA=0
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+	SELE 7
+	APPEN BLAN
+	COMMIT
+	IF STORAB=1
+	  SELE 18
+	  APPEN BLAN
+	  COMMIT
+	ENDIF
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F="9"+A_M_NAME[X,3]
+      XTW=0
+      XTWB=0
+      FOR XN1=1 TO STPN&IC_X
+	XTW=XTW+A_PRESS_N0[3,XN1,X,4]
+	XTWB=XTWB+A_PRESS_N0[3,XN1,X,10]
+      NEXT
+      IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+	IF (E_STORE =1)
+	  SELE 7
+	  XMC1=ALLTRIM(STR(X,2,0))
+	  REPL TOTM&XMC1 WITH XTW
+	  COMMIT
+	  IF (STORAB=1)
+	     SELE 18
+	     REPL TOTM&XMC1 WITH XTWB
+	     COMMIT
+	  ENDIF
+	ENDIF
+      ELSE
+	HDOK=0
+      ENDIF
+      XTWA=XTWA+XTW
+      XTWBA=XTWBA+XTWB
+    NEXT
+    SET DEVI TO SCRE
+    kX=_TOT_D_A[20,4] +2
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+	IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+	SELE 7
+	REPL LUDATE WITH DATE()  && 1
+	REPL SCANO WITH _TOT_D_A[2,kx]	&& 2
+	REPL TOTW WITH XTWA   && 7
+	REPL LUTIME WITH STORTIME   && 8
+	REPL CARLAG  WITH _TOT_D_A[9,kx]    && 9
+	REPL TOTVUSE WITH A_PRESS_N0[3,STPN&IC_X,1,6]	&& 10
+	REPL CARNO WITH _TOT_D_A[13,kx] && 13
+	REPL TANDO WITH _TOT_D_A[14,kx] && 14
+	REPL CARDRV WITH _TOT_D_A[15,kx]   && 15
+	IF COM_E=1
+	  repl	p1702  with  _TOT_D_A[4,kx]   && 4
+	  REPL LAGTTW WITH _TOT_D_A[11,kx]  && 11
+	  REPL US2 WITH _TOT_D_A[16,kx]  && 16
+	  REPL	  SCANO2  WITH	_TOT_D_A[17,kx]     && 17   S_MAX
+	ENDIF
+	REPL RATNO WITH  _TOT_D_A[18,kx]   &&  18
+	repl  U_PRICE WITH _TOT_D_A[21,kx]   &&
+	REPL LAGNO1 WITH  _TOT_D_A[19,kx]  &&	  LAG_PNO
+
+
+
+	COMMIT
+	IF STORAB=1
+	  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+	  SELE 18
+	  *REPL TOTW WITH XTWBA
+	  *REPL SCANO WITH _TOT_D_A[2,kx],CARDRV WITH _TOT_D_A[15,kx],US2 WITH _TOT_D_A[16,kx],LAGTTW WITH _TOT_D_A[11,kx],TANDO WITH _TOT_D_A[14,kx]
+	  *repl  p1702	with  _TOT_D_A[4,kx],TOTVUSE WITH A_PRESS_N0[3,STPN&IC_X,1,6]
+	  *REPL LUDATE WITH DATE(),LUTIME WITH STORTIME,RATNO WITH  _TOT_D_A[18,kx]
+	  *repl  U_PRICE WITH _TOT_D_A[21,kx],CARNO WITH _TOT_D_A[13,kx],LAGNO1 WITH  _TOT_D_A[19,kx]  &&LAG_PNO
+	  *IF COM_E=1
+	  *  REPL    SCANO2  WITH  _TOT_D_A[17,kx]     && S_MAX
+	  *ENDIF
+
+	  REPL LUDATE WITH DATE()  && 1
+	  REPL SCANO WITH _TOT_D_A[2,kx]  && 2
+	  REPL TOTW WITH XTWBA	 && 7
+	  REPL LUTIME WITH STORTIME   && 8
+	  REPL CARLAG  WITH _TOT_D_A[9,kx]    && 9
+	  REPL TOTVUSE WITH A_PRESS_N0[3,STPN&IC_X,1,6]   && 10
+	  REPL CARNO WITH _TOT_D_A[13,kx] && 13
+	  REPL TANDO WITH _TOT_D_A[14,kx] && 14
+	  REPL CARDRV WITH _TOT_D_A[15,kx]   && 15
+	  IF COM_E=1
+	    repl  p1702  with  _TOT_D_A[4,kx]	&& 4
+	    REPL LAGTTW WITH _TOT_D_A[11,kx]  && 11
+	    REPL US2 WITH _TOT_D_A[16,kx]  && 16
+	    REPL    SCANO2  WITH  _TOT_D_A[17,kx]     && 17   S_MAX
+	  ENDIF
+	  REPL RATNO WITH  _TOT_D_A[18,kx]   &&  18
+	  repl	U_PRICE WITH _TOT_D_A[21,kx]   &&
+	  REPL LAGNO1 WITH  _TOT_D_A[19,kx]  &&     LAG_PNO
+
+
+	  IF COM_E=1
+	    REPL    SCANO2  WITH  _TOT_D_A[17,kx]     && S_MAX
+	  ENDIF
+	  COMMIT
+	ENDIF
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+    _TOT_D_A[1,kx] :=date()
+    _TOT_D_A[7,kx] :=XTWA
+    _TOT_D_A[5,kx] :=_TOT_D_A[6,kx] +_TOT_D_A[7,kx]
+
+    *if  (_TOT_D_A[17,kx]<>0)
+    *  &&lag_pno=lag_pno +1
+    *  lag_pno=_TOT_D_A[17,kx]
+    *  SAVE TO LAGDATA9 ALL LIKE LAG*
+    *endif
+    lag_pno=lag_pno +1
+    lag_pno=_TOT_D_A[2,kx]
+     SAVE TO LAGDATA9 ALL LIKE LAG*
+
+    *_TOT_D_A[2,kx] :="00"+LTRIM(STR(LAG_PNO,6,0))
+    PRINTERTST=0
+    DO	PRINTERTST WITH BPORT
+    IF PRINTERTST=1  .AND. (_TOT_D_A[2,kx]<>0)	 .AND. (VAL(C_PRT_REP) <>0 )
+      SET CONS On
+      do case
+      case bport="1"
+	set print to lpt1
+	? chr(27) + "sp1;"
+      case bport="2"
+	? chr(27) + "sp2;"
+	set print to lpt2
+      case bport="3"
+	set print to lpt3
+	? chr(27) + "sp3;"
+      endcase
+      SET CONS On
+      SET DEVI TO PRINT
+      @ PROW(),0 say   "~I;"
+      @ PROW(),0 say   "~X12;"
+      DO REP_&C_PRT_REP
+      SET DEVI TO SCRE
+    ENDIF
+  ENDIF
+
+  PRINTERTST=0
+  DO  PRINTERTST    WITH   APORT
+  IF (PRINTERTST=1) .AND. (E_STORE =1)
+    SET CONS On
+    do case
+    case aport="1"
+      set print to lpt1
+      ? chr(27) + "SP1;"
+    case aport="2"
+      set print to lpt2
+      ? chr(27) + "SP2;"
+    case aport="3"
+      set print to lpt3
+      ? chr(27) + "sp3;"
+    endcase
+    SET CONS ON
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+
+    IF (E_STORE =1 )  .and.  (STPN&IC_X=1  )
+      DO  PNT_TIT
+    ENDIF
+
+    SET DEVI TO PRINT
+      @ PROW(),0 say   "~i;"
+      @ PROW(),0 say   "~X12;"
+    @ PROW(),6	SAY  STPN&IC_X	PICT "99"
+    @ PROW(),10    SAY	STORTIME
+    @ PROW(),18    SAY	A_PRESS_N0[3,STPN&IC_X,1,5]  PICT "99.9"
+    @ PROW(),25    SAY	A_PRESS_N0[3,STPN&IC_X,1,6]  PICT "99.9"
+    @ PROW()+1,1  SAY  " "
+    XTW=0
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F=A_M_NAME[X,3]
+      &&XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+      XTMP0 =  A_PRESS_N0[3,STPN&IC_X,X,1]
+      IF XTMP0 >0
+	XTMP0 =  XTMP0 +A_PRESS_N0[3,STPN&IC_X,X,2]
+      ENDIF
+      XTW =XTW+ XTMP0
+      @ PROW(),6*(X-1)+2  SAY XTMP0    PICT "&XMC_F"
+    NEXT
+    @ PROW(),74  SAY   XTW  PICT "99999"
+    @ PROW()+1,1  SAY  " "
+    IF (ERRPNT_E=1)
+      FOR  X=1 TO  GS_TOT
+	xperc= INT(A_PRESS_N0[3,STPN&IC_X,X,2]*1000/A_PRESS_N0[3,STPN&IC_X,X,1])/10
+	@ PROW(),6*(X-1)+1  SAY   xperc  PICT "999.9"
+      NEXT
+      @ PROW(),75  SAY	 "§t¤ô²v¢H"
+      @ PROW()+1,1  SAY  " "
+    ENDIF
+
+
+
+
+
+
+
+
+
+    XTW=0
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F=A_M_NAME[X,3]
+      XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,4]
+      @ PROW(),6*(X-1)+2  SAY	A_PRESS_N0[3,STPN&IC_X,X,4]  PICT "&XMC_F"
+    NEXT
+    @ PROW(),74  SAY   XTW  PICT "99999"
+    @ PROW()+1,1  SAY  " "
+    IF ERRPNT_E=1
+      FOR  X=1 TO  (GS_TOT+UWC_TOT)
+	xperc= (A_PRESS_N0[3,STPN&IC_X,X,4]- (A_PRESS_N0[3,STPN&IC_X,X,1] + A_PRESS_N0[3,STPN&IC_X,X,2]  )) * 100 /(A_PRESS_N0[3,STPN&IC_X,X,1] + A_PRESS_N0[3,STPN&IC_X,X,2] )
+	@ PROW(),6*(X-1)+1  SAY   xperc  PICT "999.99"
+      NEXT
+      @ PROW(),75  SAY	 "»~®t²v¢H"
+      @ PROW()+1,1  SAY  " "
+    ENDIF
+    IF A_PRESS_N0[3,STPN&IC_X+1,1,5]  =0
+      @ PROW(),1 SAY   "-----------------------------------------------------------------------------"
+      @ PROW()+1,1  SAY  " "
+      XTWA=0
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F="9"+A_M_NAME[X,3]
+	XTW=0
+	FOR XN1=1 TO STPN&IC_X
+	  XTW=XTW+A_PRESS_N0[3,XN1,X,4]
+	NEXT
+	@ PROW(),6*(X-1)+1  SAY   XTW	PICT "&XMC_F"
+	XTWA=XTWA+XTW
+      NEXT
+      @ PROW(),73  SAY	 XTWA  PICT "999999"
+      @ PROW()+1,1  SAY   " "
+    ENDIF
+    SET CONS On
+    SET DEVI TO SCRE
+  endif
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  IF A_PRESS_N0[3,STPN&IC_X + 1,1,5]  =0
+    x=1
+    IF X=1
+      X=_TOT_D_A[20,3]
+      IF X=0
+	_TOT_D_A[20,4] :=0
+      ELSE
+	_TOT_D_A[20,4] :=X
+	_TOT_D_A[20,3] :=0
+      ENDIF
+    ENDIF
+
+  ENDIF
+CASE UPTKSTP=6
+    UPTKSTP=7
+CASE UPTKSTP=7
+  IF  ((DIN(15)=0)	   )
+    DOUT(14,0)
+    UPTANK[1,2]=SECONDS()
+    X=UPTANK[1,1]
+    SET COLOR TO R +/ &C1
+    @  7,UPTANK[5,1]   say  UPTANK[1,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    X=SECONDS()-UPTANK[1,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[1,2]
+    ENDIF
+    X=UPTANK[1,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  7,UPTANK[5,1]   say  X  PICT "99"
+    SET  COLO TO &C2 /&C1
+    IF ( (MIXAMP <= 10) .OR. (MIXAMP >= MIXMAX))
+      DOUT(14,0)
+    ELSE
+      DOUT(14,1)
+    ENDIF
+
+
+
+  ENDIF
+  IF  X<=0
+    UPTKSTP=8
+    UPTANK[2,2]=SECONDS()
+    SET  COLO TO W+ /&C1
+    @  7,UPTANK[5,1]   say  UPTANK[1,1]  PICT "99"
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,0)
+  ENDIF
+CASE UPTKSTP=8
+  IF  (DIN(15)=0       )
+    DOUT(14,0)
+    UPTANK[2,2]=SECONDS()
+    X=UPTANK[2,1]
+    SET COLOR TO R +/ &C1
+    @  9,UPTANK[5,1]   say  UPTANK[2,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+    X=SECONDS()-UPTANK[2,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[2,2]
+    ENDIF
+    X=UPTANK[2,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  9,UPTANK[5,1]   say  X  PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0    .AND. ((MIXAMP >10) .AND. (MIXAMP <MIXMAX) )
+    *DO  CASE
+    *CASE UCHTYPE=5   .OR. UCHTYPE=6  .OR.UCHTYPE=22	.OR. UCHTYPE=7	.or.  UCHTYPE=8  .or. UCHTYPE=16  .or.	UCHTYPE=9  .OR. UCHTYPE=10    .OR. UCHTYPE=11  .or. UCHTYPE=12	.or. UCHTYPE=13 .or. UCHTYPE=17   .or. UCHTYPE=19   .or. UCHTYPE=21
+      CNVSTP=0
+    *case  cnvrst=1
+    *  CNVSTP=0
+    *ENDCASE
+    SET  COLO TO W+ /&C1
+    UPTANK[3,2]=SECONDS()
+    @  9,UPTANK[5,1]   say  UPTANK[2,1]  PICT "99"
+    UPTKSTP=9
+    SET COLOR TO GR +/ &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,1)
+  ENDIF
+CASE UPTKSTP=9
+  IF  (DIN(15)=0 .OR. (MIXAMP >= MIXMAX ) .OR. (MIXAMP <= 10)	  )
+    DOUT(14,0)
+    UPTANK[3,2]=SECONDS()
+    X=UPTANK[3,1]
+    SET COLOR TO R +/ &C1
+    @ 11,UPTANK[5,1]   say  UPTANK[3,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+  ELSE
+
+    DOUT(14,1)
+    SET COLOR TO R+  / &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    X=SECONDS()-UPTANK[3,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[3,2]
+    ENDIF
+    X=UPTANK[3,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  11,UPTANK[5,1]	say  X	PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0
+    SET  COLO TO W+ /&C1
+    @  11,UPTANK[5,1]	say  UPTANK[3,1]  PICT "99"
+    UPTKSTP=10
+    SET COLOR TO W  / &C1
+    @ 13,UPTANK[5,1]-2	SAY "úG--úH"
+    IF CNVSTP=0
+      SET  COLO TO W+	/&C1
+      @  4,UPTANK[5,1]	 say  UPTANK[4,1]  PICT "99"
+      SET COLOR TO &C2 / &C1
+    ENDIF
+    DOUT(14,0)
+  ENDIF
+CASE UPTKSTP=10
+  UPTKSTP=11
+  DOUT(14,0)
+  FOR XF=GS_TOT + 1  TO GS_TOT + UWC_TOT
+    IF WTANK_F[XF,2]<>1
+      UPTKSTP=11
+      EXIT
+    ENDIF
+  NEXT
+CASE UPTKSTP=11
+   DO  CASE
+   CASE (UCHTYPE=1) .OR.  (UCHTYPE=2)
+     CNVSTP=0
+   ENDCASE
+   UPTKSTP=0
+ENDCASE
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  TANKSTP0
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE   TANKSTP=0
+CASE  TANKSTP=1 .AND. (DIN(9)=0)   .AND. (DIN(12)=1  .and.   ((MIXAMP >10) .AND. (MIXAMP <=MIXMAX)  ))
+  IF PLOT_E=1
+    BMP_SN[2] :=SECONDS()
+    DO PLOT_MIXAS
+  ENDIF
+  tankstp=2
+  SET COLOR TO &C7 +/ &C1
+  MIXTM=0
+  MIXTM_S=SECONDS()
+  PAUSE_TM=0
+  @ 17,64 SAY "   "
+  if spacial_0=0
+    if lchtype >= 5
+      IF LAGDATE=DATE()
+	LAGW=LAGW+ A_PRESS_N0[U_PRESS,stpn6,6,5]
+      ELSE
+	LAGW=VUSE
+	LAGDATE=DATE()
+      ENDIF
+      SAVE TO LAGDATA9 ALL LIKE LAG*
+      @ 0,26 SAY  LAGW	 PICT  "9999.9"
+      ACT_V  = A_PRESS_N0[U_PRESS,stpn6,6,6]	&&4/6/2004
+      @ 17,12 SAY  A_PRESS_N0[U_PRESS,stpn6,6,6]  PICT	"99.9"
+    endif
+  endif
+CASE  TANKSTP=2
+  *@ 17,23 SAY "¢u¢w¢w¢t¢u¢w¢w¢t¢x  ¹ê»Ú­È    ¬í     ¢Ï     ¬í      KG¢x"
+  *PMIXTM
+  IF DIN(15)=0	  && PAUSE
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SET COLO TO  GR+ /&C1
+  X=0
+  IF PLOT_ACT=1
+    X=1
+  ENDIF
+   @ 17+X,51 SAY MIXTM	PICT "999"
+  SET COLO TO  &C2 /&C1
+  IF  MIXTM>=PMIXTM
+    TANKSTP=3
+  ENDIF
+  IF SPACIAL_0 =0
+    FOR   XF=GS_TOT+1  TO (GS_TOT +UWC_TOT)
+      IF (TIME1[XF,1] <>88)
+	IF WTANK_F[XF,2]<>1
+	  TANKSTP=2
+	  EXIT
+	ENDIF
+      ENDIF
+    NEXT
+  ELSE
+    IF UPTKSTP	> 0
+      TANKSTP=2
+    ENDIF
+  ENDIF
+  IF TANKSTP=3
+    FOR  I=GS_TOT+1  TO (GS_TOT +UWC_TOT)
+      WTANK_F[I,2] :=0
+    NEXT
+  ENDIF
+  IF DIN(15)=0	 && PAUSE
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SET COLO TO  GR+ /&C1
+  X=0
+  IF PLOT_ACT=1
+    X=1
+  ENDIF
+  @ 17+X,51 SAY MIXTM  PICT "999"
+  SET COLO TO  &C2 /&C1
+CASE  TANKSTP=3
+  TANKSTP=4
+CASE  TANKSTP=4 .AND.DIN(15)=1
+  IF INT((MIXA()-2048)*MAIN_AMP/2048)<=PMIXA
+    IF PLOT_E=1
+      DO  TANK_DSP
+    ENDIF
+    TANKSTP=5
+    DROPTM_S=SECONDS()
+    DROPTM=0
+    X=1
+    FOR IX=(GS_TOT+1) TO (GS_TOT+UWC_TOT)
+      IF WTANK_F[IX,3]=0
+	X=0
+	EXIT
+      ENDIF
+    NEXT
+    IF X=1
+     &&DOUT(12,1)
+      BEEP=1
+
+
+      FOR IX=(GS_TOT+1) TO (GS_TOT+UWC_TOT)
+	WTANK_F[IX,3]=0
+      NEXT
+    ELSE
+      BEEP=0
+    ENDIF
+  ENDIF
+  IF DIN(15)=0	 && PAUSE
+    MIXTM_S=SECONDS()
+  ELSE
+    IF ABS(SECONDS()-MIXTM_S)>=1
+      MIXTM=MIXTM+1
+      MIXTM_S=SECONDS()
+    ENDIF
+  ENDIF
+  SET COLO TO  GR+ /&C1
+  X=0
+  IF PLOT_ACT=1
+    X=1
+  ENDIF
+  @ 17+X,51 SAY MIXTM  PICT "999"
+  SET COLO TO  &C2 /&C1
+CASE  TANKSTP=5
+  IF DIN(13)=1
+    SET COLOR TO &C10 / &C1
+    @ 18,40 SAY "úLúPúPúPúPúPúPúPúKúPúPúPúPúPúPúPúPúPúO"
+  ELSE
+    SET COLOR TO R+   / &C1
+    @ 18,40 SAY "úLúPúPúPúPúPúPúPúKúPúPúPúPúPúPúPúPúPúO"
+  ENDIF
+  SET COLOR TO &C7 +/ &C1
+  IF DIN(15)=0	 && PAUSE
+    DROPTM_S=SECONDS()
+    DROPTM=0
+    DOUT(15,0)
+  ELSE
+    IF DIN(13)=1
+      IF DIN(9)=0
+	DROPT_S=SECONDS()
+	DROPTM=0
+	DOUT(12,0)
+	IF BEEP=2
+	  BEEP=1
+	ENDIF
+      ELSE
+	IF BEEP=1
+	  DOUT(12,1)
+	  ALMTM[1,2] := SECONDS()
+	  ALMTM[2,2] := 0
+	  BEEP=2
+	ENDIF
+      ENDIF
+      IF ABS(SECONDS()-DROPTM_S)>=1
+	DROPTM=DROPTM+1
+	DROPTM_S=SECONDS()
+      ENDIF
+      DOUT(15,1)
+    ELSE
+      DROPTM_S=SECONDS()
+      DROPTM=0
+      DOUT(15,0)
+    ENDIF
+  ENDIF
+  IF DROPTM >=PMIXOP
+    TANKSTP=6
+  ENDIF
+  SET COLO TO  W + /&C1
+  @ 17,64 SAY  DROPTM	PICT  "999"
+  SET COLO TO  &C2 /&C1
+  IF BEEP=2
+    IF ALMTM[1,2] >0
+      IF (SECONDS()-ALMTM[1,2]) >= ALMTM[1,1]
+	 DOUT(12,0)
+	 ALMTM[1,2] =0
+	 ALMTM[2,2] := SECONDS()
+      ENDIF
+    ELSE
+      IF (SECONDS()-ALMTM[2,2]) >= ALMTM[2,1]
+	 DOUT(12,1)
+	 ALMTM[1,2] := SECONDS()
+	 ALMTM[2,2] =0
+      ENDIF
+    ENDIF
+  ENDIF
+CASE  TANKSTP=6
+  DOUT(15,0)  &&MAIN M/C DOOR
+  DOUT(12,0)  && LAST ALARM
+  X=1
+  FOR IX=1 TO 12
+    IF WTANK_F[IX,3]=0
+      X=0
+      EXIT
+    ENDIF
+  NEXT
+  IF X=1
+    FOR IX=1 TO 12
+      WTANK_F[IX,3] :=0
+    NEXT
+    ACT_V=-1
+    @ 15,12 SAY "    "
+    @ 16,12 SAY "    "
+    @ 17,12 SAY "    "
+  ENDIF
+  IF  SPACIAL_0=1
+     set  colo	to  W+	/&C1
+     @ 15,41 SAY "©Õ¦X¢²"
+
+  ENDIF
+  SET COLOR TO &C2 / &C1
+  @ 18,40 SAY "úLúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúO"
+  SET COLOR TO &C7 +/ &C1
+  @ 17,64 SAY  "   "
+  @ 17,51 SAY "   "
+  TANKSTP=0
+ENDCASE
+
+**-----------------------------------------------------------------------------
+PROCEDURE  OUTDATA_RST
+PARAMETERS  P1,P2,P3
+** <<<<<¥þ¤W«¬±M¥Î>>>>>    XF_DATA=A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+DRSTX=STPN7
+FOR  X=1  TO (GS_TOT+UWC_TOT)
+  A_PRESS_N0[2,DRSTX,X,9]=A_PRESS_N0[2,DRSTX,X,4]
+  A_PRESS_N0[2,DRSTX,X,10]=A_PRESS_N0[2,DRSTX,X,4]
+  IC_X=NTOC(X)
+  *IF (W0DBF=1)
+  *  ntmp1= A_PRESS_N0[2,DRSTX,X,1]
+  *  A_PRESS_N0[2,DRSTX,X,1]= A_PRESS_N0[2,DRSTX,X,8]
+  * *  A_PRESS_N0[2,DRSTX,X,8]= ntmp1
+  *ENDIF
+  IF STANDW_ERR[X] > 0
+    IF A_PRESS_N0[2,DRSTX,X,8] =0
+      A_PRESS_N0[2,DRSTX,X,9]=0
+    ELSE
+      IF LCHTYPE=4
+	XF_DATA=A_PRESS_N0[2,DRSTX,X,1]+A_PRESS_N0[2,DRSTX,X,2]
+      ELSE
+	XF_DATA=A_PRESS_N0[2,DRSTX,X,8]+A_PRESS_N0[2,DRSTX,X,11]
+      ENDIF
+      IF (VAL(A_M_NAME[X,3])- INT( VAL(A_M_NAME[X,3]))) >0 && 99.99
+		RNDX=SECONDS()	* RAND()
+	XF_DATA1=- STANDW_ERR[X]*100 + MOD(RNDX,(STANDW_ERR[X] * 200) +1)
+	XF_DATA1=XF_DATA1/100
+      ELSE
+		RNDX=SECONDS()	* RAND()
+	XF_DATA1=- STANDW_ERR[X] + MOD(RNDX,(STANDW_ERR[X] * 2) +1)
+      ENDIF
+      IF   ABS(XF_DATA-A_PRESS_N0[2,DRSTX,X,4]) > STANDW_ERR[X]
+	A_PRESS_N0[2,DRSTX,X,9]=XF_DATA+XF_DATA1
+      ENDIF
+    ENDIF
+  ENDIF
+  A_PRESS_N0[2,DRSTX,X,4]=A_PRESS_N0[2,DRSTX,X,9]
+  NEXT
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  CNYR_SPA   &&  ¤W¤U,special=1
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE   (CNVSTP=0  .AND. DIN(8)=0  .AND. DIN(10)=1    .AND.  DIN(11)=1 .AND.  DIN(15)=1)
+  *test s1 s2 full
+  CNVSTP=1
+  FOR XF=3  TO 4
+    IF WTANK_F[XF,1] <> 1
+       CNVSTP=0
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=3  TO 4
+      WTANK_F[XF,1]=-99
+      WTANK_F[XF,2]=0
+  NEXT
+  SET COLOR TO B+ / &C1
+  @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+  SET COLOR TO w+  / &C1
+  X=_Tot_d_a[20,4] +2
+  @ 15,12 say _Tot_d_a[18,X]  PICT  "9999"
+  @ 16,12 say _Tot_d_a[10,X]  PICT  "99.9"
+  if stpn3=1
+    @ 17,12 say  "    "
+  endif
+  SET COLOR TO &C2 / &C1
+  A_STOR_4(A_PRESS_N0,3,4)
+CASE   CNVSTP=1
+  CNVSTP=2
+  FOR XF=3  TO 4
+    IF WTANK_F[XF,2] <> 1
+       CNVSTP=1
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=3  TO 4
+      WTANK_F[XF,2]=0
+  NEXT
+  UPTANK[4,2]=SECONDS()
+CASE   CNVSTP=2
+  CNVSTP=3
+  X=SECONDS()-UPTANK[4,2]
+  IF X<0
+    X=86399+SECONDS()-UPTANK[4,2]
+  ENDIF
+  X=UPTANK[4,1]-X
+  IF  X<=0
+    X=0
+  ENDIF
+  SET  COLO TO GR+ /&C1
+  @  4,UPTANK[5,1]   say  X  PICT "99"
+  SET  COLO TO &C2 /&C1
+  IF X >0
+    CNVSTP=2
+  ENDIF
+CASE   CNVSTP=3 .AND. DIN(12)=1  .AND. DIN(15)=1  .AND.  TANKSTP=0
+  CNVSTP=4
+  IF DIN(9)=1
+    CNVSTP=3
+    SET COLOR TO R  / &C1
+    @ 18,40 SAY "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ "
+    SET COLOR TO &C2 / &C1
+    RETU
+  ENDIF
+  UPTKSTP=1
+  XTMP=4
+  DO  CASE
+  CASE	UCHTYPE=9
+    XTMP=4
+  CASE	UCHTYPE=11  .OR.  UCHTYPE=12
+    XTMP=5
+  ENDCASE
+  FOR XF=GS_TOT +1  TO GS_TOT + XTMP
+    IF WTANK_F[XF,1] <> 1
+       CNVSTP=3
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=GS_TOT +1  TO GS_TOT + XTMP
+    WTANK_F[XF,1]=-99
+    WTANK_F[XF,2]=0
+  NEXT
+  UPTANK[1,2]  := SECONDS()
+  SPACMIXTM[1,2] := SECONDS()
+  set  colo  to  gr+  /&C1
+  @ 13,41 SAY "©Õ¦X¢°"
+  SET COLOR TO B+ / &C1
+  @ 18,40 SAY "úZúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYúYú[ "
+  SET COLOR TO &C2 / &C1
+  A_STOR_4(A_PRESS_N0,GS_TOT+1,GS_TOT+XTMP)
+CASE   CNVSTP=4
+  CNVSTP=5
+  IF UPTKSTP  >0
+    DO	UPTKSTP_SPA
+    CNVSTP=4
+    MNGSTP=1
+  ELSE
+    DO MONI_G12
+  ENDIF
+  X=SECONDS()-SPACMIXTM[1,2]
+  IF X<0
+    X=86399+SECONDS()-SPACMIXTM[1,2]
+  ENDIF
+  X=SPACMIXTM[1,1]-X
+  IF  X<=0
+    X=0
+  ENDIF
+  SET  COLO TO GR+ /&C1
+  @  13,48  say  X  PICT "99"
+  SET  COLO TO &C2 /&C1
+  IF X >0
+    CNVSTP=4
+  ENDIF
+CASE   CNVSTP=5
+   DO MONI_G12
+  CNVSTP=6
+  XTMP=4
+  DO  CASE
+  CASE	UCHTYPE=9
+    XTMP=4
+  CASE	UCHTYPE=11
+    XTMP=5
+  CASE	UCHTYPE=12
+    XTMP=5
+  ENDCASE
+  FOR XF=GS_TOT +1  TO GS_TOT +XTMP
+    IF WTANK_F[XF,2] <> 1
+       CNVSTP=5
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=GS_TOT +1  TO GS_TOT + XTMP
+      WTANK_F[XF,2]=0
+  NEXT
+CASE   CNVSTP=6  .AND. DIN(12)=1 .AND.	DIN(9)=0 .AND. DIN(15)=1  .AND.  TANKSTP=0
+  DO MONI_G12
+  CNVSTP=7
+  XTMP1=9
+  XTMP2=10
+  DO  CASE
+  CASE	UCHTYPE=9
+    XTMP1=9
+    XTMP2=10
+  CASE	UCHTYPE=11
+    XTMP1=10
+    XTMP2=10
+  CASE	UCHTYPE=12
+    XTMP1=10
+    XTMP2=11
+  CASE	UCHTYPE=13
+    XTMP1=9
+    XTMP2=9
+  ENDCASE
+  FOR XF=XTMP1 TO XTMP2
+    IF WTANK_F[XF,1] <> 1
+       CNVSTP=6
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=XTMP1 TO XTMP2
+    WTANK_F[XF,1]=-99
+    WTANK_F[XF,2]=0
+  NEXT
+  SPACMIXTM[2,2] := SECONDS()
+  set  colo  to  W+  /&C1
+  @ 13,41 SAY "©Õ¦X¢°"
+  @  13,48  say  SPACMIXTM[1,1]   PICT "99"
+  set  colo  to  gr+  /&C1
+  @ 14,41 SAY "©Õ¦X¢±"
+  set  colo  to  &C2  /&C1
+  A_STOR_4(A_PRESS_N0,9,11)
+  A_STOR_4(A_PRESS_N0,1,2)
+  DO STOR_DATA
+CASE   CNVSTP=7
+  DO MONI_G12
+  CNVSTP=8
+  X=SECONDS()-SPACMIXTM[2,2]
+  IF X<0
+    X=86399+SECONDS()-SPACMIXTM[2,2]
+  ENDIF
+  X=SPACMIXTM[2,1]-X
+  IF  X<=0
+    X=0
+  ENDIF
+  SET  COLO TO GR+ /&C1
+  @  14,48  say  X  PICT "99"
+  SET  COLO TO &C2 /&C1
+  XTMP1=9
+  XTMP2=10
+  DO  CASE
+  CASE	AE_TYPE=89
+    XTMP1=8
+    XTMP2=9
+  CASE	UCHTYPE=9
+    XTMP1=9
+    XTMP2=10
+  CASE	UCHTYPE=11
+    XTMP=5
+    XTMP1=10
+    XTMP2=10
+  CASE	UCHTYPE=12
+    XTMP=6
+    XTMP1=10
+    XTMP2=11
+  CASE	UCHTYPE=13
+    XTMP1=9
+    XTMP2=9
+  ENDCASE
+  FOR XF=XTMP1 TO XTMP2
+    IF WTANK_F[XF,2] <> 1
+       CNVSTP=7
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=XTMP1 TO XTMP2
+      WTANK_F[XF,2]=0
+  NEXT
+CASE   (CNVSTP=8  .AND. DIN(8)=0  .AND. DIN(10)=1    .AND.  DIN(11)=1 .AND.  DIN(15)=1)
+  DO MONI_G12
+  X=SECONDS()-SPACMIXTM[2,2]
+  IF X<0
+    X=86399+SECONDS()-SPACMIXTM[2,2]
+  ENDIF
+  X=SPACMIXTM[2,1]-X
+  IF  X<=0
+    X=0
+  ENDIF
+  SET  COLO TO GR+ /&C1
+  @  14,48  say  X  PICT "99"
+  SET  COLO TO &C2 /&C1
+  IF  DIN(8)=1	.OR. DIN(10)=0	.OR.  DIN(11)=0 .OR.  DIN(15)=0
+     RETU
+  ENDIF
+  CNVSTP=9
+  IF  MNGSTP >0
+    CNVSTP=8
+  ENDIF
+  IF  X >0
+    CNVSTP=8
+  ENDIF
+CASE   CNVSTP=9
+  CNVSTP=10
+CASE   CNVSTP=10
+  CNVSTP=11
+CASE   CNVSTP=11
+  CNVSTP=12
+CASE   CNVSTP=12 .AND. DIN(12)=1 .AND. DIN(9)=0 .AND. DIN(15)=1  .AND.	TANKSTP=0
+  CNVSTP=13
+  UPTKSTP=1
+  UPTANK[1,2]  := SECONDS()
+  SPACMIXTM[3,2] := SECONDS()
+  set  colo  to  W+  /&C1
+  @ 14,41 SAY "©Õ¦X¢±"
+  @  14,48  say  SPACMIXTM[2,1]   PICT "99"
+  set  colo  to  gr+  /&C1
+  @ 15,41 SAY "©Õ¦X¢²"
+  set  colo  to  &C2  /&C1
+  TANKSTP=1
+CASE   CNVSTP=13
+  CNVSTP=0
+  IF UPTKSTP  >0
+    DO	UPTKSTP_SPA
+    CNVSTP=13
+  ENDIF
+ENDCASE
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  UPTKSTP_SPA
+PARAMETERS  P1,P2,P3
+DO  CASE
+CASE UPTKSTP=0
+    DOUT(14,0)
+CASE UPTKSTP=1
+  IF  DIN(15)=0
+    DOUT(14,0)
+    UPTANK[1,2]=SECONDS()
+    SET COLOR TO R +/ &C1
+    @  7,UPTANK[5,1]   say  UPTANK[1,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    SET COLOR TO GR +/ &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,1)
+    X=SECONDS()-UPTANK[1,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[1,2]
+    ENDIF
+    X=UPTANK[1,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  7,UPTANK[5,1]   say  X  PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0
+    UPTKSTP=2
+    UPTANK[2,2]=SECONDS()
+    SET  COLO TO W+ /&C1
+    @  7,UPTANK[5,1]   say  UPTANK[1,1]  PICT "99"
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,0)
+  ENDIF
+CASE UPTKSTP=2
+  IF  DIN(15)=0
+    DOUT(14,0)
+    UPTANK[2,2]=SECONDS()
+    SET COLOR TO R +/ &C1
+    @  9,UPTANK[5,1]   say  UPTANK[2,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    DOUT(14,0)
+    X=SECONDS()-UPTANK[2,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[2,2]
+    ENDIF
+    X=UPTANK[2,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  9,UPTANK[5,1]   say  X  PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0
+    SET  COLO TO W+ /&C1
+    UPTANK[3,2]=SECONDS()
+    @  9,UPTANK[5,1]   say  UPTANK[2,1]  PICT "99"
+    UPTKSTP=3
+    SET COLOR TO GR +/ &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,1)
+  ENDIF
+CASE UPTKSTP=3
+  IF  DIN(15)=0
+    DOUT(14,0)
+    UPTANK[3,2]=SECONDS()
+    SET COLOR TO R +/ &C1
+    @ 11,UPTANK[5,1]   say  UPTANK[3,1]  PICT "99"
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+  ELSE
+    SET COLOR TO GR +/ &C1
+    @ 13,UPTANK[5,1]-2 SAY "újúKúk"
+    SET COLOR TO &C2 / &C1
+    DOUT(14,1)
+    X=SECONDS()-UPTANK[3,2]
+    IF X<0
+      X=86399+SECONDS()-UPTANK[3,2]
+    ENDIF
+    X=UPTANK[3,1]-X
+    IF	X<=0
+      X=0
+    ENDIF
+    SET  COLO TO GR+ /&C1
+    @  11,UPTANK[5,1]	say  X	PICT "99"
+    SET  COLO TO &C2 /&C1
+  ENDIF
+  IF  X<=0
+    SET  COLO TO W+ /&C1
+    @  11,UPTANK[5,1]	say  UPTANK[3,1]  PICT "99"
+    UPTKSTP=0
+    SET COLOR TO W  / &C1
+    @ 13,UPTANK[5,1]-2	SAY "úG--úH"
+    DOUT(14,0)
+    SET  COLO TO W+   /&C1
+    @  4,UPTANK[5,1]   say  UPTANK[4,1]  PICT "99"
+    SET COLOR TO &C2 / &C1
+  ENDIF
+ENDCASE
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  STOR_DATA	 &&  ¤W¤U,special=1
+PARAMETERS  P1,P2,P3
+set  colo  to  w+  /&c1
+STORTIME=TIME()
+if spacial_0=1
+  if lchtype >= 5
+    IF LAGDATE=DATE()
+      LAGW=LAGW+ A_PRESS_N0[U_PRESS,stpn1,6,5]
+    ELSE
+      LAGW=VUSE
+      LAGDATE=DATE()
+    ENDIF
+    SAVE TO LAGDATA9 ALL LIKE LAG*
+    @ 0,26 SAY	LAGW   PICT  "9999.9"
+    ACT_V  = A_PRESS_N0[L_PRESS,stpn1,1,6]
+    @ 17,12 SAY  A_PRESS_N0[L_PRESS,stpn1,1,6]	PICT  "99.9"
+  endif
+endif
+set  colo  to  &c2  /&c1
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    E_STORE = 1
+    X=_TOT_D_A[20,4] +2
+    IF _TOT_D_A[2,X]=0
+      E_STORE = 0
+    ENDIF
+    IF (E_STORE =1)
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      IC_X="1"
+      sele 1
+      APPE BLAN
+      REPL LUTIME  WITH STORTIME,LUDATE WITH DATE(),LAG_VUSE WITH A_PRESS_N0[3,STPN&ic_x,1,6]
+      X=_TOT_D_A[20,4] +2
+      REPL SCANO WITH _TOT_D_A[2,X],CARNO WITH _TOT_D_A[13,X],TVUSE  WITH A_PRESS_N0[3,STPN&ic_x,1,5] ,RATNO WITH _TOT_D_A[18,X],LTANDO WITH _TOT_D_A[14,X]
+      REPL PAN_NO  WITH  STPN&ic_x,LAGNO1 WITH	_TOT_D_A[19,X] &&LAG_PNO
+      IF COM_E=1
+	REPL	SCANO2	WITH  _TOT_D_A[17,X]	 && S_MAX
+      ENDIF
+    ENDIF
+  ELSE
+    ACTIME=TIME()
+    HDOK=0
+  ENDIF
+  XTW=0
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    IF (E_STORE =1)
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      IC_X="1"
+      sele 1
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F=A_M_NAME[X,3]
+	IF W0DBF=1
+	  A_PRESS_N0[3,STPN&ic_x,X,1] =A_PRESS_N0[3,STPN&ic_x,X,8]
+	  *A_PRESS_N0[2,STPN&ic_x,X,1] =A_PRESS_N0[3,STPN&ic_x,X,8]
+	ENDIF
+	XTW=XTW+A_PRESS_N0[3,STPN&ic_x,X,1]
+	IF XTW > 0
+	  XTW=XTW + A_PRESS_N0[3,STPN&ic_x,X,2]
+	ENDIF
+	XMC1=ALLTRIM(STR(X,2,0))
+	&&repl TM&XMC1 WITH A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+	XTMP0= A_PRESS_N0[3,STPN&IC_X,X,1]
+	IF XTMP0 >0
+	  XTMP0= XTMP0 +A_PRESS_N0[3,STPN&IC_X,X,2]
+	ENDIF
+	repl TM&XMC1 WITH     XTMP0
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  IF (HDOK=1) .AND.( FILE("C:\LUW1.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+    IF (E_STORE =1)
+      IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+      IC_X="1"
+      APPE BLANK
+      X=_TOT_D_A[20,4] +2
+      REPL LUTIME  WITH STORTIME,LUDATE WITH DATE(),LAGNO1 WITH _TOT_D_A[19,X]	&&LAG_PNO
+      IF COM_E=1
+	REPL	SCANO2	WITH  _TOT_D_A[17,X]	 && S_MAX
+      ENDIF
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F=A_M_NAME[X,3]
+	XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+	sele 1
+	XMC1=ALLTRIM(STR(X,2,0))
+	IF W0DBF=1
+	  IF STANDW_ERR[X] > 0
+	    IF A_PRESS_N0[3,STPN&IC_X,X,8] =0
+	      A_PRESS_N0[3,STPN&IC_X,X,4]=0
+	      A_PRESS_N0[2,STPN&IC_X,X,4]=0
+	    ELSE
+	      XF_DATA=A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+	      IF (VAL(A_M_NAME[X,3])- INT( VAL(A_M_NAME[X,3]))) >0 && 99.99
+		RNDX=SECONDS()	* RAND()
+		XF_DATA1=- STANDW_ERR[X]*100 + MOD(RNDX,(STANDW_ERR[X] * 200) +1)
+		XF_DATA1=XF_DATA1/100
+	      ELSE
+		RNDX=SECONDS()	* RAND()
+		XF_DATA1=- STANDW_ERR[X] + MOD(RNDX,(STANDW_ERR[X] * 2) +1)
+	      ENDIF
+	      A_PRESS_N0[3,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+	      A_PRESS_N0[2,STPN&IC_X,X,4]=XF_DATA+XF_DATA1
+	    ENDIF
+
+	  ENDIF
+	ENDIF
+	repl TM&XMC1 WITH A_PRESS_N0[3,STPN&IC_X,X,4]
+      NEXT
+    ENDIF
+  ELSE
+    HDOK=0
+  ENDIF
+  XTW=0
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  IC_X="1"
+  FOR  X=1 TO (GS_TOT+UWC_TOT)
+    XMC_F=A_M_NAME[X,3]
+    XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,4]
+  NEXT
+  IF A_PRESS_N0[3,STPN&IC_X+1,1,5]  =0
+    XTWA=0
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+	SELE 7
+	APPEN BLAN
+	COMMIT
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F="9"+A_M_NAME[X,3]
+      XTW=0
+      FOR XN1=1 TO STPN&IC_X
+	XTW=XTW+A_PRESS_N0[3,XN1,X,4]
+      NEXT
+      IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+	IF (E_STORE =1)
+	  SELE 7
+	  XMC1=ALLTRIM(STR(X,2,0))
+	  REPL TOTM&XMC1 WITH XTW
+	  COMMIT
+	ENDIF
+      ELSE
+	HDOK=0
+      ENDIF
+      XTWA=XTWA+XTW
+    NEXT
+    SET DEVI TO SCRE
+    IF (HDOK=1) .AND.( FILE("C:\SA.DBF")=.T.)  .and.(INT(DISKSPACE( DAA )/1024) >250 )
+      IF (E_STORE =1)
+	IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+	IC_X="1"
+	SELE 7
+	REPL TOTW WITH XTWA
+	X=_TOT_D_A[20,4] +2
+	REPL SCANO WITH _TOT_D_A[2,X],CARDRV WITH _TOT_D_A[15,X],US2 WITH _TOT_D_A[16,X],LAGTTW WITH _TOT_D_A[11,X],TANDO WITH _TOT_D_A[14,X]
+	repl  p1702  with  _TOT_D_A[4,X],TOTVUSE WITH A_PRESS_N0[3,STPN&IC_X,1,6]
+	REPL LUDATE WITH DATE(),LUTIME WITH STORTIME,RATNO WITH  _TOT_D_A[18,X]
+	repl  U_PRICE WITH _TOT_D_A[21,X],CARNO WITH _TOT_D_A[13,X] ,lagno1  with   _TOT_D_A[19,X]
+	IF COM_E=1
+	  REPL	  SCANO2  WITH	_TOT_D_A[17,X]	   && S_MAX
+	ENDIF
+	COMMIT
+      ENDIF
+    ELSE
+      HDOK=0
+    ENDIF
+  ENDIF
+  IF (spacial_0=1 )  .and.  (STPN&IC_X=1  )
+    DO	PNT_TIT
+  ENDIF
+  PRINTERTST=0
+  DO  PRINTERTST    WITH   APORT
+  IF (PRINTERTST=1) .AND. (E_STORE =1)
+    SET CONS On
+    do case
+    case aport="1"
+      set print to lpt1
+      ? chr(27) + "SP1;"
+    case aport="2"
+      set print to lpt2
+      ? chr(27) + "SP2;"
+    case aport="3"
+      set print to lpt3
+      ? chr(27) + "sp3;"
+    endcase
+    IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+    IC_X="1"
+    SET CONS ON
+    SET DEVI TO PRINT
+    @ PROW(),0 say   "~I;"
+    @ PROW(),0 say  "~X12;"
+
+    @ PROW(),6	SAY  STPN&IC_X	PICT "99"
+    @ PROW(),10    SAY	TIME()
+    @ PROW(),18    SAY	A_PRESS_N0[3,STPN&IC_X,1,5]  PICT "99.9"
+    @ PROW(),25    SAY	A_PRESS_N0[3,STPN&IC_X,1,6]  PICT "99.9"
+    @ PROW()+1,1  SAY  " "
+    XTW=0
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F=A_M_NAME[X,3]
+      &&XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,1]+A_PRESS_N0[3,STPN&IC_X,X,2]
+      XTMP0=  A_PRESS_N0[3,STPN&IC_X,X,1]
+      IF XTMP0 >0
+	XTMP0=	XTMP0 + A_PRESS_N0[3,STPN&IC_X,X,2]
+      ENDIF
+      XTW=XTW + XTMP0
+      @ PROW(),6*(X-1)+2  SAY XTMP0    PICT "&XMC_F"
+    NEXT
+    @ PROW(),74  SAY   XTW  PICT "99999"
+    @ PROW()+1,1  SAY  " "
+    XTW=0
+    FOR  X=1 TO (GS_TOT+UWC_TOT)
+      XMC_F=A_M_NAME[X,3]
+      XTW=XTW+A_PRESS_N0[3,STPN&IC_X,X,4]
+      @ PROW(),6*(X-1)+2  SAY	A_PRESS_N0[3,STPN&IC_X,X,4]  PICT "&XMC_F"
+    NEXT
+    @ PROW(),74  SAY   XTW  PICT "99999"
+    @ PROW()+1,1  SAY  " "
+    IF A_PRESS_N0[3,STPN&IC_X+1,1,5]  =0
+      @ PROW(),1 SAY   "-----------------------------------------------------------------------------"
+      @ PROW()+1,1  SAY  " "
+      XTWA=0
+      FOR  X=1 TO (GS_TOT+UWC_TOT)
+	XMC_F="9"+A_M_NAME[X,3]
+	XTW=0
+	FOR XN1=1 TO STPN&IC_X
+	  XTW=XTW+A_PRESS_N0[3,XN1,X,4]
+	NEXT
+	@ PROW(),6*(X-1)+1  SAY   XTW	PICT "&XMC_F"
+	XTWA=XTWA+XTW
+      NEXT
+      @ PROW(),73  SAY	 XTWA  PICT "999999"
+      @ PROW()+1,1  SAY   " "
+    ENDIF
+    SET CONS On
+    SET DEVI TO SCRE
+  endif
+  IC_X=ALLTRIM(STR(GS_TOT+1,2,0))
+  IC_X="1"
+  IF A_PRESS_N0[3,STPN&IC_X + 1,1,5]  =0
+    x=1
+    IF X=1
+      X=_TOT_D_A[20,3]
+      IF X=0
+	_TOT_D_A[20,4] :=0
+      ELSE
+	_TOT_D_A[20,4] :=X
+	_TOT_D_A[20,3] :=0
+      ENDIF
+    ENDIF
+
+  ENDIF
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  MONI_G12
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE MNGSTP=1  .AND. DIN(8)=0  .AND. DIN(10)=1	  .AND.  DIN(11)=1 .AND.  DIN(15)=1
+    MNGSTP=2
+    FOR XF=1  TO 2
+      IF WTANK_F[XF,1] <> 1
+	 MNGSTP=1
+	 RETU
+      ENDIF
+    NEXT
+    FOR XF=1  TO 2
+	WTANK_F[XF,1]=-99
+	WTANK_F[XF,2]=0
+    NEXT
+    SET COLOR TO B+ / &C1
+    @ 13,UPTANK[5,1]-2 SAY "ú^ú]ú_"
+    SET COLOR TO &C2 / &C1
+
+
+CASE MNGSTP=2
+  MNGSTP=3
+  FOR XF=1  TO 2
+    IF WTANK_F[XF,2] <> 1
+       MNGSTP=2
+       RETU
+    ENDIF
+  NEXT
+  FOR XF=1  TO 2
+      WTANK_F[XF,2]=0
+  NEXT
+  UPTANK[4,2]=SECONDS()
+
+
+CASE MNGSTP=3
+  MNGSTP=4
+  X=SECONDS()-UPTANK[4,2]
+  IF X<0
+    X=86399+SECONDS()-UPTANK[4,2]
+  ENDIF
+  X=UPTANK[4,1]-X
+  IF  X<=0
+    X=0
+  ENDIF
+  SET  COLO TO GR+ /&C1
+  @  4,UPTANK[5,1]   say  X  PICT "99"
+  SET  COLO TO &C2 /&C1
+  IF X >0
+    CNVSTP=10
+    MNGSTP=3
+  ENDIF
+CASE MNGSTP=4
+  MNGSTP=0
+ENDCASE
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  stp4_2_21
+PARAMETERS  P1,P2,P3
+XPA1=0
+XPA2= A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-1,4]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-2,4]  +A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN-2,4]
+RDDLY(STP_FN,xpa1,xpa2)     &&care
+XRD := RDDELAY[STP_FN,3]
+IF XRD<>0
+  IF XRD=1
+    XMC_F=A_M_NAME[STP_FN,3]
+    @  4,A_M_NAME[STP_FN,13]  SAY  A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,2]  PICT  "&XMC_F"
+    DSPB_FMK(A_M_NAME[STP_FN,8]+1,1)  && "úZúYúYú["
+    WTANK_F[STP_FN,1] :=1
+    IF	(A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN+1,1] >0)
+      EW1=A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,1]+A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,2]
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,4] := INT(EW1)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,7] := 1
+      XMC_F=A_M_NAME[STP_FN,3]
+      *@  8,A_M_NAME[STP_FN,13]  SAY  EW1   PICT "&XMC_F"
+      EWN=EW1*2048/A_M_NAME[STP_FN,10]
+      SETCHDATA(STP_ZN,EWN)
+      X=EWN +CHENDATA(0)  +CHENDATA(1)+CHENDATA(2)
+      SETDLA(0,X)
+      STP4=0
+      STP5=1
+    ELSE
+      EWN=WDATA(0)-2048
+      EW1=INT  ((EWN)*A_M_NAME[STP_FN,10]/PER/2048)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,4] := INT(EW1)
+      A_PRESS_N0[L_PRESS,STPN&STP_FC,STP_FN,7] := 1
+      XMC_F=A_M_NAME[STP_FN,3]
+      *@  8,A_M_NAME[STP_FN,13]  SAY  EW1   PICT "&XMC_F"
+      SETCHDATA(STP_ZN,EWN)
+      X=EWN +CHENDATA(0)  +CHENDATA(1)+CHENDATA(2)
+      SETDLA(0,x)
+      STP4=0
+      STP5=1
+    ENDIF
+  ENDIF
+  RET_F=1
+  RETU
+endIF
+RETU
+

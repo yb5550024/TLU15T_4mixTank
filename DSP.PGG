@@ -1,0 +1,5738 @@
+*SELE 1 Y   LUW1
+*SELE 2 Y    W1.DBF
+*SELE 3 Y    SCA.DBF
+*SELE 4 Y   ADTPRN.DBF
+*SELE 5 Y   PAR.DBF
+*SELE 6 Y   MNI_OUT
+*SELE 7 Y   SA.DBF
+*SELE 8 Y    MLDSP.DBF
+*SELE 9 Y    ¼È¥ÎÀÉ
+*SELE 10   DBF12_1.DBF	 car data
+*SELE 11   DBF15.DBF	 COMPANY
+*SELE 12   DBF16.DBF	 EMPLYEE
+*SELE 13   DBF17.DBF	 ADDRESS
+*SELE 14   DBF_LAG.DBF
+*SELE 15   CHK_BILL
+*SELE 16   DISCO
+SET CENT ON
+REST FROM indata_a  ADDITIVE
+#INCLUDE "\CL52\INCLUDE\INKEY.CH"
+*#INCLUDE "\CLIPLIB\MY_FUNC2.PRG"
+PARDO=1
+DO WHILE PARDO=1
+A_M_NAME :={" ¥Û¢° "," ¥Û¢± "," ¥Û¢² "," ¬â¢° "," ¬â¢± ","  ¤ô  ","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²"," ÃÄ¾¯ "}
+A_REP_DATA :={{SPACE(4),SPACE(20),SPACE(30),0,SPACE(10),0,0},{SPACE(4),SPACE(20),SPACE(30),0,SPACE(10),0,0}} &&¼t°ÓNO,NAME,ADRESS,¥æ³f²Ö­p,CAR NO.,ªÅ­«
+publ	    P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,RET_X1,RET_X2,RET_X3,RET_X4,RET_X5,RET_X6,C_TOP1,C_TOP2
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+STOR 0 TO COM_OK,KOT,M_MIX,F_DISPROC,fist_rec,last_rec,pnt1_ok,pnt2_ok
+X=" "
+cn=""
+X=DSK_SNO(CN)
+A_S=" "         &&***
+C_S=" "         &&***
+IF ltrim(A_S) <> ""  .OR.   LTRIM(C_S) <> ""
+  IF (A_S <> X )  .AND. (C_S <> X)
+    QUIT
+  ENDIF
+ENDIF
+*clea all
+DSK_ERR=0
+IF FILE("c:\INDATA_A.MEM")=.t.
+  set defa to c:\
+  *REST FROM indata_a  ADDITIVE
+      DSK_ERR=0
+  IF A_S <> "         "
+    X=" "
+    cn=""
+    X=DSK_SNO(CN)
+    IF A_S <> X
+      DSK_ERR=1
+    ENDIF
+  ENDIF
+  IF C_S <> "         "
+    X=" "
+    cn="C:"
+    X=DSK_SNO(CN)
+    IF C_S <> X
+      DSK_ERR=1
+    ENDIF
+  ENDIF
+  IF  DSK_ERR=1888
+    IF SER_AOK()=1
+      DO DSK_KEY
+      QUIT
+    ELSE
+   *  QUIT
+    ENDIF
+  ENDIF
+  set defa to
+endif
+*clea all
+CLEA
+SET CURS OFF
+douin=0
+use par
+goto 18
+set colo to w/b
+@  3,27  SAY "¢ä¢í¢ú¢û¢ñ¢ö¡@¡@¢Ù¢±¡D¢¯¡@"
+@  5,13  say "·PÁÂ±z,¨Ï¥Î¥»¤½¥q¶}µo¤§²£«~,¦p¦³¥ô¦óºÃ°Ý½Ð»P¥»¤½¥qÁpµ¸"
+if pa8=920   .AND.  ( FILE("DEMO_SV1.COM")=.T.)
+  do demo_txt
+  ET3D(130,250,13,3,3,"¢Ò¢Ó¢Û¢Ý")
+  inkey(1)
+else
+  IF FILE("\et3\ÿ.ÿ")=.T.
+    @  7,13  say "«Â¦K¬ì§Þ ¢â¢Ó¢Ú¡G¡]¢¯¢¶¡^¢µ¢°¢¶¢¯¢±¢¯¢±     "
+  ELSEIF FILE("\et3\ÿÿ.ÿ")=.T.
+      ET3D(150,150,13,2,2,"¾É¤Þ¬ì§Þ")
+      ? CHR(27),"T16;"
+     @ 6,13  say "¾É¤Þ¬ì§Þ ¢â¢Ó¢Ú¡G¡]¢¯¢¶¡^¢µ¢°¢µ¢´¢¶¢´¢²¡A¢²¢µ¢²¢°¢¶¢¶¢¶"
+     @ 7,13  say "                   ¢¯¢¸¢²¢µ¢¸¢¶¢¶¢´¢·¢´                "
+     INKEY(5)
+      *7,13  say "¾É¤Þ¬ì§Þ ¢â¢Ó¢Ú¡G¡]¢¯¢¶¡^¢µ¢°¢µ¢´¢¶¢´¢²¡A¢²¢µ¢²¢°¢¶¢¶¢¶"
+    *ET3D(180,150,13,3,3,"«Â¦K¬ì§Þ")
+    douin=1
+  ENDIF
+ENDIF
+USE
+? CHR(27),"T16;"
+ IF FILE("\et3\ÿ\tÿ")=.f.
+    quit
+ endif
+*SET PATH TO  a:; c:\LU9;
+	    * SETSTAR(0)
+STOR 0 TO STP9,DSPTIME,MTANDO,NTANDO,nscano1,nscano2
+* STOR	"                   "  TO  cno1,cno2,cno3,cno4,cno5
+  *REST FROM indata_a  ADDITIVE
+  IF FILE("\et3\ÿ.ÿ")=.T.
+    douin=0
+  ELSEIF FILE("\et3\ÿÿ.ÿ")=.T.
+    douin=1
+  endif
+PUBL PX,XPX,_act_px,_lastkey,_DATA_MODIFY
+STOR 0 TO F3_N,NPAH1,GETNO,FGETNO,T1,T2,TN1,SCRNO,_DATA_MODIFY	  &&NPAH1.PRG
+STOR "0" TO    TPCOI,mcarno
+STOR  0  TO  SW9,WIFOK,WIZOK,TOTWI,TOTWK,SWI0,STOP9,STOPTM9,PZI,discl,discl_1,discu,TANKSTP,COM_E
+STOR  1 TO   TOMIX,TOTANK,NEXSTP,DOWNSKP,UPSKP,LURECNO,FNEXOKL,FNEXOKU,PERFLR,totank1,totank2,totank3,totank4,totank5,totank6,totank7,totank0
+STOR 0 TO NEXOK,NEXTOK,NEXTOK1,NEXTOK2,TOTWA,TOTWB,TOTWC,TOTWD,TOTWE,TOTWF,TOTWG,TOTWH,SW1,SW2,SW3,SW4,SW5,SW6,SW7,SW8,TOTVUSE,DSPCASE,downcalf
+stor  0 TO DOWNZTM,NVUSE,UPOV,PVUSE,PRTNO,UPOVSTP,PRCEND,PRCEND1,MVUSE,MIXSTM,DLYW,DLYCO1,DLYCO2
+STOR 0 TO STAR,DOWNOV,DOWNZER,FDSPA,UPZER,SWA0,SWB0,SWC0,SWD0,SWE0,SWF0,SWG0,SWH0,CONF,DRAF,DRBF,DRCF,DRDF,DREF,DRFF,DRGF,DRHF,DRMF,DRTKF,PCONVTM1,CONSTPF,PWATER0,PWATER1,PWATERs1,PWATERs2
+STOR 0 TO PZA,PZB,PZC,PZD,PZE,PZF,PZG,PZH,SVUSE,MRATNO,SETP1,SETP2,SETP3,SETP4,SETP5,SETP6,SETP7,DISC1,DISC2,disc2_c2,DISC2_C2N,DISC2_C2P,DISCH1
+STOR  1 TO PERSAD1,PERCON,PER,DISC2_C2Q,calw_rep,ACALW_REP,XCALW_REP
+stor 0 to STOPTML3,STOPTML4,STOPTML6,STOPTML7,STOPL3,STOPL4,STOPL6,STOPL7,WAFOK1 ,WBFOK1 ,WCFOK1 ,WDFOK1,F_NEXT1,F_NEXT2
+STOR 1 TO WCNT1,WCNT2,WCNT3,WCNT4,WCNT5,WCNT6,WCNT7,WCNT8,cno,DLA_DSP,dis_proc
+STOR "3" TO DOWNPRT,UPPRT
+STOR 0 TO HI1,HI2,HI3,HI4,HI5,HI6,HI7,HI8,HIF1,HIF2,HIF3,HIF4,HIF5,HIF6,HIF7,HIF8
+STOR 0 TO HIREP,RMOUSE,RMT,ISDEMO,demno_n,AU_PRICE,M_MIX,f_nextok1,f_nextok2,DO0_DSP,DO0_DSPF
+stor "     " to func_s
+STOR "1"  TO ludbf,R_C
+STOR "R" TO CF
+stor 704  TO IO_726
+public da_max1
+if  empty(da_max1)=.T.
+ DA_MAX1=5000
+ DA_MAX2=1000
+ DA_MAX3=1200
+ DA_MAX4=1500
+ DA_MAX5=1500
+endif
+*stor  1 to lag_pno
+xx_1=1
+PANDIC=0
+ REST FROM LAGDATA9  ADDITIVE
+ IF LAGDATE<>DATE()
+ LAGW=0
+ LAGDATE=DATE()
+ LAG_REPNO=1
+ ENDIF
+ ASCANO=LAG_REPNO
+ SAVE TO LAGDATA9 ALL LIKE LAG*
+*REST FROM PARM  ADDITIVE
+* PERCON=T/(T+P)
+*DSPCON=ACTCON*PERCON
+* PERSAD1 =T/(T-P)
+*DSPSAD2=ACTSAD2*PERCON
+*PARDO=1
+*DO WHILE PARDO=1
+  PARDO=0
+  *do dsp_0
+
+  selec 5
+  USE PAR
+  GOTO 22
+  RAM_DISK=SUBSTR("ABCDEFG",PA1,1) +":"
+  ROM_N=PA4
+if rom_n=1
+  IF FILE("DISCO.DBF")=.T.
+    IF FILE("C:\DISCO.DBF")=.F.
+     COPY FILE DISCO.DBF   TO c:\DISCO.DBF
+    ENDIF
+  ENDIF
+  IF FILE("c:\SA.DBF")=.f.
+     COPY FILE SA.DBF	TO c:\SA.DBF
+  ENDIF
+  IF FILE("c:\LUW1.DBF")=.f.
+     COPY FILE LUW1.DBF   TO c:\LUW1.DBF
+  ENDIF
+  IF FILE("c:\PAR.DBF")=.f.
+     COPY FILE PAR.DBF	 TO c:\PAR.DBF
+  ENDIF
+  IF FILE("c:\W1.DBF")=.f.
+     COPY FILE W1.DBF	TO C:\W1.DBF
+  ENDIF
+  IF FILE("c:\ADTPRN.DBF")=.f.
+     COPY FILE ADTPRN.DBF   TO C:\ADTPRN.DBF
+  ENDIF
+  IF FILE("c:\SCA.DBF")=.f.
+     COPY FILE SCA.DBF	 TO C:\SCA.DBF
+  ENDIF
+  IF FILE("c:\LAGDATA9.MEM")=.f.
+     COPY FILE LAGDATA9.MEM TO C:\LAGDATA9.MEM
+  ENDIF
+  IF FILE("c:\INDATA_A.MEM")=.f.
+      COPY FILE INDATA_A.MEM TO C:\INDATA_A.MEM
+  ENDIF
+  IF FILE("c:\TOT.DBF")=.f.
+     COPY FILE tot.DBF	 TO C:\TOT.DBF
+  ENDIF
+  IF FILE("c:\DSP.DBF")=.f.
+     COPY FILE DSP.DBF	 TO C:\DSP.DBF
+  ENDIF
+  IF FILE("c:\MLDSP.DBF")=.f.
+     COPY FILE MLDSP.DBF   TO C:\MLDSP.DBF
+  ENDIF
+  IF FILE("c:\MNI_OUT.DBF")=.f.
+     COPY FILE MNI_OUT.DBF   TO C:\MNI_OUT.DBF
+  ENDIF
+  IF FILE("c:\PAR1.DBF")=.f.
+     COPY FILE PAR1.DBF   TO C:\PAR1.DBF
+  ENDIF
+  IF  PA2=1
+    COM_E=1
+    IF FILE("C:\dbf15.dbf")=.f.
+       COPY FILE dbf15.dbf  TO C:\dbf15.dbf
+    ENDIF
+    IF FILE("c:\dbf16.dbf")=.f.
+       COPY FILE dbf16.dbf TO C:\dbf16.dbf
+    ENDIF
+    IF FILE("c:\dbf17.dbf")=.f.
+       COPY FILE dbf17.dbf TO C:\dbf17.dbf
+    ENDIF
+    IF FILE("c:\dbf_LAG.dbf")=.f.
+       COPY FILE dbf_LAG.dbf TO C:\dbf_LAG.dbf
+    ENDIF
+    IF FILE("c:\dbf12_1.dbf")=.f.
+       COPY FILE dbf12_1.dbf TO C:\dbf12_1.dbf
+    ENDIF
+  ELSE
+    COM_E=0
+  ENDIF
+  GOTO 29
+  IF PA1=66
+    IF FILE("c:\CHK_BILL.dbf")=.f.
+       COPY FILE CHK_BILL.dbf TO C:\CHK_BILL.dbf
+    ENDIF
+  ENDIF
+endif
+IF ROM_N=1
+  CLOS ALL
+  set defa  to c:\
+  selec 5
+  USE PAR
+ *REST FROM indata_a  ADDITIVE
+ REST FROM LAGDATA9  ADDITIVE
+ IF LAGDATE<>DATE()
+ LAGW=0
+ LAGDATE=DATE()
+ LAG_REPNO=1
+ ENDIF
+ ASCANO=LAG_REPNO
+ SAVE TO LAGDATA9 ALL LIKE LAG*
+ENDIF
+
+STORE  1 TO   A_PRESS,U_PRESS,L_PRESS
+STOR  0 TO  UPOV,DNOV,UPOVSTP,TANKSTP,MIXTM,PAUSE_TM,MIXTM_S,DROPTM_S,DROPTM,PWATER1
+STORE  0 TO   NEXTOK,NEXTOK1,NEXTOK2,STOPTM1,STOPTM2,STOPTM3,STOPTM4,STOPTM5,STOPTM6,STOPTM7,STOPTM8,STOPTM9,STOPTM10,STOPTM11,STOPTM12
+STORE 0  TO  STP1,STOP1,STOP2,STOP3,STOP4,STOP5,STOP6,STOP7,STOP8,STOP9,STOP10,STOP11,STOP12
+STORE 1  TO  STPN1,STPN2,STPN3,STPN4,STPN5,STPN6,STPN7,STPN8,STPN9,STPN10,STPN11,STPN12
+STOR  0 TO   STP1,STP2,STP3,STP4,STP,STP5,STP6,STP7,STP8,STP9,STP10,STP11,STP12
+DI_ADS2=HEXTODEC("2A0")
+DI_ADS3=HEXTODEC("2A2")
+RDDELAY :=ARRAY(12,3)
+FILL_A_D2(RDDELAY,1,12,3,0)
+WTANK_F :=ARRAY(12,3)
+FILL_A_D2(WTANK_F,1,12,3,0)
+A_PRESS_N0 :=ARRAY(2,21,12,7)
+A_PRESS_N1 :=ARRAY(2,18)
+FILL_A_D4(A_PRESS_N0,1,1,21,12,7,0)
+FILL_A_D4(A_PRESS_N0,2,1,21,12,7,0)
+FILL_A_D2(A_PRESS_N1,1,2,18,0)
+SELE 5
+A_M_NAME :=ARRAY(12,17)
+USE  PAR1
+GOTO  TOP   &&	NAME OF MATI
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,1] :=ALLTRIM(PA&IX_C)
+NEXT
+GOTO 14
+IF EOF()
+  APPE	BLANK
+  REPL PARNO WITH 14
+  FOR I=1 TO 12
+    IX_C=ALLTRIM(STR(I,2,0))
+    REPL PA&IX_C   WITH  A_M_NAME[I,1]
+    A_M_NAME[I,17] :=ALLTRIM(PA&IX_C)
+  NEXT
+ELSE
+   FOR I=1 TO 12
+     IX_C=ALLTRIM(STR(I,2,0))
+     A_M_NAME[I,17] :=ALLTRIM(PA&IX_C)
+   NEXT
+ENDIF
+*GOTO  2   &&  POSITION IN  MONITOR TO	DISPLAY
+*FOR I=1 TO 12
+*  IX_C=ALLTRIM(STR(I,2,0))
+*  A_M_NAME[I,2] :=VAL(PA&IX_C)
+*NEXT
+
+
+
+
+
+
+
+
+
+GOTO  3    && LENGHT ON  DISPAY
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,3] :=ALLTRIM(PA&IX_C)
+NEXT
+GOTO  4    && NAME  OF	 WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,4] :=PA&IX_C
+NEXT
+GOTO  5    && LENGHT ON  WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,5] :=ALLTRIM(PA&IX_C)
+NEXT
+GOTO  13   && LENGHT ON  WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,13] :=VAL(PA&IX_C)
+NEXT
+GOTO  6    && LENGHT ON  WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,14] :=VAL(PA&IX_C)
+NEXT
+GOTO  7    && LENGHT ON  WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,15] :=VAL(PA&IX_C)
+NEXT
+GOTO  8    && POSITION ON WEIGHT
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,16] :=VAL(PA&IX_C)
+NEXT
+
+SELE 5
+USE PAR
+GOTO BOTT
+DO  WHILE RECNO() <49
+  APPE	BLANK
+ENDDO
+GOTO 49
+MAX_PNT=PA1
+STOR  1 TO  totank1,totank2,totank3,totank4,totank5,totank6,totank7,totank0
+* CKS()
+ SAVE TO LAGDATA9 ALL LIKE LAG*
+goto 35
+xx_=pa1
+GOTO 36
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,2] :=INT((PA&IX_C+xx_)/8)+int(length(alltrim(A_M_NAME[I,1]))/2)
+NEXT
+GOTO 22
+RAM_DISK=SUBSTR("ABCDEFG",PA1,1) +":"
+IF  (ROM_N=1 ) .AND.  (RAM_DISK="A:" )
+  RAM_DISK="C:"
+ENDIF
+ACARNO=SPACE(7)
+ACARDRV =SPACE(8)
+ACARW=0
+ARATNO =0
+AVUSE  =0
+ATANDO =0
+AUS2=SPACE(4)
+AUS3=0
+ATOT_CAR=0
+AUS2_1=SPACE(30)
+A_ADDR_NO=SPACE(4)
+Aus2_2=space(30)
+if  com_e=1 .AND. (FILE("C:\DBF16.DBF")=.T.) .AND. (FILE("C:\DBF15.DBF")=.T.) .AND. (FILE("C:\DBF12_1.DBF")=.T.)
+  SELE 10
+  USE c:\DBF12_1
+  SELE 11
+  USE c:\DBF15
+  INDE ON P1501 TO &RAM_DISK\DX1501
+  SELE 12
+  USE c:\DBF16
+  INDE ON P1601 TO &RAM_DISK\DX1601
+  SELE 13
+  USE c:\DBF17
+  *INDE ON P1701 TO &RAM_DISK\DX1701
+  SELE 14
+  USE c:\DBF_LAG
+  DELE FOR LAG_DATE<DATE()-62
+  PACK
+ELSE
+  COM_E=0
+endif
+IF FILE("DISCO.DBF")=.T.
+  SELE	16
+  USE  DISCO
+  DELE	FOR  DSDATE<>DATE()
+  PACK
+  F_DISPROC=2
+ENDIF
+SELE 5
+GOTO 21
+IF  PA4=77  .AND.  ( FILE("DEMO_SV1.COM")=.T.)
+  ISDEMO=1
+ELSE
+  ISDEMO=0
+ENDIF
+demo_n=pa3
+HIREP=PA5
+*IF  HIREP=0
+*  HIREP=2
+*ENDIF
+Z_AUTO=PA6
+dsp_1s=int(pa7)
+if  dsp_1s <=0
+  dsp_1s=1
+endif
+AUTOR=PA8
+IF  AUTOR=1
+  SELE 8
+  USE MLDSP
+ENDIF
+  selec 5
+T=0
+DO WHILE  T=0
+  GOTO 45
+  TIME1 :=ARRAY(12,2)
+  FOR I=1 TO 12
+    IX_C=ALLTRIM(STR(I,2,0))
+    TIME1[I,1] :=PA&IX_C
+    TIME1[I,2] :=0
+  NEXT
+  GOTO 46
+  LS1 :=ARRAY(12,2)
+  FOR I=1 TO 12
+    IX_C=ALLTRIM(STR(I,2,0))
+    LS1[I,1] :=PA&IX_C
+    LS1[I,2] :=0
+  NEXT
+  GOTO 47
+  LS2 :=ARRAY(12,2)
+  FOR I=1 TO 12
+    IX_C=ALLTRIM(STR(I,2,0))
+    LS2[I,1] :=PA&IX_C
+    LS2[I,2] :=0
+  NEXT
+  GOTO 48
+  STANDW_ERR :=ARRAY(12)
+  FOR I=1 TO 12
+    IX_C=ALLTRIM(STR(I,2,0))
+    STANDW_ERR[I] :=PA&IX_C
+  NEXT
+GOTO 30
+  IF  EOF()
+    APPE BLANK
+    REPL  PARNO  WITH INT(RECNO())
+    IF RECNO()=30
+      REPL PA1 WITH DA_MAX1,PA2 WITH DA_MAX2,PA3 WITH DA_MAX3,PA4 WITH DA_MAX4,PA5 WITH DA_MAX5
+    ENDIF
+  ELSE
+    T=1
+    DA_MAX1=PA1
+    DA_MAX2=PA2
+    DA_MAX3=PA3
+    DA_MAX4=PA4
+    DA_MAX5=PA5
+  ENDIF
+ENDDO
+T=0
+GOTO 4
+LCHTYPE=PA1
+UCHTYPE=PA2
+RATVOL=PA3
+RATVOL_S=PA3
+DATA4=PA4
+bnodata4=data4
+INTNO=PA5
+PWATER=0
+C_PRT_REP=SUBSTR(ALLTRIM(STR(pa7,3,0)),-2,2)
+C_MINK=VAL(SUBSTR((STR(pa7,3,0)),-3,1) )
+STOPDAY=PA8
+if  (stopday > 0 ) .and.  (STOPDAY <> 77)
+  IF   (VAL(SUBSTR(DTOC(DATE()),4,2)) + (VAL(SUBSTR(DTOC(DATE()),1,2)) * 100 ) ) >=STOPDAY
+    REPL  PA8 WITH 99
+    if re_star()=0
+      quit
+    ELSE
+      X=99
+      @ 20,1  GET  X
+      READ
+      REPLA PA8 WITH  X
+    endif
+  ENDIF
+endif
+GOTO 11
+PZERTM1=PA1*INTNO
+PZERTM2=PA2*INTNO
+PZERTM3=PA3*INTNO
+PZERTM4=PA4*INTNO
+PZERTM5=PA5*INTNO
+PZERTM6=PA6*INTNO
+PZERTM7=PA7*INTNO
+PZERTM9=PA7*INTNO
+PZERTM8=PA8*INTNO
+PZERTM9=PA9*INTNO
+PZERTM10=PA10*INTNO
+PZERTM11=PA11*INTNO
+PZERTM12=PA12*INTNO
+GOTO 9
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,9] :=PA&IX_C
+  A_M_NAME[I,10] :=PA&IX_C
+NEXT
+POVKG0=PA1
+POVKG1=PA2
+POVKG2=PA3
+POVKG3=PA4
+POVKG4=PA5
+POVKG5=PA6
+POVKG6=PA7
+POVKG8=PA7
+POVKG7=PA8
+SPOVKG0=PA1
+SPOVKG1=PA2
+SPOVKG2=PA3
+SPOVKG3=PA4
+SPOVKG4=PA5
+SPOVKG5=PA6
+SPOVKG6=PA7
+SPOVKG8=PA7
+SPOVKG7=PA8
+GOTO 10
+MAIN_AMP=PA1
+pconvtm=PA2
+WATER_ADJ=PA3
+GOTO TOP
+PFLOR1=pa1
+PFLOR2=pa2
+PFLOR3=pa3
+PFLOR4=pa4
+PFLOR5=pa5
+PFLOR6=pa6
+PFLOR7=pa7
+PFLOR8=pa8
+PFLOR9=pa9
+PFLOR10=pa10
+PFLOR11=pa11
+PFLOR12=pa12
+GOTO 12
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,6] :=PA&IX_C
+  A_M_NAME[I,12] :=PA&IX_C
+NEXT
+MOVKG0=PA1
+MOVKG1=PA2
+MOVKG2=PA3
+MOVKG3=PA4
+MOVKG4=PA5
+MOVKG5=PA6
+MOVKG6=PA7
+MOVKG7=PA8
+MOVKG8=PA9
+MOVKG9=PA10
+MOVKG10=PA11
+MOVKG11=PA12
+
+GOTO 30
+fps=int(pa7)
+GOTO 29
+RDT_1=PA2
+RDT_2=PA3
+RDT_3=PA4
+Z_RDT_1=PA5
+Z_RDT_2=PA6
+MYS_WATER=PA7	&&  1:´î¤ô +  S1    2: ´î¤ô + S2    0:´î¤ô + 1/2   S1  1/2 S2
+IF MYS_WATER >=3
+  MYS_WATER=0
+ENDIF
+del_key=pa8
+X_MONI=INT(PA8)
+LU_COUNT=0
+IF PA1=66
+  LU_COUNT=1
+  SELE 15
+  USE CHK_BILL
+ENDIF
+IF  X_MONI=77
+  DO MONI_INI
+  SELE 6
+  USE	MNI_OUT
+ENDIF
+
+SELE 5
+GOTO 15
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,7] :=PA&IX_C
+NEXT
+ZA=PA1
+ZB=PA2
+ZC=PA3
+ZD=PA4
+ZE=PA5
+ZF=PA6
+ZG=PA7
+ZI=PA7
+ZH=PA8
+Z0=PA1
+Z1=PA2
+Z2=PA3
+Z3=PA4
+Z4=PA5
+Z5=PA6
+Z6=PA7
+Z7=PA8
+GOTO 2
+PZER1=PA1
+PZER2=PA2
+PZER3=PA3
+PZER4=PA4
+PZER5=PA5
+PZER6=PA6
+PZER7=PA7
+PZER9=PA7
+PZER8=PA8
+PZER9=PA9
+PZER10=PA10
+PZER11=PA11
+PZER12=PA12
+DO CASE
+CASE LCHTYPE=4
+  KLCHN=2
+  SETZER(0,INT(((PZER1/A_M_NAME[1,6])*PER*2048)+2048))
+  SETZER(1,INT(((PZER4/A_M_NAME[2,6])*PER*2048)+2048))
+ENDCASE
+DO CASE
+   CASE UCHTYPE=1
+     SETZER(KLCHN,INT(((PZER6/A_M_NAME[KLCHN,6])*PER*2048)+2048))
+     SETZER(KLCHN+1,INT(((PZER8/A_M_NAME[KLCHN+1,6])*PER*2048)+2048))
+     SETZER(KLCHN+2,INT(((PZER9/A_M_NAME[KLCHN+2,6])*PER*2048)+2048))
+     SETZER(KLCHN+3,INT(((PZER11/A_M_NAME[KLCHN+3,6])*PER*2048)+2048))
+     SETZER(KLCHN+4,INT(((PZER12/A_M_NAME[KLCHN+4,6])*PER*2048)+2048))
+   CASE UCHTYPE=2
+	SETZER(KLCHN,INT(((PZER5/POVKG4)*PER*2048)+2048))
+	SETZER(KLCHN+1,INT(((PZER6/POVKG5)*PER*2048)+2048))
+	SETZER(KLCHN+2,INT(((PZER8/POVKG7)*PER*2048)+2048))
+   CASE UCHTYPE=3
+	SETZER(KLCHN,INT(((PZER5/POVKG4)*PER*2048)+2048))
+	SETZER(KLCHN+1,INT(((PZER6/POVKG5)*PER*2048)+2048))
+ENDCASE
+GOTO 3
+ERKG1=PA1
+ERKG2=PA2
+ERKG3=PA3
+ERKG4=PA4
+ERKG5=PA5
+ERKG6=PA6
+ERKG7=PA7
+ERKG8=PA8
+ERKG9 =PA9
+ERKG10=PA10
+ERKG11=PA11
+ERKG12=PA12
+GOTO 5
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  A_M_NAME[I,8] :=INT( PA&IX_C )
+NEXT
+DATA1=PA1
+DATA2=PA2
+DATA3=PA3
+DATA4=PA4
+DATA5=PA5
+DATA6=PA6
+DATA7=PA7
+DATA8=PA8
+DATA9=PA9
+DATA10=PA10
+DATA11=PA11
+DATA12=PA12
+SETWANO(0,INT(DATA1))
+SETWANO(1,INT(DATA2))
+SETWANO(2,INT(DATA3))
+SETWANO(3,INT(DATA4))
+SETWANO(4,INT(DATA5))
+SETWANO(5,INT(DATA6))
+SETWANO(6,INT(DATA7))
+SETWANO(7,INT(DATA8))
+SETWANO(8,INT(DATA9))
+SETWANO(9,INT(DATA10))
+SETWANO(10,INT(DATA11))
+SETWANO(11,INT(DATA12))
+GOTO 6
+DATA1=PA1
+DATA2=PA2
+DATA3=PA3
+DATA4=PA4
+DATA5=PA5
+DATA6=PA6
+DATA7=PA7
+DATA8=PA8
+DATA9=PA9
+DATA10=PA10
+DATA11=PA11
+DATA12=PA12
+SETOUTIME(0,INT(DATA1*INTNO))
+SETOUTIME(1,INT(DATA2*INTNO))
+SETOUTIME(2,INT(DATA3*INTNO))
+SETOUTIME(3,INT(DATA4*INTNO))
+SETOUTIME(4,INT(DATA5*INTNO))
+SETOUTIME(5,INT(DATA6*INTNO))
+SETOUTIME(6,INT(DATA7*INTNO))
+SETOUTIME(7,INT(DATA8*INTNO))
+SETOUTIME(8,INT(DATA9*INTNO))
+SETOUTIME(9,INT(DATA10*INTNO))
+SETOUTIME(10,INT(DATA11*INTNO))
+SETOUTIME(11,INT(DATA12*INTNO))
+GOTO 7
+FOR I=1 TO 12
+  IX_C=ALLTRIM(STR(I,2,0))
+  RDDELAY[I,1] :=PA&IX_C
+NEXT
+DATA1=PA1
+DATA2=PA2
+DATA3=PA3
+DATA4=PA4
+DATA5=PA5
+DATA6=PA6
+DATA7=PA7
+DATA8=PA8
+DATA9=PA9
+DATA10=PA10
+DATA11=PA11
+DATA12=PA12
+
+SETZERTM(0,INT(DATA1*INTNO))
+SETZERTM(1,INT(DATA2*INTNO))
+SETZERTM(2,INT(DATA3*INTNO))
+SETZERTM(3,INT(DATA4*INTNO))
+SETZERTM(4,INT(DATA5*INTNO))
+SETZERTM(5,INT(DATA6*INTNO))
+SETZERTM(6,INT(DATA7*INTNO))
+SETZERTM(7,INT(DATA8*INTNO))
+SETRDTIME(0,INT(DATA1*INTNO))
+SETRDTIME(1,INT(DATA2*INTNO))
+SETRDTIME(2,INT(DATA3*INTNO))
+SETRDTIME(3,INT(DATA4*INTNO))
+SETRDTIME(4,INT(DATA5*INTNO))
+SETRDTIME(5,INT(DATA6*INTNO))
+SETRDTIME(6,INT(DATA7*INTNO))
+SETRDTIME(7,INT(DATA8*INTNO))
+SETRDTIME(8,INT(DATA9*INTNO))
+SETRDTIME(9,INT(DATA10*INTNO))
+SETRDTIME(10,INT(DATA11*INTNO))
+SETRDTIME(11,INT(DATA12*INTNO))
+GOTO 8
+pdrOP1=PA1
+PDRCL =PA2
+PDROP2=PA3
+PMIXTM=PA4
+PMIXA =PA5
+PMIXOP=PA6
+SETMEM(HEXTODEC("284"),INT(PDROP1*INTNO))
+SETMEM(HEXTODEC("286"),INT(PDRCL*INTNO))
+SETMEM(HEXTODEC("288"),INT(PDROP2*INTNO))
+SETMEM(HEXTODEC("28A"),INT(PMIXTM*INTNO))
+SETMEM(HEXTODEC("28C"),INT(PMIXA*2048/MAIN_AMP)+2048)
+SETMEM(HEXTODEC("28E"),INT(PMIXOP*INTNO))
+aport=str(pa7,1,0)
+if aport="0"
+  aport="1"
+endif
+bport=str(pa8,1,0)
+if bport="0"
+  bport="2"
+endif
+if aport=bport
+  if aport="1"
+    bport="2"
+  else
+    bport="1"
+  endif
+endif
+GOTO 13
+STOPDR1 =PA1
+STOPDR2 =PA2
+STOPDR3 =PA3
+STOPDR4 =PA4
+STOPDR5 =PA5
+STOPDR6 =PA6
+STOPDR7 =PA7
+STOPDR8 =PA8
+STOPDR9 =PA9
+STOPDR10=PA10
+STOPDR11=PA11
+STOPDR12=PA12
+
+
+
+GOTO 19
+STOPLC=PA3
+STOPLD=PA4
+STOPLF=PA6
+STOPlG=PA7
+COLOR="  N  B  G BG  RRBGR W"
+COLOR="  N  B  G BG  R RB GR  WB+ G+ BG+R+ RB+GR+W+ "
+GOTO 14
+c1=SUBSTR(COLOR,MOD(INT(PA1),16)*3+1,3)
+C2=SUBSTR(COLOR,MOD(INT(PA2),16)*3+1,3)
+C3=SUBSTR(COLOR,MOD(INT(PA3),16)*3+1,3)
+C4=SUBSTR(COLOR,MOD(INT(PA4),16)*3+1,3)
+C5=SUBSTR(COLOR,MOD(INT(PA5),16)*3+1,3)
+C6=SUBSTR(COLOR,MOD(INT(PA6),16)*3+1,3)
+C7=SUBSTR(COLOR,MOD(INT(PA7),16)*3+1,3)
+COLOR="B  G  BG R  RB GR W  B+ G+ BG+R+ RB+GR+W+ "
+GOTO 20
+c8=SUBSTR(COLOR,MOD(INT(PA1),16)*3+1,3)
+C9=SUBSTR(COLOR,MOD(INT(PA2),16)*3+1,3)
+C10=SUBSTR(COLOR,MOD(INT(PA3),16)*3+1,3)
+C11=SUBSTR(COLOR,MOD(INT(PA4),16)*3+1,3)
+C12=SUBSTR(COLOR,MOD(INT(PA5),16)*3+1,3)
+C13=SUBSTR(COLOR,MOD(INT(PA6),16)*3+1,3)
+C14=SUBSTR(COLOR,MOD(INT(PA7),16)*3+1,3)
+IF PA1=0
+  C8=C2
+ENDIF
+IF PA2=0
+  C9=C2
+ENDIF
+IF PA3=0
+  C10=C2
+ENDIF
+IF PA4=0
+  C11=C2
+ENDIF
+GOTO 15
+ZA=PA1
+ZB=PA2
+ZC=PA3
+ZD=PA4
+ZE=PA5
+ZF=PA6
+ZG=PA7
+ZI=PA7
+ZH=PA8
+
+GOTO 16
+TOTDR=0
+IF PA1=1
+  TOTDR=TOTDR+1
+ENDIF
+IF PA2=1
+  TOTDR=TOTDR+1
+ENDIF
+IF PA3=1
+  TOTDR=TOTDR+1
+ENDIF
+IF PA4=1
+  TOTDR=TOTDR+1
+ENDIF
+TOTDR1=TOTDR
+DRSTA=PA1
+DRSTB=PA2
+DRSTC=PA3
+DRSTD=PA4
+XX=STR(PA1,1,0)
+DRST_Z&XX="SWA1"
+XX=STR(PA2,1,0)
+DRST_Z&XX="SWB1"
+XX=STR(PA3,1,0)
+DRST_Z&XX="SWC1"
+XX=STR(PA4,1,0)
+DRST_Z&XX="SWD1"
+DRSTA_o=PA1
+DRSTB_o=PA2
+DRSTC_o=PA3
+DRSTD_o=PA4
+DELAYW=PA5
+DELAYCO1=PA6
+DELAYCO2=PA7
+DRFME=PA8
+DRNO=1
+GOTO 17
+SDRA=PA1
+SDRB=PA2
+SDRC=PA3
+SDRD=PA4
+SDRE=PA5
+SDRF=PA6
+SDRG=PA7
+SDRH=PA8
+GOTO 18
+KOT=PA4
+IF KOT=1
+  TOTANK0=0    &&NO.  UB   TANK
+ENDIF
+if PA8=16.8
+  douin=1
+endif
+_auto_flor=pa7
+DAA=int(PA2)
+if  DAA=0
+  DAA=3
+endif
+DS=SUBSTR("ABCD",INT(PA3),1)+":"
+DA=SUBSTR("ABCD",INT(PA2),1)+":"
+SET COLOR TO &C5 +/ &C1
+PUBL NRATNO,NCARNO
+CHRN=0
+FANT=0
+CAS=0
+CAS1=0
+F=0
+X1=0
+XP=0
+Y1=0
+XX1=0
+YY1=0
+   IF FILE("c:\LUW1.DBF")=.T.
+   HDOK=1
+   SELEC 1
+   USE c:\LUW1
+   GOTO TOP
+   IF LUDATE<DATE()-750
+     DELE FOR LUDATE<DATE()-750
+     PACK
+   ENDIF
+   X= INT(DISKSPACE( 3 )/1024)
+   IF X < 350
+      X=(650 -X) *10 /2
+      Y=(650 -X) *7  /2
+      DELE FOR RECNO() < X
+      PACK
+      SELE 7
+      USE c:\SA
+      DELE FOR RECNO() < Y
+   ENDIF
+   SELE 7
+   USE c:\SA
+   GOTO TOP
+   IF LUDATE<DATE()-750
+     DELE FOR LUDATE<DATE()-750
+     PACK
+   ENDIF
+   ELSE
+   HDOK=0
+   @ 1,0 SAY "µwºÐ¬G»Ù"
+   ENDIF
+   F7_FUNC=" "
+   F8_FUNC=" "
+   ARR_PCS :=ARRAY(13)
+   ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+   RET_A :=ARRAY(13)
+   _F3TXT_A :=ARRAY(4) && FUNCTION F3  TITLE
+   PUBL   _F3TXT_A
+   SELE 5
+   GOTO 21
+   PUBLIC P_DEMO,_NOTPER,COM_OK
+   COM_OK=0
+   c_coMn=MOD(PA2,10)
+   c_BAU=INT(PA2/10)   && 5=2400 6=4800 7=9600
+   IF ( C_COMN	<=1).and. (c_BAU >= 4)
+     *COM_OK=COMINI(C_COMN,C_BAU,1,0,2)
+     X=ASC(SUBSTR(COM_STS(C_COMN),1,1))
+     COM_OK=X
+   ENDIF
+   GOTO 7
+   IF EMPTY(SUBSTR(PA13,1,4))=.T.
+     _F3TXT_A[1] := "«È¤á¥N¸¹"
+   ELSE
+     _F3TXT_A[1] := SUBSTR(PA13,1,8)
+   ENDIF
+   IF EMPTY(SUBSTR(PA13,5,4))=.T.
+     _F3TXT_A[2] := "«È¤á¦WºÙ"
+   ELSE
+     _F3TXT_A[2] := SUBSTR(PA13,9,8)
+   ENDIF
+   IF EMPTY(SUBSTR(PA13,9,4))=.T.
+     _F3TXT_A[3] := "¦aÂI¥N¸¹"
+   ELSE
+     _F3TXT_A[3] := SUBSTR(PA13,17,8)
+   ENDIF
+   IF EMPTY(SUBSTR(PA13,13,4))=.T.
+     _F3TXT_A[4] := "°e³f¦aÂI             "
+   ELSE
+     _F3TXT_A[4] := SUBSTR(PA13,25,8)
+   ENDIF
+   _TOT_D_A :=ARRAY(21,5) && PRINT @Y,X,DATA1,DATA2
+     _TOT_D_A[20,1] :=99
+     _TOT_D_A[20,3] :=0      && FIST  INPUT
+     _TOT_D_A[20,4] :=0      && FIST  PRINT
+     _TOT_D_A[1,5] :="XXXXXXXX"
+     _TOT_D_A[2,5] :="999999999"
+     _TOT_D_A[3,5] :="XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+     _TOT_D_A[4,5] :="XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+     _TOT_D_A[5,5] :="999999999"
+     _TOT_D_A[6,5] :="999999999"
+     _TOT_D_A[7,5] :="999999999"
+     _TOT_D_A[8,5] :="XXXXXXXX"
+     _TOT_D_A[9,5] :="999999999"    &&¥æ³f¨®¦¸
+     _TOT_D_A[10,5] :="9999999.9"
+     _TOT_D_A[11,5] :="9999999.9"    &&²Ö­p¦Ì¼Æ
+     _TOT_D_A[12,5] :="9999"
+     _TOT_D_A[13,5] :="XXXXXXXX"
+     _TOT_D_A[14,5] :="9999"
+     _TOT_D_A[15,5] :="XXXXXXXXXX"
+     _TOT_D_A[17,5] :="99"
+     _TOT_D_A[18,5] :="9999"      && °t¤ñno.
+     _TOT_D_A[20,2] :=15    &&¶µ¼Æ
+     _TOT_D_A[21,2] :="99999" &&³æ»ù
+     _TOT_D_A[21,3] :=0 &&³æ»ù
+     _TOT_D_A[21,4] :=0 &&³æ»ù
+     SELE 5
+     GOTO 23
+     _TOT_D_A[1,1] :=VAL(SUBSTR(STR(PA1,5,0),1,2))
+     _TOT_D_A[1,2] :=VAL(SUBSTR(STR(PA1,5,0),3,3))
+     _TOT_D_A[2,1] :=VAL(SUBSTR(STR(PA2,5,0),1,2))
+     _TOT_D_A[2,2] :=VAL(SUBSTR(STR(PA2,5,0),3,3))
+     _TOT_D_A[3,1] :=VAL(SUBSTR(STR(PA3,5,0),1,2))
+     _TOT_D_A[3,2] :=VAL(SUBSTR(STR(PA3,5,0),3,3))
+     _TOT_D_A[4,1] :=VAL(SUBSTR(STR(PA4,5,0),1,2))
+     _TOT_D_A[4,2] :=VAL(SUBSTR(STR(PA4,5,0),3,3))
+     _TOT_D_A[5,1] :=VAL(SUBSTR(STR(PA5,5,0),1,2))  &&CAR  TOTAL  WEIGHT
+     _TOT_D_A[5,2] :=VAL(SUBSTR(STR(PA5,5,0),3,3))
+     _TOT_D_A[6,1] :=VAL(SUBSTR(STR(PA6,5,0),1,2))  && CAR  EMPTY  WEIGHT
+     _TOT_D_A[6,2] :=VAL(SUBSTR(STR(PA6,5,0),3,3))
+     _TOT_D_A[7,1] :=VAL(SUBSTR(STR(PA7,5,0),1,2))
+     _TOT_D_A[7,2] :=VAL(SUBSTR(STR(PA7,5,0),3,3))
+     LST_BB=PA8
+     GOTO 24
+     _TOT_D_A[8,1]  :=VAL(SUBSTR(STR(PA1,5,0),1,2))
+     _TOT_D_A[8,2]  :=VAL(SUBSTR(STR(PA1,5,0),3,3))
+     _TOT_D_A[9,1]  :=VAL(SUBSTR(STR(PA2,5,0),1,2))
+     _TOT_D_A[9,2]  :=VAL(SUBSTR(STR(PA2,5,0),3,3))
+     _TOT_D_A[10,1] :=VAL(SUBSTR(STR(PA3,5,0),1,2))
+     _TOT_D_A[10,2] :=VAL(SUBSTR(STR(PA3,5,0),3,3))
+     _TOT_D_A[11,1] :=VAL(SUBSTR(STR(PA4,5,0),1,2))
+     _TOT_D_A[11,2] :=VAL(SUBSTR(STR(PA4,5,0),3,3))
+     _TOT_D_A[12,1] :=VAL(SUBSTR(STR(PA5,5,0),1,2))
+     _TOT_D_A[12,2] :=VAL(SUBSTR(STR(PA5,5,0),3,3))
+     _TOT_D_A[13,1] :=VAL(SUBSTR(STR(PA6,5,0),1,2))
+     _TOT_D_A[13,2] :=VAL(SUBSTR(STR(PA6,5,0),3,3))
+     _TOT_D_A[14,1] :=VAL(SUBSTR(STR(PA7,5,0),1,2))
+     _TOT_D_A[14,2] :=VAL(SUBSTR(STR(PA7,5,0),3,3))
+     GOTO 25
+     _TOT_D_A[15,1] :=VAL(SUBSTR(STR(PA1,5,0),1,2))
+     _TOT_D_A[15,2] :=VAL(SUBSTR(STR(PA1,5,0),3,3))
+     _TOT_D_A[17,1] :=VAL(SUBSTR(STR(PA2,5,0),1,2))
+     _TOT_D_A[17,2] :=VAL(SUBSTR(STR(PA2,5,0),3,3))
+     _TOT_D_A[18,1] :=VAL(SUBSTR(STR(PA3,5,0),1,2))
+     _TOT_D_A[18,2] :=VAL(SUBSTR(STR(PA3,5,0),3,3))
+     _TOT_D_A[16,1] :=VAL(SUBSTR(STR(PA4,5,0),1,2))
+     _TOT_D_A[16,2] :=VAL(SUBSTR(STR(PA4,5,0),3,3))
+     P_LENGTH=INT(PA8)
+     IF  P_LENGTH=0
+       P_LENGTH=33
+     ENDIF
+   _AUTO_FLOR(1,1,0," ",0)
+   SELEC 2
+   USE W1
+*  INDEX ON RATNO TO RATNODX
+   SELEC 4
+   USE ADTPRN
+   SET RELA TO RATNO  INTO W1
+   SELEC 3
+   USE SCA
+   CUS=1
+   SET CURS OFF
+   SET SCOR OFF
+  PERR=1-PER
+  cleamem()
+  r=0
+  F=0
+  PCON=0
+  CH=""
+  do lu_dsp
+  LU12_DSP(LCHTYPE,UCHTYPE)
+  TEST=0
+  T=0
+  TD1=1
+  *IF	RISMOUSE()
+  *  RMOUSE=1
+  *  RCURSORON()
+  *ELSE
+  *  RCURSOROFF()
+  *ENDIF
+  DO WHILE TD1=1
+    DO WHILE T=0
+      IF  F3_N <> 1
+	T=INKEY()
+      ENDIF
+      DO  DSP2
+      do lustp
+      *IF  RMOUSE=1
+      *  RMT=Rclick()
+      *  IF RMT = .t.
+      *    DO RMOUSE
+      *  ENDIF
+      *ENDIF
+    ENDDO
+    IF	F_DISPROC >=1
+      if t=13
+	if func_s="98766"
+	  DO0_DSP=1
+	ELSE
+	  DO0_DSP=0
+	ENDIF
+	if ALLTRIM(func_s)="998"
+	  SET CURS ON
+	  @ 13,1  SAY  "³Ì¤j¦C¦L¤è¼Æ: " GET MAX_PNT
+	  READ
+	  SET CURS OFF
+	  @ 13,1 CLEA  TO  13,25
+	  SELE 5
+	  GOTO 49
+	  REPL	PA1  WITH  MAX_PNT
+	ENDIF
+	if func_s="91234"
+	  do  dis_proc
+	  func_s="     "
+	else
+	  func_s="     "
+	endif
+      else
+	func_s=SUBSTR(FUNC_S+CHR(T),2,5)
+      endif
+    endif
+    IF T=-29  .and. douin=1
+      T=SER_OK()
+      IF T <> 1
+	T=0
+      ELSE
+	T=-29
+      ENDIF
+    ENDIF
+    @ 0,45 SAY	SUBSTR(DTOC(DATE()),7,4)
+    @ 0,52 SAY	SUBSTR(DTOC(DATE()),1,2)
+    @ 0,57 SAY	SUBSTR(DTOC(DATE()),4,2)
+    @ 0,71 SAY	TIME()
+    do do_case
+    t=0
+ ENDDO
+ENDDO
+clea
+clos all
+quit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*#INCLUDE "\CLIPLIB\MY_FUNC2.PRG"
+* -----------------------------------------------------------------------------
+  FUNCTION CURSER2
+  PARAMETERS  X1,Y1,XP
+  X1=int((X1+XP)*8)
+  Y1=INT(Y1*15+15)
+  *XP=INT(XP)
+   *@ 0,0 SAY ""
+   *? CHR(27),"L",X1, ",",Y1-1, ",",X1+7,",",Y1-1,",",0,";"
+    *?	CHR(27),"L",X1, ",",Y1-2, ",",X1+7,",",Y1-2,",",0,";"
+    *?	CHR(27),"L",X1, ",",Y1-3, ",",X1+7,",",Y1-3,",",0,";"
+  RETU
+* -----------------------------------------------------------------------------
+  FUNCTION CURSER0
+  PARAMETERS  XX1,YY1
+  XX1=INT(XX1*8)
+  YY1=INT(YY1*15+15)
+   *@  0,0  SAY ""
+  *? CHR(27),"L",XX1, ",",YY1-1, ",",XX1+7,",",YY1-1,";"
+  *?  CHR(27),"L",XX1, ",",YY1-2, ",",XX1+7,",",YY1-2,";"
+  *?  CHR(27),"L",XX1, ",",YY1-3, ",",XX1+7,",",YY1-3,";"
+  RETU
+* -----------------------------------------------------------------------------
+  FUNCTION HEXTODEC
+  PARAMETERS  X
+  X=UPPER(X)
+  A=SUBSTR(X,1,1)
+  B=SUBSTR(X,2,1)
+  C=SUBSTR(X,3,1)
+  DO CASE
+  CASE A="A"
+       A=10*256
+  CASE A="B"
+       A=11*256
+  CASE A="C"
+       A=12*256
+  CASE A="D"
+       A=13*256
+  CASE A="E"
+       A=14*256
+  CASE A="F"
+       A=15*256
+  OTHERWISE
+  A=VAL(A)*256
+  ENDCASE
+  DO CASE
+  CASE B="A"
+       B=10*16
+  CASE B="B"
+       B=11*16
+  CASE B="C"
+       B=12*16
+  CASE B="D"
+       B=13*16
+  CASE B="E"
+       B=14*16
+  CASE B="F"
+       B=15*16
+  OTHERWISE
+  B=VAL(B) *16
+  ENDCASE
+  DO CASE
+  CASE C="A"
+       C=10
+  CASE C="B"
+       C=11
+  CASE C="C"
+       C=12
+  CASE C="D"
+       C=13
+  CASE C="E"
+       C=14
+  CASE C="F"
+       C=15
+  OTHERWISE
+  C=VAL(C)
+  ENDCASE
+  T=A+B+C
+  RETU	T
+* -----------------------------------------------------------------------------
+FUNCTION  ET3D
+PARAMETERS   TROW,TCOL,TGAP,TRX,TRY,STRING
+@ 1,0 SAY ""
+TROW1=STR(TROW)
+TCOL1=STR(TCOL)
+TROW2=STR(TROW+1)
+TCOL2=STR(TCOL+1)
+TROW3=STR(TROW+2)
+TCOL3=STR(TCOL+2)
+TROW4=STR(TROW+3)
+TCOL4=STR(TCOL+3)
+TGAP=STR(TGAP)
+TRX=STR(TRX)
+TRY=STR(TRY)
+TRXY=TRX+'/'+TRY
+? CHR(27),"T24,&TROW1,&TCOL1,&TGAP,&TRXY,O;&STRING"
+? CHR(27),"T24,&TROW2,&TCOL2,&TGAP,&TRXY,O;&STRING"
+*? CHR(27),"T24,&TROW3,&TCOL3,&TGAP,&TRXY,O;&STRING"
+RETURN ""
+* -----------------------------------------------------------------------------
+PROCEDURE  fun_key
+PARAMETERS  P1,P2,P3
+F_KEY_LAST=6
+LOP_FUNC=1
+DO WHILE LOP_FUNC=1
+  if t=5
+    FDSPA =FDSPA  -1
+    If FDSPA  < 0
+      FDSPA =F_KEY_LAST
+    ENDIF
+  else
+    FDSPA =FDSPA  +1
+    if FDSPA  > F_KEY_LAST
+      FDSPA =0
+    endif
+  endif
+  do case
+  case FDSPA =0
+    LOP_FUNC=0
+    SET COLOR TO W+ / &CF
+    @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦¥\¯à«ü¥Ü F1-§t¤ô²v   F2-°t¤ñ F3-¥X¨®      F4-°Ñ¼Æ F5-³øªí¦C¦L      ¡ü"
+    SET COLOR TO  gr +/ &CF
+    @ 24,2  SAY "¡ô¡õ"
+    @ 24,20 SAY "F1"
+    @ 24,32 SAY "F2"
+    @ 24,40 SAY "F3"
+    @ 24,53 SAY "F4"
+    @ 24,61 SAY "F5"
+    SET COLOR TO &C7 +/ &C1
+  case FDSPA =1
+    LOP_FUNC=0
+    SET COLOR TO W+  / &CF
+    @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦ F6-¹sÂI F7-¸¨®t F8-¤¤¤î¥[¤ô F9-°_°Ê F10-°_°Ê¤¤¤î  Ctl-End.¡÷µ²§ô  ¡ü"
+    SET COLOR TO  gr +/ &CF
+    @ 24,2  SAY "¡ô¡õ"
+    @ 24,12  say "F6"
+    @ 24,20  say "F7"
+    @ 24,28  say "F8"
+    @ 24,40  say "F9"
+    @ 24,48  say "F10"
+    @ 24,62  say "Ctl-End.¡÷"
+    SET COLOR TO &C7 +/ &C1
+  case FDSPA =2
+    LOP_FUNC=0
+    SET COLOR TO W+  / &CF
+    @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦ Ctrl-F4 ½SºÙ®Õ¥¿,Âk¹s Ctrl-F5 ²Ö­p­×¥¿ Ctrl-F8 µwÊ^´ú¸Õ Ctrl-F9   ¡ü"
+    SET COLOR TO  gr +/ &CF
+    @ 24,2  SAY "¡ô¡õ"
+    @ 24,12  say "Ctrl-F4"
+    @ 24,34  say "Ctrl-F5"
+    @ 24,51  say "Ctrl-F8"
+    @ 24,68  say "Ctrl-F9"
+    SET COLOR TO &C7 +/ &C1
+  case FDSPA =3
+    IF	COM_E=1
+      SET COLOR TO  W+ / &CF
+      @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦ Shift-F1 «È¤á¸ê®Æ¿é¤J Shift-F2 ­û¤u¸ê®Æ¿é¤J Shift-F3  ¨®½ø¸ê®Æ¿é¤J¡ü"
+      @ 24,21  SAY  SUBSTR(_F3TXT_A[2],1,4)
+      SET COLOR TO  gr +/ &CF
+      @ 24,2  SAY "¡ô¡õ"
+      @ 24,12  say "Shift-F1"
+      @ 24,34  say "Shift-F2"
+      @ 24,56  say "Shift-F3"
+      SET COLOR TO &C7 +/ &C1
+      LOP_FUNC=0
+    ENDIF
+  case FDSPA =4
+    IF	COM_E=1
+      SET COLOR TO  W+ / &CF
+      @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦ Shift-F4     ¦aÂI¸ê®Æ¿é¤J                                             ¡ü"
+      @ 24,21  SAY  _F3TXT_A[4]
+      SET COLOR TO  gr +/ &CF
+      @ 24,2  SAY "¡ô¡õ"
+      @ 24,12  say "Shift-F4"
+      SET COLOR TO &C7 +/ &C1
+      LOP_FUNC=0
+    ENDIF
+  case FDSPA =5
+    LOP_FUNC=0
+    SET COLOR TO W+  / &CF
+    @ 24,0 SAY	 "¡ü¡ô¡õ-¨ä¥¦ Shift-F5¤é´Á®É¶¡§ó¥¿  Shift-F6 ¾÷±ñ®e¶q­×¥¿ Shift-F7 ¤p¤J®Æ­×¥¿   ¡ü"
+    SET COLOR TO  gr +/ &CF
+    @ 24,2  SAY "¡ô¡õ"
+    @ 24,12  say "Shift-F5"
+    @ 24,34  say "Shift-F6"
+    @ 24,56  say "Shift-F7"
+    SET COLOR TO &C7 +/ &C1
+  case FDSPA =6
+    IF	_AUTO_FLOR=1
+      SET COLOR TO  W+ / &CF
+      @ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦ Shift-F8 ¤@¦¸¦Û°Ê­×¥¿¸¨®t³Ì¤j­«                                   ¡ü"
+      SET COLOR TO  gr +/ &CF
+      @ 24,2  SAY "¡ô¡õ"
+      @ 24,12  say "Shift-F8"
+      SET COLOR TO &C7 +/ &C1
+      LOP_FUNC=0
+    ENDIF
+  endcase
+ENDDO
+RETURN
+* -----------------------------------------------------------------------------
+FUNCTION NREAD
+PARAMETERS  Y1,X1,PPX,LONG,x_func
+XPX=PpX
+pgm=x_func
+SET COLOR TO N/W *
+CHRN=XPX
+@ Y1,X1  SAY CHRN
+SET COLOR TO 7/0
+     XP=0
+       t=0
+       SET COLOR TO W+	/ R
+		  @ Y1,(X1+XP)	SAY SUBSTR(CHRN,XP+1,1)
+       SET COLOR TO &C7 +/ &C1
+       *CURSER2(X1,Y1,XP)
+       set colo to gr + * /bl
+       @ y1,x1 say  substr(chrn,XP+1,1)
+	 set colo to &c7 + /&c1
+       XX1=X1+XP
+       YY1=Y1
+       T1=0
+       TN1=0
+       DO WHILE T1<>233
+       T=0
+       DO WHILE  T=0
+       T=INKEY( )
+       DO DSP2
+       DO LUSTP
+       ENDDO
+
+       DO CASE
+	  case	T=19
+		IF XP>=1
+		XP=XP-1
+		*CURSER0(XX1,YY1)
+		SET COLOR TO N/W *
+		@ Y1,X1  SAY CHRN
+		SET COLOR TO 7/0
+		SET COLOR TO W+  / R
+		@ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+		SET COLOR TO &C7 +/ &C1
+		*CURSER2(X1,Y1,XP)
+		XX1=X1+XP
+		YY1=Y1
+		ENDIF
+	  CASE	T=4
+		IF XP<=LONG-2
+		XP=XP+1
+		*CURSER0(XX1,YY1)
+		SET COLOR TO N/W  *
+		@ Y1,X1  SAY CHRN
+		SET COLOR TO 7/0
+		SET COLOR TO W+  / R
+			   @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+		SET COLOR TO &C7 +/ &C1
+		*CURSER2(X1,Y1,XP)
+		XX1=X1+XP
+		YY1=Y1
+		ENDIF
+	  CASE	 T>=32
+	     XP=XP+1
+	     IF TN1=0 .AND. XP=1
+	       TN1=1
+	       CHRN=SPACE(LONG)
+	     ENDIF
+	     IF XP<LONG
+	     CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,LONG-XP)
+		SET COLOR TO N/W *
+	     @ Y1,X1  SAY CHRN
+	     SET COLOR TO 7/0
+	     *CURSER0(XX1,YY1)
+	     SET COLOR TO W+  / R
+			@ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+	     SET COLOR TO &C7 +/ &C1
+	     *CURSER2(X1,Y1,XP)
+	     XX1=X1+XP
+	     YY1=Y1
+	     ELSE
+	     CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+		SET COLOR TO N/W *
+	     @ Y1,X1  SAY CHRN
+	     SET COLOR TO 7/0
+	     XP=XP-1
+	     SET COLOR TO W+  / R
+			@ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+	     SET COLOR TO &C7 +/ &C1
+	     *CURSER2(X1,Y1,XP)
+	     XX1=X1+XP
+	     YY1=Y1
+	     ENDIF
+	  CASE T=13   .OR. T=23 .OR. T=5 .OR. T=24 .OR. T=27.OR. T=-6 .OR. T=-9
+	       T1=233
+	      XPX=CHRN
+	       TNSTP=T
+	  CASE T=28
+	      IF  pgm	  <> " "
+	      DO &pgm
+	      ENDIF
+	       T1=233
+	      XPX=CHRN
+	       TNSTP=T
+       ENDCASE
+       ENDDO
+RETU   TNSTP
+
+* -----------------------------------------------------------------------------
+FUNCTION SER_OK_o
+SER_X=VAL(SUBSTR(DTOC(DATE()),1,1))
+SER_X=SER_X +VAL(SUBSTR(DTOC(DATE()),2,1))
+SER_X=SER_X +VAL(SUBSTR(DTOC(DATE()),4,1))
+SER_X=SER_X +VAL(SUBSTR(DTOC(DATE()),5,1))
+SER_X=SER_X +VAL(SUBSTR(DTOC(DATE()),7,1))
+SER_X=SER_X +VAL(SUBSTR(DTOC(DATE()),8,1))
+SER_X=(SER_X * 2)  +9
+SER_XW=DOW(DATE())-1
+IF  SER_XW =0
+  SER_XW=7
+ENDIF
+SER_XW=STR(SER_XW,1,0)
+IF  SER_X <100
+  SER_X=SER_X * 10
+  SER_X=STR(SER_X,3,0)
+  SER_X=SUBSTR(SER_X,1,1) + SER_XW + SUBSTR(SER_X,2,2)
+ELSE
+  SER_X=STR(SER_X,3,0)
+  SER_X=SUBSTR(SER_X,1,2) + SER_XW + SUBSTR(SER_X,3,1)
+ENDIF
+SER_STP=1
+SER_OK=1
+DO WHILE SER_STP <=4
+  T_SER=0
+  DO  WHILE T_SER=0
+    T_SER=INKEY()
+   *DO DSP2
+  ENDDO
+  IF  CHR(T_SER) <> SUBSTR(SER_X,SER_STP,1)
+    SER_OK=0
+    EXIT
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+RETU SER_OK
+
+* -----------------------------------------------------------------------------
+FUNCTION CKS
+sele 5
+GOTO TOP
+cks_1=0
+DO WHILE .NOT. EOF()
+  cks_1=cks_1+PA1+PA2+PA3+PA4+PA5+PA6+PA7+PA8
+  SKIP
+ENDDO
+IF cks_1<> CKS
+  if  cks <> 168
+  clea
+  @ 0,0  SAY "DataBase Not Found !  Press Any Key To Continue"
+  T=SER_OK()
+  endif
+  IF  T= 1 .or. cks =168
+    CKS=cks_1
+     SAVE TO indata_a
+    @ 0,0  SAY "             "
+  ELSE
+    QUIT
+  ENDIF
+ENDIF
+RETU  ""
+* -----------------------------------------------------------------------------
+FUNCTION SUBOD
+PARAMETERS  X1,Y1
+X1=X1-Y1
+RETU X1
+
+* -----------------------------------------------------------------------------
+FUNCTION DRNO_C
+PARAMETERS  X1,Y1
+X1_N=X1
+DO WHILE  X1_N >1
+* DRSTA_N
+ENDDO
+RETU Y1
+
+
+PROCEDURE  DEMO_INP
+PARAMETERS  P1,P2,P3
+IF  STP1=3
+  XX=WDATA(0)
+  XX=XX+demo_n
+  IF  XX <= 4096
+    SETMEM(HEXTODEC("254"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP2=3
+  XX=WDATA(0)
+  XX=XX+demo_n
+  IF  XX <= 4096
+    SETMEM(HEXTODEC("254"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP3=3
+  XX=WDATA(1)
+  XX=XX+demo_n
+  IF  XX <= 4096
+    SETMEM(HEXTODEC("256"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP4=3
+  XX=WDATA(1)
+  XX=XX+demo_n
+  IF  XX <= 4096
+    SETMEM(HEXTODEC("256"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP2=5
+  XX=WDATA(0)
+  XX=XX-(demo_n * 2)
+  IF  XX >= 2048
+    SETMEM(HEXTODEC("254"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP4=5
+  XX=WDATA(1)
+  XX=XX-(demo_n * 2)
+  IF  XX >= 2048
+    SETMEM(HEXTODEC("256"),INT(XX))
+  ENDIF
+ENDIF
+IF  STP5=3
+  XX=WDATA(KLCHN)
+  XX=XX+demo_n
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )
+  IF  XX <= 4048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP6=3
+  XX=WDATA(KLCHN+1)
+  XX=XX+demo_n
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )+2
+  IF  XX <= 4048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP7=3
+  XX=WDATA(KLCHN+2)
+  XX=XX+demo_n
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +4
+  IF  XX <= 4048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP9=3
+  XX=WDATA(KLCHN+2)
+  XX=XX+demo_n
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +4
+  IF  XX <= 4048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP8=3
+  XX=WDATA(KLCHN+3)
+  XX=XX+demo_n
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +6
+  IF  XX <= 4048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP5=5
+  XX=WDATA(KLCHN)
+  XX=XX-(demo_n * 2)
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )
+  IF  XX >= 2048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP6=5
+  XX=WDATA(KLCHN+1)
+  XX=XX-(demo_n * 2)
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +2
+  IF  XX >= 2048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP7=5
+  XX=WDATA(KLCHN+2)
+  XX=XX-(demo_n * 2)
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +4
+  IF  XX >= 2048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP8=5
+  XX=WDATA(KLCHN+3)
+  XX=XX-(demo_n * 2)
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +6
+  IF  XX >= 2048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+IF  STP9=5
+  XX=WDATA(KLCHN+2)
+  XX=XX-(demo_n * 2)
+  X=(2*16*16) + (5 *16) + 4 + (KLCHN * 2 )  +4
+  IF  XX >= 2048
+    SETMEM(X,INT(XX))
+  ENDIF
+ENDIF
+RETU
+PROCEDURE  DEMO_txt
+PARAMETERS  P1,P2,P3
+@  7,13  say "³Õ³Ç¬ì§Þ ¢â¢Ó¢Ú¡G¡]¢¯¢¶¡^¢²¢±¢²¢±¢³¢µ¢·¡A¢²¢³¢¶¢°¢°¢±¢³"
+xx=300
+save scre to scrma
+do  while xx >=150
+ ? CHR(27),"T16;"
+  rest scre from scrma
+ x="³Õ³Ç¬ì§Þ"
+set colo to gr+ / b
+ ET3D(130,xx,13,3,3,x)
+ xx=xx-4
+enddo
+set colo to w/b
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION READ2_s
+PARAMETERS  PX,X1,Y1,TNSTP,LONG
+XPX=pX
+X1=X1-1
+SET COLOR TO 0/7 *
+IF TNSTP<>9
+  SET COLOR TO 0 * /7
+  @ Y1,X1  SAY XPX  PICT "9999"
+  CHRN=STR(INT(XPX),4)
+ELSE
+  SET COLOR TO 0 * /7
+  @ Y1,X1  SAY XPX  PICT "99.99"
+  CHRN=STR(XPX,5,2)
+ENDIF
+XP=0
+t=0
+SET COLOR TO W+  / R
+@ y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+SET COLOR TO 7/0
+*CURSER2(X1,Y1,XP)
+XX1=X1+XP
+YY1=Y1
+T1=0
+TN1=0
+DO WHILE T1<>233
+  T=0
+  DO WHILE  T=0
+    T=INKEY( )
+    DO DSP2
+    DO LUSTP
+  ENDDO
+  DO CASE
+  case	T=19
+    IF XP>=1
+      XP=XP-1
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	T=4
+    IF XP<=LONG-2
+      XP=XP+1
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO &C1 */ &C7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	 T=43 .OR.T=45 .OR.T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+    XP=XP+1
+    IF TN1=0 .AND. XP=1
+      TN1=1
+      IF  TNSTP<>9
+	CHRN="    "
+      ELSE
+	CHRN="     "
+      ENDIF
+    ENDIF
+    IF XP<LONG
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,LONG-XP)
+      SET COLOR TO 0/7	*
+      IF  VAL(CHRN)>=1000
+	CHRN="    "
+      ENDIF
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ELSE
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+      SET COLOR TO 0/7
+      IF  TNSTP<>9
+	IF  VAL(CHRN)>=1000
+	  CHRN="    "
+	ENDIF
+      ELSE
+	IF  VAL(CHRN)>=100
+	  CHRN="     "
+	ENDIF
+      ENDIF
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      XP=XP-1
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE T=13   .OR. T=23 .OR. T=5 .OR. T=24.or. t=2
+    T1=233
+    IF TNSTP<>9
+      XPX =INT(VAL(CHRN))
+      PX=XPX
+      @ Y1,X1  SAY  PX	 PICT "9999"
+    ELSE
+      XPX =INT(VAL(CHRN)*100)/100
+      IF XPX > 100
+	XPX=1
+      ENDIF
+      PX=XPX
+      @ Y1,X1  SAY  PX	 PICT "99.99"
+    ENDIF
+    SELE 5
+    IF TNSTP=8
+      GOTO 22
+      REPL PA3 WITH PX
+    ELSE
+      GOTO 3
+      CHNO=LTRIM(STR(TNSTP))
+      IF TNSTP=9
+	CHNO=STR(8,1,0)
+      ENDIF
+      REPL PA&CHNO WITH PX
+    ENDIF
+    DO CASE
+    CASE T=5
+      IF TNSTP>1
+	TNSTP=TNSTP-1
+      ENDIF
+    CASE T=24  .OR. T=13
+      TNSTP=TNSTP+1
+    ENDCASE
+    IF T=23 .or. t=2
+      TNSTP=10
+    ENDIF
+  CASE T=27
+    SET COLOR TO 0/7
+    XPX=PX
+    IF TNSTP<>9
+      @ Y1,X1  SAY XPX	PICT "9999"
+      CHRN=STR(INT(XPX),4)
+    ELSE
+      @ Y1,X1  SAY XPX	PICT "99.99"
+      CHRN=STR(XPX,5,2)
+    ENDIF
+    SET COLOR TO 7/0
+    XP=0
+    t=0
+    *CURSER0(XX1,YY1)
+    *CURSER2(X1,Y1,XP)
+    XX1=X1+XP
+    YY1=Y1
+  ENDCASE
+ENDDO
+RETU   TNSTP
+&&-----------------------------------------------------------------------------
+FUNCTION dsk_sno
+PARAMETERS  dn
+#DEFINE F_BLOCK 73
+CBUFFER=SPACE(F_BLOCK)
+! vol &dn > c:\TEST.TMP
+NHANDLE=fopen("c:\TEST.TMP")
+FREAD(NHANDLE,@CBUFFER,F_BLOCK)
+x=SUBSTR(ALLTRIM(CBUFFER),-11,9)
+fCLOSE("c:\TEST.TMP")
+delE file   c:\test.tmp
+retu x
+**-----------------------------------------------------------------------------
+FUNCTION SER_AOK   && NO=4809
+SER_X="4809"
+SER_OK=1
+SER_STP=1
+DO WHILE SER_STP <=4
+  T_SER=0
+  DO  WHILE T_SER=0
+    T_SER=INKEY()
+   *DO DSP2
+  ENDDO
+  IF  CHR(T_SER) <> SUBSTR(SER_X,SER_STP,1)
+    SER_OK=0
+    EXIT
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+RETU SER_OK
+&&-----------------------------------------------------------------------------
+PROCEDURE  DSK_KEY
+PARAMETERS  P1,P2,P3
+CLEA
+ *REST FROM indata_a ADDITIVE
+a_s=space(9)
+c_s=space(9)
+AN="A:"
+CN="C:"
+SET CURS ON
+@ 5,10 SAY "AN " GET  AN
+@ 6,10 SAY "CN " GET  CN
+READ
+A_s=dsk_sno(AN)
+c_s=dsk_sno(CN)
+@ 5,10 SAY "AS " GET  A_S
+@ 6,10 SAY "CS " GET  C_S
+READ
+ SAVE TO indata_a
+RETU
+
+&&-----------------------------------------------------------------------------
+PROCEDURE  lu_dsp
+PARAMETERS  P1,P2,P3
+CLEAR
+SET COLOR TO &C2 / &C1
+@ 0,0 SAY "°t¤ñ®e¶q:        ²Ö­p¦Ì¼Æ:             ¤é´Á:     ¦~   ¤ë   ¤é ¡@  ®É¶¡:         "
+@ 1,0 SAY "                                                                                "
+* 2,0 SAY "       ¥Û¢° ¥Û¢± ¬â¢° ¬â¢±  «Ý©Õ¼Ñ  ²M¤ô ¦B¤ô ¤ôªd¢° ¤ôªd¢± ¤ôªd¢² ÃÄ¾¯¢° ÃÄ¾¯¢±"
+*@ 2,0 SAY "       ¥Û¢° ¥Û¢± ¥Û¢² ¬â¢° ¬â¢± ¡@¡@²M¤ô ¦B¤ô ¤ôªd¢° ¤ôªd¢± ¤ôªd¢² ÃÄ¾¯¢° ÃÄ¾¯¢±"
+SET COLOR TO &C2 / &C1
+SELE 5
+@ 3,0 SAY "¡@¡@                               "
+M_SETN :=ARRAY(12,3)
+M_SETN :={{4,7,"9999"},{4,12,"9999"},{4,17,"9999"},{4,22,"9999"},{4,27,"9999"},{4,36,"9999"},{4,41,"9999"},{4,47,"9999"},{4,54,"9999"},{4,61,"9999"},{4,67,"99.99"},{4,74,"99.99"}}
+MACT_SETN :=ARRAY(12,3)
+MACT_SETN :={{8,7,"9999"},{8,12,"9999"},{8,17,"9999"},{8,22,"9999"},{8,27,"9999"},{8,36,"9999"},{8,41,"9999"},{8,47,"9999"},{8,54,"9999"},{8,61,"9999"},{8,67,"99.99"},{8,74,"99.99"}}
+*	@ 4,0 SAY "³]©w­È 1234 1234 1234 1234 1234     1234 1234  1234   1234   1234  12.34  12.34 "
+FOR  I=13 TO 12
+  SN_T=M_SETN[I,3]
+  @ M_SETN[I,1],M_SETN[I,2]   SAY  "1234"  PICT "&SN_T"
+  @ MACT_SETN[I,1],MACT_SETN[I,2]   SAY  "1234"  PICT "&SN_T"
+NEXT
+@ 5,0 SAY "¡@                                 "
+*@ 6,28 SAY "û"
+*@ 6,8 SAY "û"
+*@ 6,13 SAY "úK"
+goto 34
+*LLbox(pa1,PA2,PA3,PA4,PA11)
+*LLbox(pa5,PA6,PA3,PA4,PA11)
+*LLbox(pa5,PA6,PA7,PA8,PA11)
+*LLbox(pA3+3,PA9,PA7,PA10,PA11)
+SET COLOR TO &C5 +/ &C1
+@ 4,0 SAY "³]©w­È"
+SET COLOR TO &C4 / &C1
+DO CASE
+CASE LCHTYPE=1
+CASE LCHTYPE=4
+  PZA=ZA
+  PZB=ZA
+  PZC=ZB
+  PZD=ZB
+  SETLZA(0,ZA)
+  SETLZA(1,ZB)
+  SETWANO(0,0)
+  SETWANO(1,0)
+  SETWANO(2,0)
+  SETWANO(3,1)
+  SETWANO(4,1)
+  KLCHN=2
+  SET COLOR TO &C2 / &C1
+  SET COLOR TO &C4 / &C1
+CASE LCHTYPE=5
+ENDCASE
+DO CASE
+CASE UCHTYPE=1
+  PZE=ZE
+  PZF=ZF
+  PZG=ZG
+  PZH=ZH
+  SETLZA(KLCHN+0,A_M_NAME[KLCHN+1,7])
+  SETLZA(KLCHN+1,A_M_NAME[KLCHN+2,7])
+  SETLZA(KLCHN+2,A_M_NAME[KLCHN+3,7])
+  SETLZA(KLCHN+3,A_M_NAME[KLCHN+4,7])
+  SETLZA(KLCHN+4,A_M_NAME[KLCHN+5,7])
+ * SETLZA(KLCHN+0,ZE*2048/MOVKG4)
+ * SETLZA(KLCHN+1,ZF*2048/MOVKG5)
+ * SETLZA(KLCHN+2,ZG*2048/MOVKG6)
+ * SETLZA(KLCHN+3,ZH*2048/MOVKG7)
+  SETWANO(5,(KLCHN+0))
+  SETWANO(6,(KLCHN+0))
+  SETWANO(7,(KLCHN+1))
+  SETWANO(8,(KLCHN+2))
+  SETWANO(9,(KLCHN+2))
+  SETWANO(10,(KLCHN+3))
+  SETWANO(11,(KLCHN+4))
+  KUCHN=5
+CASE UCHTYPE=2
+ENDCASE
+SETTOTW(KLCHN+KUCHN+1)
+IF DRFME=3
+  DO CASE
+  CASE	UCHTYPE=1
+    NNN=LTRIM(STR(KLCHN+3,5,0))
+    TOTANK&NNN=0
+  CASE	UCHTYPE=2
+    NNN=LTRIM(STR(KLCHN+2,5,0))
+    TOTANK&NNN=0
+  ENDCASE
+ENDIF
+SET COLOR TO &C4 / &C1
+CLEAMIX()
+DOUT(8,0)
+DOUT(9,0)
+CLEADROP()
+CLEAOUT()
+
+x=INT(DISKSPACE( DAA )/1024)
+if  douin=1
+  x=1221
+endif
+@ 22,70  SAY x	 PICT "9999"
+sele 3
+SET DELE OFF
+GOTO TOP
+IF .NOT. EOF()
+  ASCANO=SCANO
+ENDIF
+ACARNO=CARNO
+ARATNO=RATNO
+AVUSE=VUSE
+ATANDO=TANDO
+@ 23,15 SAY ASCANO  PICT "9999"
+@ 23,25 SAY ACARNO
+@ 23,42 SAY ARATNO  PICT "9999"
+@ 23,52 SAY AVUSE   PICT "99.9"
+@ 23,61 SAY ATANDO  PICT "9999"
+DELE
+set dele off
+RETU
+
+
+&&-----------------------------------------------------------------------------
+PROCEDURE  DO_CASE
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE  T=5 .OR. T=24
+  DO FUN_KEY
+CASE T=-99 .and. star=0
+  xyratvol=ratvol
+  do ratvolpg
+  ratvol=xyratvol
+CASE T=-20  && disc 0.5 m 3
+  IF DISCH1=0
+    DISCH1=1
+    DISC1=0
+    @ 18,16 SAY "A,"
+    if f_disproc>0
+      f_discproc=1
+    endif
+  ELSE
+    DISCH1=0
+    DISC1=0
+    @ 18,16 SAY " ,"
+    if f_disproc>0
+      f_discproc=2
+    endif
+  ENDIF
+CASE T=-21  && disc 1 m3
+  IF DISC1=0
+    DISC1=1
+    DISCH1=0
+    @ 18,16 SAY "B,"
+  ELSE
+    DISC1=0
+    DISCH1=0
+    @ 18,16 SAY " ,"
+  ENDIF
+CASE T=-22  &&disc c1 ? kg
+  DO DISC2
+  if f_disproc>0
+    f_discproc=1
+  endif
+CASE T=-25  &&disc c2 ? kg
+  PGM=" "
+  NREAD(18,18,STR(disc2_c2,3,0),3,pgm)
+  disc2_c2 =VAL(XPX)
+  SET COLOR TO w  / &C1
+  @ 18,18  SAY disc2_c2   PICT "999"
+  if f_disproc>0
+    f_discproc=1
+  endif
+case t=-23  .and.  star=0
+  save scre to SCRMA
+  do setadj
+  cks=168
+  cks()
+  rest scre from scrma
+  td1=0
+  clea
+  PARDO=1
+  LU12_DSP(LCHTYPE,UCHTYPE)
+CASE T=28
+  t=0
+  DO W_IN
+  *SCRRA_1=savescreen(19,0,24,79)
+  *DSPCASE=-2
+  *IF COM_E  =0
+  *  DO pah
+  *ELSE
+  *  DO  PAH_N
+  *ENDIF
+  *T=0
+  *restscreen(19,0,24,79,scrRA_1)
+  *DSPCASE=0
+  *SET COLOR TO &C7 +/ &C1
+  *FDSPA=0
+  *@ 23,16 SAY ASCANO  PICT "9999"
+  *@ 23,28 SAY ACARNO
+  *@ 23,48 SAY ARATNO  PICT "9999"
+  *@ 23,64 SAY AVUSE   PICT "99.9"
+  *@ 23,74 SAY ATANDO  PICT "9999"
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-1
+  t=0
+  set cons off
+  SCRMA1=savescreen(19,0,24,79)
+  DO RATEN
+  DELE FOR  RATNO=0
+  PACK
+  dele FILE w2.dbf
+  SORT	ON  RATNO   TO W2
+  USE
+  IF   ROM_N=1
+    DELE FILE  C:\W1.DBF
+    RENA  C:\W2.DBF TO	 C:\W1.DBF
+    USE  C:\W1
+    TOTA ON RATNO   TO	W2
+    USE
+    DELE FILE  C:\W1.DBF
+    RENA  C:\W2.DBF TO	 C:\W1.DBF
+  ELSE
+    DELE FILE  W1.DBF
+    RENA  W2.DBF TO   W1.DBF
+    USE W1
+    TOTA ON RATNO   TO	W2
+    USE
+    DELE FILE  W1.DBF
+    RENA  W2.DBF TO   W1.DBF
+  ENDIF
+  USE W1
+  restscreen(19,0,24,79,scrma1)
+  set cons on
+  @ 23,15 SAY ASCANO  PICT "9999"
+  @ 23,25 SAY ACARNO
+  @ 23,42 SAY ARATNO  PICT "9999"
+  @ 23,52 SAY AVUSE   PICT "99.9"
+  @ 23,61 SAY ATANDO  PICT "9999"
+  LU12_DSP(LCHTYPE,UCHTYPE)
+Case t=-10 .and.  star=0   .AND.  COM_E=1
+  save scre to SCRMA
+  clea
+  DO PGM15
+  COMMIT
+  rest scre from scrma
+  set curs off
+  set cons  on
+  commit
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-11 .and.  star=0   .AND.  COM_E=1
+  save scre to SCRMA
+  clea
+  DO PGM16
+  COMMIT
+  rest scre from scrma
+  set curs off
+  set cons  on
+  commit
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-12 .and.  star=0   .AND.  COM_E=1	  &&S-F3 CAR DATA INPUT
+  save scre to SCRMA
+  DO  D_CAR_DATA
+  COMMIT
+  rest scre from scrma
+  set curs off
+  set cons  on
+  commit
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-13 .and.  star=0   .AND.  COM_E=1	  &&S-F4 addr.DATA INPUT
+  save scre to SCRMA
+  DO  D_add_DATA
+  COMMIT
+  rest scre from scrma
+  set curs off
+  set cons  on
+  commit
+  LU12_DSP(LCHTYPE,UCHTYPE)
+CASE  T=-24
+  T=0
+  DO LULAG
+  SET COLOR TO &C7 +/ &C1
+  @ 0,26  say lagw pict  "9999.9"
+case t=-2
+  SCRRA1=savescreen(19,0,24,79)
+  DSPCASE=-2
+  IF COM_E  =0
+    IF	STAR=0
+      DO   PAH1
+      DO FUN_KEY
+    ELSE
+      DO  NPAH1
+    ENDIF
+  ELSE
+    DO	PAH_N
+    restscreen(19,0,24,79,scrRA1)
+    SET COLOR TO &C7 +/ &C1
+    @ 23,15 SAY ASCANO	PICT "9999"
+    @ 23,25 SAY ACARNO
+    @ 23,42 SAY ARATNO	PICT "9999"
+    @ 23,52 SAY AVUSE	PICT "99.9"
+    @ 23,61 SAY ATANDO	PICT "9999"
+  ENDIF
+  DSPCASE=0
+  FDSPA=0
+  T=0
+  sele 5
+  COLOR="B  G  BG R  RB GR W  B+ G+ BG+R+ RB+GR+W+ "
+  GOTO 20
+  c8=SUBSTR(COLOR,MOD(INT(PA1),16)*3+1,3)
+  C9=SUBSTR(COLOR,MOD(INT(PA2),16)*3+1,3)
+  C10=SUBSTR(COLOR,MOD(INT(PA3),16)*3+1,3)
+  C11=SUBSTR(COLOR,MOD(INT(PA4),16)*3+1,3)
+  C12=SUBSTR(COLOR,MOD(INT(PA5),16)*3+1,3)
+  C13=SUBSTR(COLOR,MOD(INT(PA6),16)*3+1,3)
+  C14=SUBSTR(COLOR,MOD(INT(PA7),16)*3+1,3)
+case t=-14 .and.  star=0
+  save scre to SCRMA
+  set curs oN
+  SET COLOR TO W+   / N ,  W+  / R
+  clea
+  @ 10,20 SAY "Current  Date Is  "
+  @ 11,20 SAY "Enter New  Date  (MM-DD-YY):   -  -  "
+  @ 10,39 say date()
+  D1=YEAR(DATE())
+  D2=VAL(SUBSTR(DTOC(DATE()),1,2))
+  D3=VAL(SUBSTR(DTOC(DATE()),4,2))
+  @ 11,49   GET D2 PICT "99" RANG 1,12
+  @ 11,52   GET D3 PICT "99" RANG 1,31
+  @ 11,55   GET D1 PICT "9999"
+  READ
+  IF ( D1 > 2099 )  .OR. (D1 <1980)
+    D1=YEAR(DATE())
+  ENDIF
+  D1=WRITE_DATE(D1,D2,D3)
+  @ 14,20 SAY "Current  Time Is  "
+  @ 15,20 SAY "Enter New  Time      :  :  "
+  @ 14,39 say time()
+  D1=VAL(SUBSTR(time(),1,2))
+  D2=VAL(SUBSTR(time(),4,2))
+  D3=VAL(SUBSTR(time(),7,2))
+  @ 15,39   GET D1 PICT "99" RANG 0,23
+  @ 15,42   GET D2 PICT "99" RANG 0,59
+  @ 15,45   GET D3 PICT "99"  RANG 0,59
+  READ
+  D1=WRITE_TIME(D1,D2,D3,0)
+  rest scre from scrma
+  set curs off
+  SET COLOR TO &C7 +/ &C1
+  IF	ENGL=0
+    @ 0,45 SAY	SUBSTR(DTOC(DATE()),7,4)
+    @ 0,52 SAY	SUBSTR(DTOC(DATE()),1,2)
+    @ 0,57 SAY	SUBSTR(DTOC(DATE()),4,2)
+  else
+    @ 0,45 say	date()
+  endif
+  SET COLOR TO &C2 / &C1
+  LU12_DSP(LCHTYPE,UCHTYPE)
+CASE  T=-15  .and. star=0
+  NREAD(0,9,STR(RATVOL,4,1),4," ")
+  IF VAL(XPX) <=RATVOL_S
+    RATVOL=VAL(XPX)
+  ELSE
+    RATVOL=RATVOL_S
+  ENDIF
+  @ 0,9  SAY ratvol PICT "99.9"
+  T=0
+CASE  T=-16  .and. star=0
+  SCRRA1=savescreen(21,0,21,79)
+  DO DSP4
+  FDSPA=0
+  restscreen(21,0,21,79,scrRA1)
+  DO FUN_KEY
+  T=0
+  LU12_DSP(LCHTYPE,UCHTYPE)
+CASE  T=-17  .and. star=0 .and. _auto_flor=1
+  SCRRA1=savescreen(21,0,24,79)
+  DO _AUTO_MAXIN
+  FDSPA=0
+  restscreen(21,0,24,79,scrRA1)
+  DO FUN_KEY
+  T=0
+case t=-3
+  T=0
+  IF  STAR=1
+    x=_Tot_d_a[20,4]+2
+    @ 15,12 say _Tot_d_a[18,X]	PICT  "9999"
+    @ 16,12 say _Tot_d_a[10,X]	PICT  "99.9"
+    disc_totm=str(_Tot_d_a[10,X],4,1)
+    PGM=" "
+    if val(disc_totm) >0
+      NREAD(16,12,disc_totm,3,pgm)
+      disc_totm =VAL(XPX)
+      SET COLOR TO w  / &C1
+      x=_Tot_d_a[20,4]+2
+      if disc_totm <_Tot_d_a[10,X]
+	IF disc_totm >= A_PRESS_N0[L_PRESS,STPN1,1,6]
+	  XAP1=STPN1
+	  XAP0=XAP1
+	  SETVN0=A_PRESS_N0[L_PRESS,XAP1,1,6]
+	  SETVN1=A_PRESS_N0[L_PRESS,XAP1,1,6]
+	  DO WHILE disc_totm >= A_PRESS_N0[L_PRESS,XAP1,1,6]
+	    SETVN0=A_PRESS_N0[L_PRESS,XAP1,1,6]
+	    XAP1=XAP1+1
+	    XAP0=XAP1
+	  ENDDO
+	  XAP1=XAP0
+	  SETVN1=A_PRESS_N0[L_PRESS,XAP1,1,6]
+	  for xap2=1  to 12
+	    A_PRESS_N0[L_PRESS,XAP1,XAP2,6] :=DISC_TOTM
+	    XAP3=(DISC_TOTM-SETVN0)/A_PRESS_N0[L_PRESS,XAP1,XAP2,5]
+	    A_PRESS_N0[L_PRESS,XAP1,XAP2,1] :=A_PRESS_N0[L_PRESS,XAP1,XAP2,1] * XAP3
+	    A_PRESS_N0[L_PRESS,XAP1,XAP2,3] :=A_PRESS_N0[L_PRESS,XAP1,XAP2,3] * XAP3
+	    A_PRESS_N0[L_PRESS,XAP1,XAP2,5] :=DISC_TOTM-SETVN0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,1] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,2] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,3] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,4] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,5] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,6] :=0
+	    A_PRESS_N0[L_PRESS,XAP1+1,XAP2,7] :=0
+	  NEXT
+	  x=_Tot_d_a[20,4]+2
+	  _Tot_d_a[10,X]=disc_totm
+	ENDIF
+      endif
+      x=_Tot_d_a[20,4]+2
+      @ 16,12  SAY _Tot_d_a[10,X]   PICT "99.9"
+    endif
+  ENDIF
+  DSPCASE=-3
+  DO  SETPAR1
+  DSPCASE=0
+  DO FUN_KEY
+  SET COLOR TO &C7 +/ &C1
+  FDSPA=0
+
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-28  .and.  star=0
+  X=SER_NO(8)
+  IF  X="0246"
+    MNIDSP=1
+  ENDIF
+case t=-29  .and.  star=0
+  save scre to SCRMA
+  do setparN
+ *do setparN1
+  rest scre from scrma
+  td1=0
+  clea
+  PARDO=1
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-4  .and.  star=0
+  save scre to SCRMA
+  DO SA
+  rest scre from SCRMA
+  SET COLOR TO &C7 +/ &C1
+  set curs off
+  set cons on
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-5
+  DO DSP1
+  GOTO 2
+  PZER1=PA1
+  PZER2=PA2
+  PZER3=PA3
+  PZER4=PA4
+  PZER5=PA5
+  PZER6=PA6
+  PZER7=PA7
+  PZER9=PA7
+  PZER8=PA8
+  PZER9=PA9
+  PZER10=PA10
+  PZER11=PA11
+  PZER12=PA12
+  DO CASE
+  CASE LCHTYPE=4
+    KLCHN=2
+    SETZER(0,INT(((PZER1/A_M_NAME[1,6])*PER*2048)+2048))
+    SETZER(1,INT(((PZER4/A_M_NAME[2,6])*PER*2048)+2048))
+  ENDCASE
+  DO CASE
+  CASE UCHTYPE=1
+    SETZER(KLCHN,INT(((PZER6/A_M_NAME[KLCHN,6])*PER*2048)+2048))
+    SETZER(KLCHN+1,INT(((PZER8/A_M_NAME[KLCHN+1,6])*PER*2048)+2048))
+    SETZER(KLCHN+2,INT(((PZER9/A_M_NAME[KLCHN+2,6])*PER*2048)+2048))
+    SETZER(KLCHN+3,INT(((PZER11/A_M_NAME[KLCHN+3,6])*PER*2048)+2048))
+    SETZER(KLCHN+4,INT(((PZER12/A_M_NAME[KLCHN+4,6])*PER*2048)+2048))
+  endcase
+  DO FUN_KEY
+  FDSPA=0
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-6
+  DO DSP3
+  sele 5
+  GOTO TOP
+  PFLOR1=pa1
+  PFLOR2=pa2
+  PFLOR3=pa3
+  PFLOR4=pa4
+  PFLOR5=pa5
+  PFLOR6=pa6
+  PFLOR7=pa7
+  PFLOR8=pa8
+  PFLOR9=pa9
+  PFLOR10=pa10
+  PFLOR11=pa11
+  PFLOR12=pa12
+  DO FUN_KEY
+  SET COLOR TO &C7 +/ &C1
+  FDSPA=0
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-27 .AND. STAR=0
+  t=0
+  save scre to SCRMA
+  DO htest
+  rest scre from scrma
+  DO FUN_KEY
+  SET COLOR TO &C7 +/ &C1
+  FDSPA=0
+  LU12_DSP(LCHTYPE,UCHTYPE)
+case t=-8  .AND. STAR=0
+  SET COLOR TO R+/ &C1
+  @ 15,23 SAY "¢z¢w¢w¢{"
+  @ 16,23 SAY "¢x    ¢x"
+  @ 17,23 SAY "¢uúTúW¢t"
+  @ 18,23 SAY "¢|úSúX¢}"
+  SET COLOR TO w+  / &C1
+  @ 16,25 SAY "°_°Ê"
+  SET COLOR TO &C2 / &C1
+  @ 15,31 SAY "¢z¢w¢w¢{"
+  @ 16,31 SAY "¢x¤¤¤î¢x"
+  @ 17,31 SAY "¢u¢w¢w¢t"
+  @ 18,31 SAY "¢|¢w¢w¢}"
+  * SETSTAR(1)
+  star=1
+  dout3(11,1)
+  SET COLOR TO &C7 +/ &C1
+case t=-9 .AND. STAR=1
+  SET COLOR TO &C2 / &C1
+  dout3(11,0)
+  * SETSTAR(0)
+  @ 15,23 SAY "¢z¢w¢w¢{¢z¢w¢w¢{"
+  @ 16,23 SAY "¢x°_°Ê¢x¢x¤¤¤î¢x"
+  @ 17,23 SAY "¢u¢w¢w¢t¢uúTúW¢t"
+  @ 18,23 SAY "¢|¢w¢w¢}¢|úSúX¢}"
+  SET COLOR TO w+  / &C1
+  @ 20,52 SAY "¤¤¤î"
+  SET COLOR TO &C7 +/ &C1
+  CLEAMIX()
+  DOUT(8,0)
+  DOUT(9,0)
+  CLEADROP()
+  CLEAOUT()
+  cleamem()
+  _TOT_D_A[20,3] :=0
+  _TOT_D_A[20,4] :=0	  && FIST  INPUT
+  _AUTO_FLOR(1,1,0," ",0)
+  @ 0,26 SAY  lagw PICT  "9999.9"
+
+  STOR 0 TO STP9,M_MIX
+  STOR "0" TO    TPCOI
+  STOR	0  TO  SW9,WIFOK,WIZOK,TOTWI,TOTWK,SWI0,STOP9,STOPTM9,PZI,PANDIC
+  STOR "0" TO   TPCOA,TPCOB,TPCOC,TPCOD,TPCOE,TPCOF,TPCOG,TPCOH,TPCO,TPCO1,TPCO2,TPCO3
+  STOR	0 TO TOTVUSE,DSPCASE,downcalf,NEXTOK,TANKSTP
+
+  STOR	1 TO   TOMIX,TOTANK,NEXSTP,DOWNSKP,UPSKP,LURECNO,FNEXOKL,FNEXOKU,PERFLR,totank1,totank2,totank3,totank4,totank5,totank6,totank7,totank0
+  STOR	0 TO   STP1,STP2,STP3,STP4,STP,STP5,STP6,STP7,STP8,wdsp1,wdsp2,DISC2_C2N,DISC2_C2P
+  STOR 0 TO STAR,DOWNOV,DOWNZER,UPZET ,SWA0,SWB0,SWC0,SWD0,SWE0,SWF0,SWG0,SWH0,DBAI
+  stor	0 TO DOWNZTM,NVUSE,PVUSE,PRTNO ,UPOVSTP,PRCEND,PRCEND1,PRCEND1,MVUSE,MIXSTM,PCON
+  STOR 0 TO FWA1,FWA2,FWA3,FWB1,FWB2,FWB3,FWC1,FWC2,FWC3,FWD1,FWD2,FWD3,FWE1,FWE2,FWE3,FWF1,FWF2,FWF3,FWG1,FWG2,FWG3,FWH1,FWH2,FWH3
+  STOR 0 TO RWA1,RWA2,RWA3,RWB1,RWB2,RWB3,RWC1,RWC2,RWC3,RWD1,RWD2,RWD3,RWE1,RWE2,RWE3,RWF1,RWF2,RWF3,RWG1,RWG2,RWG3,RWH1,RWH2,RWH3,DRAF,DRBF,DRCF,DRDF,DREF,DRFF,DRGF,DRHF,DRMF,DRTKF,PCONVTM1,CONSTPF
+  STOR 0 TO MIXSTP,disc2_s3,upz_all
+  STOR 1 TO WCNT1,WCNT2,WCNT3,WCNT4,WCNT5,WCNT6,WCNT7,WCNT8
+  stor 0 to STOPTML3,STOPTML4,STOPTML6,STOPTML7,STOPL3,STOPL4,STOPL6,STOPL7,MTANDO,NTANDO,WAFOK1 ,WBFOK1 ,WCFOK1 ,WDFOK1,PWATERs1,PWATERs2,PWATER0,f_nextok1,f_nextok2
+  STOR	1 TO PERSAD1,PERCON,PER,calw_rep,ACALW_REP,XCALW_REP
+  STOR 0 TO F_NEXT1,F_NEXT2
+  STOR "1"  TO ludbf
+  IF KOT=1
+    TOTANK0=0
+  ENDIF
+  POVKG0=SPOVKG0
+  POVKG1=SPOVKG1
+  POVKG2=SPOVKG2
+  POVKG3=SPOVKG3
+  POVKG4=SPOVKG4
+  POVKG5=SPOVKG5
+  POVKG6=SPOVKG6
+  POVKG7=SPOVKG7
+  MOVKG0=SMOVKG0
+  MOVKG1=SMOVKG1
+  MOVKG2=SMOVKG2
+  MOVKG3=SMOVKG3
+  MOVKG4=SMOVKG4
+  MOVKG5=SMOVKG5
+  MOVKG6=SMOVKG6
+  MOVKG7=SMOVKG7
+  STOR "3" TO DOWNPRT,UPPRT
+  TOTDR1=TOTDR
+  DRNO=1
+  IF DISCH1=0
+    @ 15,12 CLEA TO 17,17
+    @ 18,16 SAY " ,"
+    DISC1=0
+  ENDIF
+  SET COLOR TO &C5 +/ &C1
+  SET COLOR TO &C2 / &C1
+  SET COLOR TO &C4 / &C1
+  set colo  to &c7 +/ &c1
+  * @  9,44 SAY PDRCL  PICT "99"
+  SETTOTW(KLCHN+KUCHN+1)
+  IF DRFME=3
+    DO CASE
+    CASE  UCHTYPE=1
+      NNN=LTRIM(STR(KLCHN+3,5,0))
+      TOTANK&NNN=0
+    CASE  UCHTYPE=2
+      NNN=LTRIM(STR(KLCHN+2,5,0))
+      TOTANK&NNN=0
+    ENDCASE
+  ENDIF
+
+
+@ 23,15 SAY ASCANO  PICT "9999"
+@ 23,25 SAY ACARNO
+@ 23,42 SAY ARATNO  PICT "9999"
+@ 23,52 SAY AVUSE   PICT "99.9"
+@ 23,61 SAY ATANDO  PICT "9999"
+@ 8,6 clea to 8,79
+@ 4,6 clea to 4,79
+star=0
+@  6,5	CLEA  TO  11,79
+@ 11,5	CLEA  TO  11,79
+_TOT_D_A[20,3] :=0
+_TOT_D_A[20,4] :=0	&& FIST  INPUT
+LU12_DSP(LCHTYPE,UCHTYPE)
+STORE  1 TO   A_PRESS,U_PRESS,L_PRESS
+STOR  0 TO  UPOV,DNOV,UPOVSTP,TANKSTP,PWATER1
+STORE  0 TO   NEXTOK,NEXTOK1,NEXTOK2,STOPTM1,STOPTM2,STOPTM3,STOPTM4,STOPTM5,STOPTM6,STOPTM7,STOPTM8,STOPTM9,STOPTM10,STOPTM11,STOPTM12
+STORE 0  TO  STP1,STOP1,STOP2,STOP3,STOP4,STOP5,STOP6,STOP7,STOP8,STOP9,STOP10,STOP11,STOP12
+STOR  0 TO   STP1,STP2,STP3,STP4,STP,STP5,STP6,STP7,STP8,STP9,STP10,STP11,STP12
+STORE 1  TO  STPN1,STPN2,STPN3,STPN4,STPN5,STPN6,STPN7,STPN8,STPN9,STPN10,STPN11,STPN12
+FILL_A_D4(A_PRESS_N0,1,1,21,12,7,0)
+FILL_A_D4(A_PRESS_N0,2,1,21,12,7,0)
+FILL_A_D2(A_PRESS_N1,1,2,18,0)
+FILL_A_D2(WTANK_F,1,12,3,0)
+FOR X=1 TO 12
+  TIME1[X,2] :=0
+  A_M_NAME[X,10]=A_M_NAME[X,9]
+  A_M_NAME[X,12]=A_M_NAME[X,6]
+NEXT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+case t=23  .AND. STAR=0
+  td1=0
+  clea
+  clos all
+  quit
+ENDCASE
+retu
+&&-----------------------------------------------------------------------------
+FUNCTION  TXT_ECHO
+PARAMETERS   D_YS,D_XS,D_C1,D_C2,D_C3,t_color
+D_L_C=LEN(D_C1)
+D_YE=D_YS+4
+D_XE=D_XS+4+D_L_C
+XCOR=SETCOLOR()
+* 80 col
+SET DEVI TO SCRE
+SET COLOR TO &C7 / &C5
+SET COLOR TO GR+ / R
+@ D_YS,D_XS CLEA TO D_YE,D_XE
+BOX_S(D_YS,D_XS,D_YE,D_XE)
+@ d_ys +1 ,d_xs+2  clea to  d_ye -1,d_xe-2
+do case
+case  t_color=1
+  SET COLOR TO W+ / bl, b/w+
+case  t_color=2
+  SET COLOR TO 7+ / 0 , b/w+
+case  t_color=3
+  SET COLOR TO r  / gr+ , b/w+
+case  t_color=4
+  SET COLOR TO gr+ / bl , b/w+
+endcase
+
+
+@ D_YS+1,D_XS+2       SAY D_C1
+@ D_YS+2,D_XS+2     SAY D_C2
+@ D_YS+3,D_XS+2     SAY D_C3
+*@ 13,36 SAY		       "Esc"
+XT=0
+SET COLO TO &XCOR
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION  BOX_S
+PARAMETERS   UPOW,UPCOL,DWNOW,DWNCOL
+   IF  MOD((UPCOL - DWNCOL),2) <> 0
+      IF  DWNCOL <>78
+	DWNCOL=DWNCOL +1
+      ELSE
+	DWNCOL=DWNCOL -1
+      ENDIF
+   ENDIF
+   X=UPCOL+2
+   DO WHILE  X < DWNCOL
+     @	UPOW,X SAY "¢w"
+     @ DWNOW,X SAY "¢w"
+     X=X+2
+   ENDDO
+   X=UPOW+1
+   DO WHILE  X < DWNOW
+     @	X,UPCOL SAY "¢x"
+     @	X,DWNCOL  SAY "¢x"
+     X=X+1
+   ENDDO
+@  UPOW,UPCOL  SAY "¢z"
+@  UPOW,DWNCOL	SAY "¢{"
+@  DWNOW,UPCOL	SAY "¢|"
+@  DWNOW,DWNCOL  SAY "¢}"
+RETU ""
+&&-----------------------------------------------------------------------------
+FUNCTION  OK_ECHO
+PARAMETERS   D_YS,D_XS,D_C1,D_C2,D_C3
+D_L_C=LEN(D_C1)
+D_YE=D_YS+4
+D_XE=D_XS+4+D_L_C
+XCOR=SETCOLOR()
+* 80 col
+X_OK=0
+SET DEVI TO SCRE
+SET COLOR TO &C7 / &C5
+XPNT_ER=SAVESCREEN(D_YS,0,D_YE,79)
+SET COLOR TO GR+ / R
+@ D_YS,D_XS CLEA TO D_YE,D_XE
+BOX_S(D_YS,D_XS,D_YE,D_XE)
+SET COLOR TO W+ / R
+
+@ D_YS+1,D_XS+2       SAY D_C1
+@ D_YS+2,D_XS+2     SAY D_C2
+@ D_YS+3,D_XS+2     SAY D_C3
+SET COLOR TO GR+ / R
+*@ 13,36 SAY		       "Esc"
+set curs off
+XT=0
+
+DO WHILE (XT<>78) .AND.(XT<>89)  .AND.(XT<>110) .AND.(XT<>121) .AND.(XT<>27)
+  xt=INKEY()
+ENDDO
+if (XT=89) .or.(XT=121)
+  x_OK=1
+ELSE
+  x_OK=0
+endif
+set curs oN
+RESTSCREEN(D_YS,0,D_YE,79,XPNT_ER)
+SET COLO TO &XCOR
+RETU X_OK
+&&-----------------------------------------------------------------------------
+FUNCTION READ2
+PARAMETERS  PX,X1,Y1,TNSTP,LONG
+XPX=pX
+X1=X1
+SET COLOR TO 0/7 *
+IF TNSTP<>9
+  SET COLOR TO 0 * /7
+  @ Y1,X1  SAY XPX  PICT "9999"
+  CHRN=STR(INT(XPX),4)
+ELSE
+  SET COLOR TO 0 * /7
+  @ Y1,X1  SAY XPX  PICT "99.99"
+  CHRN=STR(XPX,5,2)
+ENDIF
+XP=0
+t=0
+SET COLOR TO W+  / R
+@ y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+SET COLOR TO 7/0
+*CURSER2(X1,Y1,XP)
+XX1=X1+XP
+YY1=Y1
+T1=0
+TN1=0
+DO WHILE T1<>233
+  T=0
+  DO WHILE  T=0
+    T=INKEY( )
+    DO DSP2
+    DO LUSTP
+  ENDDO
+  DO CASE
+  case	T=19
+    IF XP>=1
+      XP=XP-1
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	T=4
+    IF XP<=LONG-2
+      XP=XP+1
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO &C1 */ &C7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	 T=43 .OR.T=45 .OR.T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+    XP=XP+1
+    IF TN1=0 .AND. XP=1
+      TN1=1
+      IF  TNSTP<>9
+	CHRN="    "
+      ELSE
+	CHRN="     "
+      ENDIF
+    ENDIF
+    IF XP<LONG
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,LONG-XP)
+      SET COLOR TO 0/7	*
+      IF  VAL(CHRN)>=1000
+	CHRN="    "
+      ENDIF
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ELSE
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+      SET COLOR TO 0/7
+      IF  TNSTP<>9
+	IF  VAL(CHRN)>=1000
+	  CHRN="    "
+	ENDIF
+      ELSE
+	IF  VAL(CHRN)>=100
+	  CHRN="     "
+	ENDIF
+      ENDIF
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      XP=XP-1
+      SET COLOR TO 0/7 *
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE T=13   .OR. T=23 .OR. T=5 .OR. T=24.or. t=2
+    T1=233
+    IF TNSTP<>9
+      XPX =INT(VAL(CHRN))
+      PX=XPX
+      @ Y1,X1  SAY  PX	 PICT "9999"
+    ELSE
+      XPX =INT(VAL(CHRN)*100)/100
+      IF XPX > 100
+	XPX=1
+      ENDIF
+      PX=XPX
+      @ Y1,X1  SAY  PX	 PICT "99.99"
+    ENDIF
+    SELE 5
+    CHNO=LTRIM(STR(TNSTP))
+    IF TNSTP=8
+      GOTO 18
+      REPL PA1 WITH PX
+    ELSE
+     IF TNSTP=9
+       CHNO="8"
+     ENDIF
+     REPL PA&CHNO WITH PX
+    ENDIF
+    DO CASE
+    CASE T=5
+      IF TNSTP>1
+	TNSTP=TNSTP-1
+      ENDIF
+    CASE T=24  .OR. T=13
+      TNSTP=TNSTP+1
+    ENDCASE
+    IF T=23 .or. t=2
+      TNSTP=9
+    ENDIF
+  CASE T=27
+    SET COLOR TO 0/7
+    XPX=PX
+    IF TNSTP<>9
+      @ Y1,X1  SAY XPX	PICT "9999"
+      CHRN=STR(INT(XPX),4)
+    ELSE
+      @ Y1,X1  SAY XPX	PICT "99.99"
+      CHRN=STR(XPX,5,2)
+    ENDIF
+    SET COLOR TO 7/0
+    XP=0
+    t=0
+    *CURSER0(XX1,YY1)
+    *CURSER2(X1,Y1,XP)
+    XX1=X1+XP
+    YY1=Y1
+  ENDCASE
+ENDDO
+RETU   TNSTP
+**-----------------------------------------------------------------------------
+**-----------------------------------------------------------------------------
+FUNCTION SER_OK_old
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2))
+SER_XW=DOW(DATE())-1
+IF  SER_XW =0
+  SER_XW=7
+ENDIF
+SER_XW=SER_XW + SER_X2
+SER_X1=VAL(SUBSTR(DTOC(DATE()),1,2)) +SER_XW
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2)) +SER_XW
+SER_X3=VAL(SUBSTR(DTOC(DATE()),7,2)) +SER_XW
+SER_Xok1="TV7213"
+SER_Xok2="YB0246"
+SER_Xok3=ALLTRIM(STR(SER_X1 * SER_X2 * SER_X3,6,0))
+XS=1
+XN=7
+SER_OK=1
+SER_STP=1
+  T_SER=""
+
+DO WHILE (SER_STP <=7)	.AND. (T <>13)
+  T=0
+  DO WHILE  T =0
+    T=INKEY()
+  ENDDO
+  IF  T <>13
+    T_SER=T_SER +UPPER(CHR(T))
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+SER_OK=0
+IF (T_SER =SER_XOK1) .OR. (T_SER =SER_XOK2) .OR. (T_SER =SER_XOK3)
+  SER_OK=1
+ELSE
+  SER_OK=0
+ENDIF
+RETU SER_OK
+&&-----------------------------------------------------------------------------
+FUNCTION SER_OK_BOSS
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2))
+SER_XW=DOW(DATE())-1
+IF  SER_XW =0
+  SER_XW=7
+ENDIF
+SER_XW=SER_XW + SER_X2
+SER_X1=VAL(SUBSTR(DTOC(DATE()),1,2)) +SER_XW
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2)) +SER_XW
+SER_X3=VAL(SUBSTR(DTOC(DATE()),7,2)) +SER_XW
+SER_Xok1="83479"
+SER_Xok3=ALLTRIM(STR(SER_X1 * SER_X2 * SER_X3,6,0))
+XS=1
+XN=7
+SER_OK=1
+SER_STP=1
+  T_SER=""
+
+DO WHILE (SER_STP <=7)	.AND. (T <>13)
+  T=0
+  DO WHILE  T =0
+    T=INKEY()
+  ENDDO
+  IF  T <>13
+    T_SER=T_SER +UPPER(CHR(T))
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+SER_OK=0
+IF (T_SER =SER_XOK1) .OR. (T_SER =SER_XOK3)
+  SER_OK=1
+ELSE
+  SER_OK=0
+ENDIF
+RETU SER_OK
+**-----------------------------------------------------------------------------
+PROCEDURE  OUT_01
+PARAMETERS  P1,P2,P3
+CLEA GETS
+TREAD=0
+TLOOP1=0
+XLOOP1=0
+XLOOP=0
+RETURN
+**-----------------------------------------------------------------------------
+PROCEDURE   DNREAD_01
+PARAMETERS  P1,P2,P3
+CLEA GETS
+RETURN
+**-----------------------------------------------------------------------------
+PROCEDURE  upread_01
+PARAMETERS  P1,P2,P3
+CLEA GETS
+IF READNO>1
+readno=READNO-2
+if readno<0
+readno=0
+ENDIF
+ENDIF
+RETURN
+&&-----------------------------------------------------------------------------
+FUNCTION READ_A
+PARAMETERS  Y1,X1,PX,D_TYPE,LONG,N_DASH,TNSTP,C_FUNC && Y,X,DATA,DATA_TYPE<C/N>,DATA LONG,¤p¼Æ¦ì¼ÆTNSTP
+&&TNSTP=READ_A(S_Y,S_X1,XPA1,"C",8,0,TNSTP,"D_MATE")
+&& RETU TNSTP
+XPX=pX
+X1=X1
+SET COLOR TO 0/7+
+DO CASE
+CASE   D_TYPE="N"
+  CHRN=STR(XPX,LONG,N_DASH)
+CASE   D_TYPE="C"
+  CHRN=SUBSTR(XPX,1,LONG)
+CASE   D_TYPE="D"
+  CHRN=DTOC(XPX)
+  LONG=10
+ENDCASE
+SET COLOR TO 0 + /7
+@ Y1,X1  SAY CHRN
+XP=0
+t=0
+SET COLOR TO W+  / R
+@ y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+SET COLOR TO 7/0
+XX1=X1+XP
+YY1=Y1
+T1=0
+TN1=0
+DO WHILE T1<>233
+  T=0
+  DO WHILE  T=0
+    T=INKEY()
+    IF DLA_DSP=1
+      DO DSP2
+    ENDIF
+    DO LUSTP
+  ENDDO
+  SELE &LUDBF
+  _LASTKEY=T
+  DO CASE
+  CASE T=K_F7
+    IF	EMPTY(F7_FUNC) =.F.
+      DO &F7_FUNC
+    ENDIF
+  CASE T=K_F8
+    IF	EMPTY(F8_FUNC) =.F.
+      DO &F8_FUNC
+    ENDIF
+  CASE	T=K_F1 .AND. ( C_FUNC <> " ")
+    DO &C_FUNC
+    T=0
+    XP=0
+    SET COLOR TO 0/7 +
+    @ Y1,X1  SAY CHRN
+    SET COLOR TO &C1 +/ 7 +
+    @ Y1,X1  SAY CHRN
+    SET COLOR TO W+  / R
+    @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+  case	T=K_DEL
+      DO CASE
+      CASE  D_TYPE <> "D"
+	CHRN=SUBSTR(CHRN,1,XP) +SUBSTR(CHRN,XP+2,LONG-XP-1) + " "
+      ENDCASE
+      SET COLOR TO 0/7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      XX1=X1+XP
+      YY1=Y1
+  case	T=K_LEFT
+    IF XP>=1
+      XP=XP-1
+      DO CASE
+      CASE  D_TYPE="D"
+	IF XP=2 .OR.  XP=5
+	  XP=XP-1
+	ENDIF
+      ENDCASE
+      SET COLOR TO 0/7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	T=K_RIGHT
+    IF XP<=LONG-2
+      XP=XP+1
+      DO CASE
+      CASE  D_TYPE="D"
+	IF XP=2 .OR.  XP=5
+	  XP=XP+1
+	ENDIF
+      ENDCASE
+      SET COLOR TO 0/7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO &C1 +/ 7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE	 T>=32
+    XP=XP+1
+    IF TN1=0 .AND. XP=1
+      TN1=1
+      DO CASE
+      CASE  D_TYPE <> "D"
+	CHRN=SPACE(LONG)
+      ENDCASE
+    ENDIF
+    IF XP<LONG
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,LONG-XP)
+      DO CASE
+      CASE  D_TYPE="D"
+	IF XP=2 .OR.  XP=5
+	  XP=XP+1
+	ENDIF
+      ENDCASE
+      SET COLOR TO 0/7	+
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      *CURSER0(XX1,YY1)
+      SET COLOR TO 0/7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      XX1=X1+XP
+      YY1=Y1
+    ELSE
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+      SET COLOR TO 0/7+
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO 7/0
+      XP=XP-1
+      SET COLOR TO 0/7 +
+      @ Y1,X1  SAY CHRN
+      SET COLOR TO W+  / R
+      @ Y1,(X1+XP)  SAY SUBSTR(CHRN,XP+1,1)
+      SET COLOR TO &C7 +/ &C1
+      *CURSER2(X1,Y1,XP)
+      XX1=X1+XP
+      YY1=Y1
+    ENDIF
+  CASE T=13   .OR. T=23 .OR. T=5 .OR. T=24.or. t=2
+    IF	T=28 .AND. ( C_FUNC <> " ")
+      DO &C_FUNC
+      T=13
+    ENDIF
+    T1=233
+    DO CASE
+    CASE   D_TYPE="N"
+      XPX=VAL(CHRN)
+    CASE   D_TYPE="C"
+      XPX=CHRN
+    CASE   D_TYPE="D"
+      XPX=CTOD(CHRN)
+    ENDCASE
+
+    PX=XPX
+    SET COLOR TO 0/7+
+    @ Y1,X1  SAY  CHRN
+    *SELE 5
+    *CHNO=LTRIM(STR(TNSTP))
+    *REPL PA&CHNO WITH PX
+    DO CASE
+    CASE T=5
+      IF TNSTP>1
+	TNSTP=TNSTP-1
+      ENDIF
+    CASE T=24  .OR. T=13
+      TNSTP=TNSTP+1
+    ENDCASE
+    IF T=23 .or. t=2
+      TNSTP=99
+    ENDIF
+  CASE T=27
+    SET COLOR TO 0/7 +
+    @ Y1,X1  SAY  CHRN
+    XPX=PX
+    DO CASE
+    CASE   D_TYPE="N"
+      XPX=VAL(CHRN)
+    CASE   D_TYPE="C"
+      XPX=CHRN
+    CASE   D_TYPE="D"
+      XPX=CTOD(CHRN)
+    ENDCASE
+    PX=XPX
+    SET COLOR TO 7/0
+    XP=0
+    t=0
+    XX1=X1+XP
+    YY1=Y1
+  ENDCASE
+ENDDO
+_act_px=PX
+RETU   TNSTP
+&&---------------------------------------------------------------------------------------------------
+FUNCTION _GET_BROW
+PARAMETERS  Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI  &&
+IF _MODI="Y"
+  STOR 0 TO FIST_REC,LAST_REC
+ENDIF
+_DATA_MODIFY =0
+X_G_B=SAVESCREEN(Y1_N-1,0,Y1_N+YL_N+1,79)
+XCOR=SETCOLOR()
+XXP=LEN(C_TOP2)+1
+IF EMPTY(C_TOP2)=.T.
+  XXP=0
+ENDIF
+ARR_DSPN=ARRAY(1)
+XX=X1_N+XXP +1+LEN(ARR_TITLE[1])
+ARR_DSPN[1] :=XX -1-LEN(ARR3[1])
+X=2
+*XX=X1_N+XXP
+DO WHILE  X <=	TIT_N
+  *XX=XX+1+LEN(ARR_TITLE[X])
+  XX=XX+1+LEN(ARR_TITLE[X])
+  AADD(ARR_DSPN,XX -LEN(ARR3[X])-1)
+  X=X+1
+ENDDO
+X=1
+D_C=ALLTRIM(C_TOP2) +" "
+DO WHILE  X <=	TIT_N
+  D_C=D_C +ARR_TITLE[X]
+  X=X+1
+  IF X <= TIT_N
+    D_C=D_C +" "
+  ENDIF
+ENDDO
+DC_L=LEN(D_C)
+SET DEVI TO SCRE
+X_C2=" Pg-Wown Up¤W¤U­¶ Enter¿ï¾Ü "
+IF  (_MODI="Y") .OR. (_MODI="K")
+  X_C1="¡ô¡õ¤W¤Uµ§ F3-­×§ï  Esc¸õÂ÷ "
+ELSE
+  X_C1="¡ô¡õ¤W¤Uµ§          Esc¸õÂ÷ "
+ENDIF
+IF (FIST_REC<>0).AND. (FIST_REC=LAST_REC)
+  X_C1=" F3-­×§ï  Esc¸õÂ÷ "
+  X_C2=""
+ENDIF
+X=LEN(X_C1)
+IF X>DC_L
+  XX=INT((X-DC_L)/2)
+ELSE
+  XX=0
+ENDIF
+SET COLOR TO GR+ / BL
+@ Y1_N-1,X1_N-2-XX  CLEA TO Y1_N+YL_N+1,X1_N + DC_L +2 +XX
+BOX_S(Y1_N-1,X1_N-2-XX,Y1_N+YL_N+1,X1_N + DC_L+XX)
+SET COLOR TO GR+ / R
+@ Y1_N-1,X1_N  SAY   D_C
+*@ Y1_N+YL_N,X1_N  SAY	 SPACE(DC_L)
+IF  DC_L>LEN(X_C1)+LEN(X_C2)+1
+  X=LEN(X_C1)+LEN(X_C2)
+  @ Y1_N+YL_N+1,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY   X_C2+" "+X_C1
+ELSE
+  @ Y1_N+YL_N,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY	X_C1
+  @ Y1_N+YL_N+1,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY   X_C2
+ENDIF
+IF EMPTY(C_TOP1)= .F.
+  @ Y1_N+YL_N+1,X1_N   SAY   C_TOP1
+ENDIF
+SELE &N_SELE
+N_YN=Y1_N
+N_REC=1
+*GOTO TOP
+SET COLOR TO W+ / BL
+DO _DSP_ALL
+N_REC=RECNO()
+*N_YN=Y1_N
+*GOTO TOP
+SET COLOR TO GR+ / W+
+_REC_DSP(N_YN)
+_LOOP_BR=1
+DO WHILE _LOOP_BR =1
+  T=0
+  DO WHILE T=0
+    T=INKEY()
+    IF DLA_DSP=1
+      DO DSP2
+    ENDIF
+    DO LUSTP
+  ENDDO
+  SELE &N_SELE
+  DO CASE
+  CASE T=K_F7
+    IF	EMPTY(F7_FUNC) =.F.
+      DO &F7_FUNC
+    ENDIF
+  CASE T=K_F8
+    IF	EMPTY(F8_FUNC) =.F.
+      DO &F8_FUNC
+    ENDIF
+  CASE T=-2   .AND. (_MODI="Y"  .OR.    _MODI="K"  )
+    &&TNSTP=READ_A(S_Y,S_X1,XPA1,"C",8,0,TNSTP,"P_FUNC&GET_STPC")
+    _GET_STP=1
+    DO WHILE ( _GET_STP >=0 )  .AND. ( _GET_STP <=TIT_N )
+       R_C=ARR_REC_NAME[_GET_STP]
+       T_C=ARR_TYPE[_GET_STP]
+       _D_TYPE=TYPE("&R_C")
+       C_L=LEN(ARR_TYPE[_GET_STP])
+       SET COLOR TO  &12 /&11
+       @ N_YN,ARR_DSPN[_GET_STP]  SAY &R_C   PICT "&T_C"
+       GET_STPC=ALLTRIM(STR(_GET_STP,2,0))
+       p_func=P_FUNC&GET_STPC
+       X_GETSTP=_GET_STP
+       set  colo  to gr + /w
+       _REC_DSP(N_YN)
+      _GET_STP=READ_A(N_YN,ARR_DSPN[_GET_STP],&R_C,"&_D_TYPE",C_L,ARR4[_GET_STP],_GET_STP,"&P_FUNC")
+      IF T_C="!" .AND. (VALTYPE(_ACT_PX)="C")
+	_ACT_PX=UPPER(_ACT_PX)
+      ELSE
+	IF _ACT_PX >INT(VAL(ARR3[X_GETSTP]))
+	  _ACT_PX =INT(VAL(ARR3[X_GETSTP]))
+	ENDIF
+      ENDIF
+      T_C=ARR_TYPE[X_GETSTP]
+      @ N_YN,ARR_DSPN[X_GETSTP]   SAY  _ACT_PX	PICT "&T_C"
+      SELE &N_SELE
+      REPL  &R_C  WITH _ACT_PX
+      IF  EMPTY(ARR_PCS[X_GETSTP]) =.F.
+	PCS_CF(N_YN,&R_C,X_GETSTP,RECNO())
+      ENDIF
+    ENDDO
+    set  colo to  gr + /w
+    _REC_DSP(N_YN)
+    T=0
+    _DATA_MODIFY=1
+  CASE T=5
+    UP_DSP1()
+  CASE T=24
+    IF	_MODI="Y"
+      SKIP
+      IF  EOF()
+	SKIP -1
+	FOR  X =1 TO TIT_N
+	  R_C=ARR_REC_NAME[X]
+	  IF EMPTY(&R_C)=.F.
+	    APPE BLANK
+	    EXIT
+	  ENDIF
+	NEXT
+	SKIP
+      ENDIF
+      SKIP -1
+    ENDIF
+    DOWN_DSP1()
+  CASE T=7 .and. _modi="Y"
+    DELE
+    PACK
+    IF	EOF()
+      SKIP -1
+      IF  EOF()
+	APPE BLANK
+      ENDIF
+    ENDIF
+    N_REC=RECNO()
+    N_YN=Y1_N
+    SET COLOR TO W+ / BL
+    DO _DSP_ALL
+    SET COLOR TO GR+ / W+
+    GOTO N_REC
+    _REC_DSP(N_YN)
+    _DATA_MODIFY =1
+  CASE T=18
+    SKIP -(YL_N +(N_YN-Y1_N))
+    IF BOF()
+      GOTO TOP
+    ENDIF
+    N_REC=RECNO()
+    N_YN=Y1_N
+    SET COLOR TO W+ / BL
+    DO _DSP_ALL
+    SET COLOR TO GR+ / W+
+    GOTO N_REC
+    _REC_DSP(N_YN)
+  CASE T=3
+    SKIP ((Y1_N+YL_N-N_YN))
+    IF EOF()
+      GOTO BOTT
+    ENDIF
+    N_REC=RECNO()
+    N_YN=Y1_N
+    SET COLOR TO W+ / BL
+    DO _DSP_ALL
+    GOTO N_REC
+    SET COLOR TO GR+ / W+
+    _REC_DSP(N_YN)
+  CASE T=13
+    X=1
+    DO WHILE  X <=TIT_N
+      R_C=ARR_REC_NAME[X]
+      XK=ALLTRIM(STR(X,2,0))
+      RET_X&XK=&R_C
+      RET_A[X]=&R_C
+      X=X+1
+    ENDDO
+    _LOOP_BR=0
+  CASE T=23 .OR. T=27
+    _LOOP_BR=0
+  ENDCASE
+ENDDO
+T=0
+SET COLO TO &XCOR
+RESTSCREEN(Y1_N-1,0,Y1_N+YL_N+1,79,X_G_B)
+RETU
+&&---------------------------------------------------------------------------------------------------
+PROCEDURE  D_CAR_DATA
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+ARR1 :={"  ¨®¸¹ ","¾r¾p©m¦W"," ªÅ­«(Kg)"}
+ARR2 :={"P12101","P12102","p12103"}
+ARR3 :={"!!!!!!!","XXXXXXXX","999999"}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 10
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC2="FIND_1102"
+_GET_BROW(18,20,5,3,ARR1,ARR2,ARR3,"_DMAKE1","10","Y")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+FUNCTION   _REC_DSP
+PARAMETERS  YD_N
+X=1
+DO WHILE  X <=TIT_N
+  R_CB=ARR_REC_NAME[X]
+  T_CB=ARR_TYPE[X]
+  @ YD_N,ARR_DSPN[X]  SAY &R_CB   PICT "&T_CB"
+  IF  EMPTY(ARR_PCS[X]) =.F.
+    PCS_CF(YD_N,&R_CB,X,RECNO())
+  ENDIF
+  X=X+1
+ENDDO
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE    _DSP_ALL
+PARAMETERS  P1,P2,P3
+XAL=1
+Y_X=Y1_N
+@ Y1_N,X1_N  CLEA TO Y1_N+YL_N-1,X1_N + DC_L-1
+IF .NOT. BOF()
+  DO WHILE  (XAL <=YL_N)  .AND. (.NOT. EOF())
+    _REC_DSP(Y_X)
+    SKIP
+    Y_X=Y_X+1
+    XAL=XAL+1
+  ENDDO
+  SKIP -1
+  N_YN=Y_X -1
+ENDIF
+N_REC=RECNO()
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION   UP_DSP1
+PARAMETERS  X
+SET COLOR TO W+ / BL
+_REC_DSP(N_YN)
+SKIP -1
+if fist_rec=0
+  IF BOF()
+    GOTO TOP
+  ELSE
+    N_YN=N_YN -1
+    IF N_YN < Y1_N
+      N_YN=Y1_N
+      SCROLL(Y1_N,X1_N,Y1_N+YL_N-1,X1_N+DC_L,-1)
+    ENDIF
+  ENDIF
+else
+  IF recno() < FIST_REC
+    SKIP
+  ELSE
+    N_YN=N_YN -1
+    IF N_YN < Y1_N
+      N_YN=Y1_N
+      SCROLL(Y1_N,X1_N,Y1_N+YL_N-1,X1_N+DC_L,-1)
+    ENDIF
+  ENDIF
+endif
+SET COLOR TO GR+ / W+
+_REC_DSP(N_YN)
+N_REC=RECNO()
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION   DOWN_DSP1
+PARAMETERS  X
+SET COLOR TO W+ / BL
+_REC_DSP(N_YN)
+SKIP
+IF LAST_REC=0
+  IF .NOT. EOF()
+    N_YN=N_YN +1
+    IF N_YN > Y1_N + YL_N-1
+      N_YN=Y1_N +YL_N-1
+      SCROLL(Y1_N,X1_N,Y1_N+YL_N-1,X1_N+DC_L,1)
+    ENDIF
+  ELSE
+    GOTO N_REC
+  ENDIF
+ELSE
+  IF RECNO()<=LAST_REC
+    N_YN=N_YN +1
+    IF N_YN > Y1_N + YL_N-1
+      N_YN=Y1_N +YL_N-1
+      SCROLL(Y1_N,X1_N,Y1_N+YL_N-1,X1_N+DC_L,1)
+    ENDIF
+  ELSE
+    SKIP -1
+  ENDIF
+ENDIF
+SET COLOR TO GR+ / W+
+_REC_DSP(N_YN)
+N_REC=RECNO()
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION  PNT1_OK
+PARAMETERS   X_OK
+XCOR=SETCOLOR()
+* 136 col
+X_OK=1
+if  RDLPT(0) <> 144
+  SET DEVI TO SCRE
+  SET COLOR TO &C7 / &C5
+  XPNT_ER=SAVESCREEN(10,0,14,79)
+  SET COLOR TO GR+ / R
+  @ 10,30 CLEA TO 14,54
+  BOX_S(10,30,14,54)
+  SET COLOR TO W+ / R
+  @ 11,32 SAY			" NO. 1  ¦Cªí¾÷¤£¥¿½T"
+  @ 12,32 SAY			" «ö¸Ë«á«ö¥ô¤@ÁäÄ~Äò"
+  @ 13,32 SAY			" «ö Esc Áä°±¤î¦C¦L "
+  SET COLOR TO GR+ / R
+  @ 13,36 SAY			"Esc"
+  set curs off
+  do while RDLPT(0) <>144
+    XT=0
+    DO WHILE XT=0
+      xt=INKEY()
+    ENDDO
+    if XT=27
+      EXIT
+      x_OK=0
+    endif
+  ENDDO
+  set curs oN
+  SET DEVI TO PRINT
+  IF RDLPT(0) <> 144
+      x_OK=0
+  ENDIF
+  if  x_OK=0
+  SET DEVI TO SCRE
+  endif
+  RESTSCREEN(10,0,14,79,XPNT_ER)
+endif
+SET COLO TO &XCOR
+RETU X_OK
+&&-----------------------------------------------------------------------------
+FUNCTION  PNT2_OK
+PARAMETERS   X_masage
+XCOR=SETCOLOR()
+* 80 col
+X_OK=1
+IF RDLPT(1) <> 144
+  IF EMPTY(X_MASAGE) = .T.
+    SET DEVI TO SCRE
+    SET COLOR TO &C7 / &C5
+    XPNT_ER=SAVESCREEN(10,0,14,79)
+    SET COLOR TO GR+ / R
+    @ 10,30 CLEA TO 14,54
+    BOX_S(10,30,14,54)
+    SET COLOR TO W+ / R
+
+    @ 11,32 SAY 		  " NO. 2  ¦Cªí¾÷¤£¥¿½T"
+    @ 12,32 SAY 		  " «ö¸Ë«á«ö¥ô¤@ÁäÄ~Äò"
+    @ 13,32 SAY 		  " «ö Esc Áä°±¤î¦C¦L "
+    SET COLOR TO GR+ / R
+    @ 13,36 SAY 		  "Esc"
+    set curs off
+    do while RDLPT(1) <>144
+      XT=0
+      DO WHILE XT=0
+	xt=INKEY()
+      ENDDO
+      if XT=27
+	EXIT
+	x_OK=0
+      endif
+    ENDDO
+    set curs oN
+    SET DEVI TO PRINT
+    IF RDLPT(1) <> 144
+    X_OK=0
+    ENDIF
+    if	x_OK=0
+    SET DEVI TO SCRE
+    endif
+    RESTSCREEN(10,0,14,79,XPNT_ER)
+  ELSE
+    X_OK=0
+  ENDIF
+ENDIF
+SET COLO TO &XCOR
+RETU X_OK
+&&-----------------------------------------------------------------------------
+PROCEDURE  D_add_DATA
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+IF  LU_COUNT=1
+  ARR1 :={_F3TXT_A[3],_F3TXT_A[4],"°t¤ñ"," ³æ »ù"}
+  ARR2 :={"P1701","P1702","ratno","U_PRICE"}
+  ARR3 :={"!!!!","XXXXXXXXXXXXXXXXXXX","9999","99999"}
+  ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+  ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+  XN_TIT=4
+ELSE
+  ARR1 :={_F3TXT_A[3],_F3TXT_A[4]}
+  ARR2 :={"P1701","P1702"}
+  ARR3 :={"!!!!","XXXXXXXXXXXXXXXXXXX"}
+  ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+  ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+  XN_TIT=2
+ENDIF
+RET_X1=SPACE(4)
+sele 13
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC2=" "
+_GET_BROW(18,5,5,XN_TIT,ARR1,ARR2,ARR3,"_DMAKE1","13","Y")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+SET COLOR TO &C7 +/ &C1
+IF _DATA_MODIFY =1
+  SELE 13
+  DELE FILE C:\DBF17_1.DBF
+  DELE FOR EMPTY(P1701)=.T.
+  PACK
+  SORT ON P1701  TO DBF17_1.DBF
+  ZAP
+  APPE FROM DBF17_1
+  DELE FILE C:\DBF17_1.DBF
+ENDIF
+retu
+**-----------------------------------------------------------------------------
+FUNCTION _AUTO_FLOR
+PARAMETERS _AFR_INIT,_SET_WEI,_ACT_WEI,NO_FLOR,F_ROPPEN
+IF _AFR_INIT=1
+  PUBLIC  _ATFLOR1
+  IF  EMPTY(_ATFLOR1)=.T.
+    PUBLIC   _ATFLOR1,_ATFLOR2,_ATFLOR3,_ATFLOR4,_ATFLOR5,_ATFLOR6,_ATFLOR7,_ATFLOR9,_ATFLOR8
+    SELE 5
+    GOTO 28
+    IF EOF()
+      APPE BLANK
+      REPL PARNO WITH RECNO()
+      DO WHILE RECNO() <>28
+	APPE BLANK
+	REPL PARNO WITH RECNO()
+      ENDDO
+      GOTO 27
+      REPL PA1 WITH 30,PA2 WITH 30,PA3 WITH 30,PA4 WITH 30,PA5 WITH 30
+      REPL PA6 WITH 15,PA7 WITH 15,PA8 WITH 0.2
+      GOTO 28
+      REPL PA1 WITH 15
+    ENDIF
+    GOTO 27
+    _ATFLOR1 =PA1
+    _ATFLOR2 =PA2
+    _ATFLOR3 =PA3
+    _ATFLOR4 =PA4
+    _ATFLOR5 =PA5
+    _ATFLOR6 =PA6
+    _ATFLOR7 =PA7
+    _ATFLOR8 =PA8
+    GOTO 28
+    _ATFLOR9 =PA1
+  ENDIF
+  PUBLIC   _ATF1,_ATF2,_ATF3,_ATF4,_ATF5,_ATF6,_ATF7,_ATF9,_ATF8
+  PUBLIC   _ATFA1,_ATFA2,_ATFA3,_ATFA4,_ATFA5,_ATFA6,_ATFA7,_ATFA9,_ATFA8
+  STOR 0  TO  _ATF1,_ATF2,_ATF3,_ATF4,_ATF5,_ATF6,_ATF7,_ATF9,_ATF8
+  STOR 0  TO  _ATFA1,_ATFA2,_ATFA3,_ATFA4,_ATFA5,_ATFA6,_ATFA7,_ATFA9,_ATFA8
+ELSEIF	_AUTO_FLOR=1
+  IF F_ROPPEN=0   &&­p¶q¤@¦¸
+    IF	_SET_WEI <> _ACT_WEI
+      _XERR=_ACT_WEI -	_SET_WEI
+      IF  ABS(_XERR) > _ATFLOR&NO_FLOR
+	_XERR=(_XERR/ ABS(_XERR)) * ABS(_ATFLOR&NO_FLOR)
+      ENDIF
+      PFLOR&NO_FLOR=PFLOR&NO_FLOR +_XERR
+      IF PFLOR&NO_FLOR <0
+	PFLOR&NO_FLOR=0
+      ENDIF
+      DO _FLORSAVE
+    ENDIF
+  ELSE
+    PFLOR&NO_FLOR=PFLOR&NO_FLOR-ABS(ERKG&NO_FLOR)  *.5
+    IF PFLOR&NO_FLOR  <0
+      PFLOR&NO_FLOR=ABS(ERKG&NO_FLOR)
+    ENDIF
+    DO _FLORSAVE
+  ENDIF
+ENDIF
+STOR 0 TO _ATF&NO_FLOR,_ATFA&NO_FLOR
+retu
+&&-----------------------------------------------------------------------------
+PROCEDURE  _FLORSAVE
+PARAMETERS  P1,P2,P3
+SELE 5
+IF   NO_FLOR="9"
+  GOTO 18
+  REPL	PA1 WITH  PFLOR&NO_FLOR
+ELSE
+  GOTO TOP
+  REPL	PA&NO_FLOR  WITH    PFLOR&NO_FLOR
+ENDIF
+XCOR=SETCOLOR()
+SET COLOR TO &C7 +/ &C1
+@ 22,8	SAY  PFLOR1 PICT "999"
+@ 22,16 SAY  PFLOR2 PICT "999"
+@ 22,24 SAY  PFLOR3 PICT "999"
+@ 22,32 SAY  PFLOR4 PICT "999"
+@ 22,42 SAY  PFLOR5 PICT "999"
+@ 22,48 SAY  PFLOR6 PICT "999"
+@ 22,58 SAY  PFLOR7 PICT "999"
+@ 22,66 SAY  PFLOR9 PICT "999"
+@ 22,73 SAY  PFLOR8 PICT "99.99"
+SET COLO TO &XCOR
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION _FLOR_F
+PARAMETERS _NOF
+_NOFC=ALLTRIM(STR(_NOF,2,0))
+IF  _ATF&_NOFC=0
+  IF RD_DO1(_NOF)=0
+    _ATF&_NOFC=1
+    _ATFA&_NOFC=0
+  ENDIF
+ELSE
+  IF RD_DO1(_NOF)=1
+    _ATF&_NOFC=1
+    _ATFA&_NOFC=1
+  ENDIF
+ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE  _AUTO_MAXIN
+PARAMETERS  P1,P2,P3
+SET COLOR TO W+ / N
+@ 21,0 CLEA TO 23,77
+SET COLOR TO W+ / &CF
+@ 23,0 SAY    "¡ü<<  ¤@¦¸¦Û°Ê­×¥¿¸¨®t³Ì¤j­«  >>                                             ¡ü"
+SET COLOR TO  gr +/ &CF
+@ 23,2	SAY "<<"
+@ 23,30 SAY ">>"
+SET COLOR TO W+ / N
+FGET=1
+SCRNO=22
+XP1 =7
+XP2 =15
+XP3 =23
+XP4 =31
+XP5 =42
+XP6 =50
+XP7 =58
+XP8 =66
+XP9 =74
+XPA1=_ATFLOR1
+XPA2=_ATFLOR2
+XPA3=_ATFLOR3
+XPA4=_ATFLOR4
+XPA5=_ATFLOR5
+XPA6=_ATFLOR6
+XPA7=_ATFLOR7
+XPA8=_ATFLOR9
+XPA9=_ATFLOR8
+SET COLOR TO W+ / N
+@ 22,XP1  SAY  _atflor1    PICT "999"
+@ 22,XP2  SAY  _atflor2      PICT "999"
+@ 22,XP3  SAY  _atflor3      PICT "999"
+@ 22,XP4  SAY  _atflor4      PICT "999"
+@ 22,XP5  SAY  _atflor5      PICT "999"
+@ 22,XP6  SAY  _atflor6      PICT "999"
+@ 22,XP7  SAY  _atflor7      PICT "999"
+@ 22,XP8  SAY  _atflor9      PICT "999"
+@ 22,XP9  SAY  _atflor8      PICT "9.9"
+DO WHILE  FGET <=9
+  FGETC=ALLTRIM(STR(FGET,1,0))
+  IF  FGET=9
+    CHRN=STR(XPA&FGETC,3,1)
+  ELSE
+    CHRN=STR(XPA&FGETC,3)
+  ENDIF
+  *T_A=NREAD(SCRNO,XP&FGETC,CHRN,6,"")
+  TNSTP=READ_A(SCRNO,XP&FGETC,CHRN,"C",3,0,TNSTP," ")
+  T_A=_LASTKEY
+  XPA&FGETC=VAL(CHRN)
+  DO CASE
+  CASE	FGETC="8"
+    _ATFLOR9=VAL(CHRN)
+  CASE	FGETC="9"
+    _ATFLOR8=VAL(CHRN)
+  OTHERWISE
+    _ATFLOR&FGETC=VAL(CHRN)
+  ENDCASE
+  SET  COLOR TO W+ /N
+  x_TY="999"
+  IF FGETC="9"
+    x_TY="9.9"
+  ENDIF
+  @ SCRNO,xp&FGETC SAY XPA&FGETC   PICT "&x_ty"
+  DO CASE
+  CASE	T_A=13
+    FGET=FGET+1
+  CASE	T_A=5
+      FGET=FGET-1
+      IF  FGET <=0
+	FGET=100
+      ENDIF
+  CASE T_A=24
+      FGET=FGET+1
+  CASE T_A=23
+    T2=0
+    FGET=100
+  ENDCASE
+ENDDO
+SET COLOR TO W+ / N
+@ 21,0 CLEA TO 23,77
+SELE 5
+GOTO 27
+REPL PA1 WITH XPA1,PA2 WITH XPA2,PA3 WITH XPA3,PA4 WITH XPA4,PA5 WITH XPA5
+REPL PA6 WITH XPA6,PA7 WITH XPA7,PA8 WITH XPA9
+GOTO 28
+REPL PA1 WITH XPA8
+COMMIT
+RETU
+&&-----------------------------------------------------------------------------
+**-----------------------------------------------------------------------------
+FUNCTION SER_OK
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2))
+SER_XW=DOW(DATE())-1
+IF  SER_XW =0
+  SER_XW=7
+ENDIF
+SER_XW=SER_XW + SER_X2
+SER_X1=VAL(SUBSTR(DTOC(DATE()),1,2)) +SER_XW
+SER_X2=VAL(SUBSTR(DTOC(DATE()),4,2)) +SER_XW
+SER_X3=VAL(SUBSTR(DTOC(DATE()),7,2)) +SER_XW
+SER_Xok1="TV7213"
+SER_Xok2="YB0246"
+SER_Xok3=ALLTRIM(STR(SER_X1 * SER_X2 * SER_X3,6,0))
+XS=1
+XN=7
+SER_OK=1
+SER_STP=1
+  T_SER=""
+
+DO WHILE (SER_STP <=7)	.AND. (T <>13)
+  T=0
+  DO WHILE  T =0
+    T=INKEY()
+  ENDDO
+  IF  T <>13
+    T_SER=T_SER +UPPER(CHR(T))
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+SER_OK=0
+IF (T_SER =SER_XOK1) .OR. (T_SER =SER_XOK2) .OR. (T_SER =SER_XOK3)
+  SER_OK=1
+ELSE
+  SER_OK=0
+ENDIF
+RETU SER_OK
+&&-----------------------------------------------------------------------------
+&&-----------------------------------------------------------------------------
+FUNCTION  PNT_OK1
+PARAMETERS   X_OK
+XCOR=SETCOLOR()
+* 136 col
+X_OK=1
+if  RDLPT(0) <> 144
+  SET DEVI TO SCRE
+  SET COLOR TO &C7 / &C5
+  XPNT_ER=SAVESCREEN(10,0,14,79)
+  SET COLOR TO GR+ / R
+  @ 10,30 CLEA TO 14,54
+  BOX_S(10,30,14,54)
+  SET COLOR TO W+ / R
+  @ 11,32 SAY			" NO. 1  ¦Cªí¾÷¤£¥¿½T"
+  @ 12,32 SAY			" «ö¸Ë«á«ö¥ô¤@ÁäÄ~Äò"
+  @ 13,32 SAY			" «ö Esc Áä°±¤î¦C¦L "
+  SET COLOR TO GR+ / R
+  @ 13,36 SAY			"Esc"
+  set curs off
+  do while RDLPT(0) <>144
+    XT=0
+    DO WHILE XT=0
+      xt=INKEY()
+    ENDDO
+    if XT=27
+      EXIT
+      x_OK=0
+    endif
+  ENDDO
+  set curs oN
+  SET DEVI TO PRINT
+  IF RDLPT(0) <> 144
+      x_OK=0
+  ENDIF
+  if  x_OK=0
+  SET DEVI TO SCRE
+  endif
+  RESTSCREEN(10,0,14,79,XPNT_ER)
+endif
+SET COLO TO &XCOR
+RETU X_OK
+&&-----------------------------------------------------------------------------
+FUNCTION  PNT_OK2
+PARAMETERS   X_masage
+XCOR=SETCOLOR()
+* 80 col
+X_OK=1
+IF RDLPT(1) <> 144
+  IF EMPTY(X_MASAGE) = .T.
+    SET DEVI TO SCRE
+    SET COLOR TO &C7 / &C5
+    XPNT_ER=SAVESCREEN(10,0,14,79)
+    SET COLOR TO GR+ / R
+    @ 10,30 CLEA TO 14,54
+    BOX_S(10,30,14,54)
+    SET COLOR TO W+ / R
+
+    @ 11,32 SAY 		  " NO. 2  ¦Cªí¾÷¤£¥¿½T"
+    @ 12,32 SAY 		  " «ö¸Ë«á«ö¥ô¤@ÁäÄ~Äò"
+    @ 13,32 SAY 		  " «ö Esc Áä°±¤î¦C¦L "
+    SET COLOR TO GR+ / R
+    @ 13,36 SAY 		  "Esc"
+    set curs off
+    do while RDLPT(1) <>144
+      XT=0
+      DO WHILE XT=0
+	xt=INKEY()
+      ENDDO
+      if XT=27
+	EXIT
+	x_OK=0
+      endif
+    ENDDO
+    set curs oN
+    SET DEVI TO PRINT
+    IF RDLPT(1) <> 144
+    X_OK=0
+    ENDIF
+    if	x_OK=0
+    SET DEVI TO SCRE
+    endif
+    RESTSCREEN(10,0,14,79,XPNT_ER)
+  ELSE
+    X_OK=0
+  ENDIF
+ENDIF
+SET COLO TO &XCOR
+RETU X_OK
+&&-----------------------------------------------------------------------------
+FUNCTION  _NTO00C
+PARAMETERS   NX1,XIN,XDN  &&  N,¾ã¼ÆLONG,¤p¼ÆLONG
+NXC=ALLTRIM(STR(NX1,XIN,XDN))
+NXC=SUBSTR("0000000"+NXC,-XIN,XIN)
+RETU NXC
+&&-----------------------------------------------------------------------------
+FUNCTION RE_STAR
+SER_Xok1="167017"
+XS=1
+XN=7
+SER_OK=1
+SER_STP=1
+  T_SER=""
+
+DO WHILE (SER_STP <=10)  .AND. (T <>13)
+  T=0
+  DO WHILE  T =0
+    T=INKEY()
+  ENDDO
+  IF  T <>13
+    T_SER=T_SER +UPPER(CHR(T))
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+SER_OK=0
+IF (T_SER =SER_XOK1)
+  SER_OK=1
+ELSE
+  SER_OK=0
+ENDIF
+RETU SER_OK
+&&-----------------------------------------------------------------------------
+
+&&-----------------------------------------------------------------------------
+PROCEDURE  MONI_INI
+PARAMETERS  P1,P2,P3
+PUBLIC	I00,I01,I02,I03,I04,I05,I06,I07,I08,I09,I010,I011,I012,I013,I014,I015
+PUBLIC	ACT_W1,ACT_W2,ACT_W3,ACT_W4,ACT_W5   &&­p¶q¹ê­«
+PUBLIC	DB_1,DB_2,DB_3,DB_4,DB_5   &&¹ê­«DISPLAY NO=0 YES=1
+PUBLIC	DBTIME_1,DBTIME_2,DBTIME_3,DBTIME_4,DBTIME_5
+PUBLIC	ZERTIME_1,ZERTIME_2,ZERTIME_3
+PUBLIC	W_ZERO1,W_ZERO2,W_ZERO3,W_ZERO4,W_ZERO5  && ½SºÙZERO
+PUBLIC	W_1,W_2,W_3,W_4,W_5  && ½SºÙDATA
+PUBLIC	F_IN1,F_IN2,F_IN3,F_IN4,F_IN5
+PUBLIC	F_OUT1,F_OUT2,F_OUT3,F_DROW
+PUBLIC	FUL_W1,FUL_W2,FUL_W3,FUL_W4,FUL_W5
+PUBLIC	ZER_W1,ZER_W2,ZER_W3,CRT_DSP_ALL,MMOVKG1,MMOVKG2,MMOVKG3,MMOVKG4,MNIDSP
+STOR 0 TO I00,I01,I02,I03,I04,I05,I06,I07,I08,I09,I010,I011,I012,I013,I014,I015
+stor 0 to ACT_W1,ACT_W2,ACT_W3,ACT_W4,ACT_W5   &&­p¶q¹ê­«
+stor 0 to DB_1,DB_2,DB_3,DB_4,DB_5   &&¹ê­«DISPLAY NO=0 YES=1
+STOR 0 TO DBTIME_1,DBTIME_2,DBTIME_3,DBTIME_4,DBTIME_5
+STOR 0 TO ZERTIME_1,ZERTIME_2,ZERTIME_3,MNIDSP
+STOR 0 TO W_ZERO1,W_ZERO2,W_ZERO3,W_ZERO4,W_ZERO5  && ½SºÙZERO
+STOR 0 TO W_1,W_2,W_3,W_4,W_5  && ½SºÙDATA
+STOR 0 TO F_IN1,F_IN2,F_IN3,F_IN4,F_IN5
+STOR 0 TO F_OUT1,F_OUT2,F_OUT3,F_DROW
+STOR 0 TO FUL_W1,FUL_W2,FUL_W3,FUL_W4,FUL_W5
+STOR 0 TO ZER_W1,ZER_W2,ZER_W3,CRT_DSP_ALL
+MMOVKG1=SMOVKG5
+MMOVKG2=SMOVKG6
+MMOVKG3=SMOVKG6
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION  D_READ
+PARAMETERS  XN
+XCN=ALLTRIM(STR(INT(XN),1,0))
+PN=XN-1
+XCP=ALLTRIM(STR(INT(XN-1),1,0))
+IF DIN2(PN)=1
+  DB_&XCN=1
+  F_IN&XCN=1
+  XX=STR(INT((XN+1)/2),1,0)
+  DBTIME_&XCN=SECONDS()
+  IF F_OUT&XX=1
+    F_OUT&XX=0
+    W_ZERO&XX=W_&XX
+  ENDIF
+ELSE
+  IF DB_&XCN=1
+    IF ABS(SECONDS()-DBTIME_&XCN) >=RDT_&XCN
+      DBTIME_&XCN=SECONDS()
+      _CAL_M&XCN=1
+      DB_&XCN=0
+      IF XN=3
+	  DB_2=0
+	  FUL_W2=1
+      ENDIF
+      FUL_W&XCN=1
+    ENDIF
+  ELSE
+    DBTIME_&XCN=SECONDS()
+    DB_&XCN=0
+  ENDIF
+ENDIF
+IF  DB_&XCN=1
+  DO CASE
+  CASE XN=1
+      ACT_W1=W_1 -W_ZERO1
+  CASE XN=2
+    IF FUL_W2=0
+      ACT_W&XCN=W_2-W_ZERO2
+    ELSE
+      ACT_W2=ACT_W2 +(W_2 -W_ZERO2-ACT_W2-ACT_W3)
+    ENDIF
+  CASE XN=3
+    IF FUL_W3=0
+      ACT_W3=W_2 -ACT_W2-W_ZERO2
+    ELSE
+      ACT_W3=ACT_W3 +(W_2 -W_ZERO2-ACT_W2-ACT_W3)
+    ENDIF
+  ENDCASE
+  IF MNIDSP=1
+    DSPB_DATA(XN)
+  ENDIF
+ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION  OUT_READ
+PARAMETERS  XN
+
+XCN=ALLTRIM(STR(INT(XN),1,0))
+PN=XN-1
+XCP=ALLTRIM(STR(INT(XN-1),1,0))
+IF DIN2(PN+9)=1
+  DO CASE
+  CASE	XN=1 .AND. F_IN1=1
+    DB_1=0
+    IF	F_IN1=1  .AND. (ACT_W1 >=1 )
+      IF DIN2(15)=0
+	SELE  6
+	GOTO BOTT
+	IF (TCO1 >0 )  .or. BOF()
+	  APPE	BLANK
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	IF   (TCO2 =0) .AND. (TCO3 =0)
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	REPLA  TCO1 WITH  ACT_W1
+	commit
+      ENDIF
+    ENDIF
+    ACT_W1=0
+    F_IN1=0
+    FUL_W1=0
+    IF MNIDSP=1
+      DSPB_DATA(1)
+    ENDIF
+  CASE	XN=2 .AND. (F_IN2=1   .OR. F_IN3=1)
+    DB_2=0
+    DB_3=0
+    IF	F_IN2=1  .AND. (ACT_W2 >=1 )
+      IF DIN2(15)=0
+	SELE  6
+	GOTO BOTT
+	IF (TCO2 >0)   .or. BOF()
+	  APPE	BLANK
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	IF   (TCO1 =0) .AND. (TCO3 =0)
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	REPLA  TCO2 WITH  ACT_W2
+      ENDIF
+    ENDIF
+    IF	F_IN3=1  .AND. (ACT_W3 >=1 )
+      IF DIN2(15)=0
+	SELE  6
+	GOTO BOTT
+	IF (TCO3 >0)   .or. BOF()
+	  APPE	BLANK
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	IF   (TCO1 =0) .AND. (TCO2 =0)
+	  REPLA LUDATE	WITH  DATE(),LUTIME WITH  TIME()
+	ENDIF
+	REPLA  TCO3 WITH  ACT_W3
+      ENDIF
+    ENDIF
+      commit
+    F_IN2=0
+    F_IN3=0
+    FUL_W2=0
+    FUL_W3=0
+    ACT_W2=0
+    ACT_W3=0
+    IF MNIDSP=1
+      DSPB_DATA(2)
+      DSPB_DATA(3)
+    ENDIF
+  ENDCASE
+  F_OUT&XCN=1
+  ZERTIME_&XCN=SECONDS()
+ELSE
+  IF F_OUT&XCN=1   .AND. (ABS(SECONDS()-ZERTIME_&XCN)>=Z_RDT_&XCN)
+    F_OUT&XCN=0
+    W_ZERO&XCN=W_&XCN
+  ENDIF
+ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION  DSPB_DATA
+PARAMETERS  XM
+XCS=ALLTRIM(STR(INT(XM),1,0))
+XN=INT(XM-1)
+X=ALLTRIM(STR(INT(XM+4),1,0))
+X_DATA=ACT_W&XCS
+XC_DATA=STR(X_DATA,5,0)
+@ 1,20+9*xm    say  xc_data
+SET COLO TO &C7 +/ &C1
+RETU X_DATA
+&&-----------------------------------------------------------------------------
+PROCEDURE  MONI
+PARAMETERS  P1,P2,P3
+XS=1
+FOR XS=1 TO 3	STEP 1
+  D_READ(XS)
+NEXT
+XS=1
+FOR XS=1 TO 2	STEP 1
+  OUT_READ(XS)
+NEXT
+IF DIN2(14)=1
+  IF  F_DROW=0
+    F_DROW=1
+    SELE  6
+    GOTO BOTT
+    IF	(TCO1 <>0) .OR. (TCO2 <>0) .OR. (TCO3 <>0)   .or. BOF()
+       APPEND  BLANK
+    ENDIF
+  ENDIF
+ELSE
+  F_DROW=0
+ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION SER_NO
+PARAMETERS  XM
+T_SER=""
+XS=1
+XN=7
+SER_STP=1
+DO WHILE (SER_STP <=XM)  .AND. (T <>13)
+  T=0
+  DO WHILE  T =0
+    T=INKEY()
+  ENDDO
+  IF  T <>13
+    T_SER=T_SER +UPPER(CHR(T))
+  ENDIF
+  SER_STP=SER_STP +1
+ENDDO
+RETU T_SER
+&&-----------------------------------------------------------------------------
+FUNCTION SER_OK_DEL
+SER_X1=SUBSTR(DTOC(DATE()),1,2)+SUBSTR(DTOC(DATE()),4,2)
+SER_X2="YB0246"
+SER_OK=0
+  SER_C=""
+FOR  XN=1 TO  7
+  T=0
+  DO WHILE T =0
+    T=INKEY()
+  ENDDO
+  IF  T<>13
+    SER_C=SER_C+CHR(T)
+  ELSE
+    XN=99
+  ENDIF
+NEXT
+IF  (SER_C=SER_X1) .OR. (SER_C=SER_X2)
+  SER_OK=1
+ENDIF
+RETU SER_OK
+
+&&-----------------------------------------------------------------------------
+PROCEDURE  CHK_PNT
+PARAMETERS  P1,P2,P3
+X_G_A=SAVESCREEN(20,0,23,79)
+@  1,2 SAY "¢x¥xºÝ:                                                                   ¢x"
+@  2,2 SAY "¢x¹q¸Ü:             µ²±b°_©l¤é:                 µ²±bºI¤î¤é:               ¢x"
+@ 1,9 SAY  XMAKER_2
+@ 2,9  SAY  XMAKER_3
+@ 2,33 SAY  SDATE
+@ 2,61 SAY  EDATE
+@ 20,2 SAY "¢x                                                                        ¢x"
+@ 21,2 SAY "¢x                                                                        ¢x"
+@ 22,2 SAY "¢x¹w¦¬ª÷ÃB¦X­p:                                                           ¢x"
+@ 23,2 SAY "¢x¤W´Áµ²¤í¦X­p:                ¥»´ÁÀ³¦¬:            À³¦¬¦X­p:             ¢x"
+@ 22,17  SAY  XN_PREGET  PICT "99999999"
+@ 23,17  SAY  XN_LSTBIL  PICT "99999999"
+SET COLOR TO W+ / &CF
+@ 24,2 SAY "¡ü F7-¦C¦L¥»ªí³æ          F8-¦C¦L©Ò¦³ªí³æ                                 ¡ü"
+SET COLOR TO  gr +/ &CF
+@ 24,5	SAY "F7"
+@ 28,5	SAY "F9"
+SET COLOR TO &C7 +/ &C1
+
+
+
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+  ARR1 :={"  ¤é  ´Á  ","°t¤ñ","¼Æ¶q","³æ»ù  ª÷  ÃB  "," °e  ³f  ¦a  ÂI        ","°e³f³æ§Ç¸¹"} &&,"¹w¦¬ª÷ÃB","¤W´Áµ²¤í"}
+  ARR2 :={"LUDATE","RATNO","TTVUSE","U_PRICE","P1702","LAGNO1"}&&,"PRE_GET","LST_BILL"}
+  ARR3 :={"XXXXXXXXXX","9999","9999","9999","XXXXXXXXXXXXXXXXXXXXXX","999999"} &&,"99999999","99999999"}
+  ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+  ARR_PCS={" "," ","G_TOT","G_TOT "," "," "}
+  XN_TIT=6
+RET_X1=SPACE(4)
+
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+P_FUNC2=" "
+_GET_BROW(4,3,14,XN_TIT,ARR1,ARR2,ARR3,"_DMAKE1","7","Y")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," " }
+SET COLOR TO &C7 +/ &C1
+RESTSCREEN(20,0,23,79,X_G_A)
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  CHK_BILL
+PARAMETERS  P1,P2,P3
+X_G_A=SAVESCREEN(20,0,23,79)
+
+@ 20,2 SAY "¢x                                                                        ¢x"
+@ 21,2 SAY "¢x                                                                        ¢x"
+@ 22,2 SAY "¢x¹w¦¬ª÷ÃB¦X­p:                                                           ¢x"
+@ 23,2 SAY "¢x¤W´Áµ²¤í¦X­p:                                                           ¢x"
+SET COLOR TO W+ / &CF
+@ 24,2 SAY "¡ü F7-³øªí¦C¦L                                                            ¡ü"
+SET COLOR TO  gr +/ &CF
+@ 24,5	SAY "F7"
+SET COLOR TO &C7 +/ &C1
+
+
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+  ARR1 :={"  ¤é  ´Á  ","«È¤á¥N¸¹  «È¤á¦WºÙ            ","¹w¦¬ª÷ÃB","¤W´Áµ²¤í","¦¬¾Ú³æ¸¹"}
+  ARR2 :={"LUDATE","US2","PRE_GET","LST_BILL","NO_BILL"}
+  ARR3 :={"XXXXXXXXXX","!!!!","99999999","99999999","XXXXXXXX"}
+  ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+  ARR_PCS={" ","CHK_FNAME","CHK_GTOT","CHK_GBIL"," "}
+  XN_TIT=5
+RET_X1=SPACE(4)
+
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+P_FUNC2=" "
+_GET_BROW(3,3,15,XN_TIT,ARR1,ARR2,ARR3,"_DMAKE1","15","Y")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+SET COLOR TO &C7 +/ &C1
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," " }
+RESTSCREEN(20,0,23,79,X_G_A)
+PACK
+dele FILE w2.dbf
+SORT  ON  LUDATE  TO W2
+USE
+IF   ROM_N=1
+  DELE FILE  C:\CHK_BILL.DBF
+  RENA	C:\W2.DBF TO   C:\CHK_BILL.DBF
+  USE  C:\CHK_BILL
+ELSE
+  DELE FILE  W1.DBF
+  RENA	W2.DBF TO   CHK_BILL.DBF
+  USE CHK_BILL
+ENDIF
+retu
+&&-----------------------------------------------------------------------------
+FUNCTION PCS_CF
+PARAMETERS  Y_POSI,X_DATA,XFUNC_NO,XN_RECNO
+XDO_F=ARR_PCS[XFUNC_NO]
+DO &XDO_F
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  CHK_GTOT
+PARAMETERS  P1,P2,P3
+SUM PRE_GET  TO X_PREGET
+@ 22,17  SAY  X_PREGET PICT "99999999"
+GOTO  XN_RECNO
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  CHK_FNAME
+PARAMETERS  P1,P2,P3
+X_P1501=X_DATA
+IF EMPTY(X_P1501)=.F.
+  SELE 11
+  LOCA	 FOR  P1501=X_P1501
+  IF  .NOT.  EOF()
+    X_P1502=SUBSTR(LTRIM(P1502),1,22)
+  ELSE
+    X_P1502="????                  "
+  ENDIF
+  @ Y_POSI,ARR_DSPN[2]+5  SAY X_P1502
+  SELE &N_SELE
+ENDIF
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  CHK_GBIL
+PARAMETERS  P1,P2,P3
+SUM LST_BILL  TO X_PREGET
+@ 23,17  SAY  X_PREGET PICT "99999999"
+GOTO  XN_RECNO
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  FIN_MAKER
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+  ARR1 :={"«È¤á¥N¸¹","«È¤á¦WºÙ                      "}
+  ARR2 :={"P1501","P1502"}
+  ARR3 :={"!!!!","XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
+  ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+  ARR_PCS={" "," "," "," "," "}
+  XN_TIT=2
+RET_X1=SPACE(4)
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+P_FUNC2=" "
+_GET_BROW(3,3,15,XN_TIT,ARR1,ARR2,ARR3,"_DMAKE1","11","N")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+SET COLOR TO &C7 +/ &C1
+XMAKER=RET_X1
+retu
+&&-----------------------------------------------------------------------------
+PROCEDURE  G_TOT
+PARAMETERS  P1,P2,P3
+IF  EMPTY(US2)=.T.
+  REPL US2 WITH  XMAKER
+ENDIF
+@ Y_POSI,ARR_DSPN[4]+6	SAY  TTVUSE *U_PRICE  PICT "99999999"
+SUM TTVUSE *U_PRICE  TO X_PREGET
+@ 23,42  SAY  X_PREGET PICT "99999999"
+@ 23,63  SAY  (X_PREGET -XN_PREGET +XN_LSTBIL)	PICT "99999999"
+GOTO  XN_RECNO
+retu
+&&-----------------------------------------------------------------------------
+PROCEDURE  CHKBIL_PNT
+PARAMETERS  P1,P2,P3
+XX="PNT_OK&APORT"+ "()"
+XX=&XX
+IF RDLPT(VAL(APORT)-1)=144
+  X_CKBN=RECNO()
+  set print to lpt&APORT
+  ? chr(27) + "sp&APORT;"
+  SET DEVI TO PRINT
+  @ PROW()+5,5 SAY     " ¤é  ´Á   «È¤á¥N¸¹  «È¤á¦WºÙ            ¹w¦¬ª÷ÃB ¤W´Áµ²¤í  ¦¬¾Ú³æ¸¹"
+  @ PROW()+1,5 SAY     "-------------------------------------------------------------------"
+  SELE 15
+  GOTO TOP
+  XN_PRE=0
+  XN_LST=0
+  DO  WHILE  .NOT. EOF()
+    @ PROW()+1,5  SAY LUDATE
+    @ PROW(),5	SAY LUDATE
+    @ PROW(),18 SAY US2
+    XXUS2=US2
+    SELE 11
+    LOCA   FOR	P1501=XXUS2
+    IF	.NOT.  EOF()
+      X_P1502=SUBSTR(LTRIM(P1502),1,22)
+      @ PROW(),25  SAY X_P1502
+    ENDIF
+    SELE 15
+    @ PROW(),45 SAY PRE_GET    PICT "99999999"
+    @ PROW(),54 SAY LST_BILL   PICT "99999999"
+    @ PROW(),64 SAY NO_BILL
+    XN_PRE=XN_PRE+ PRE_GET
+    XN_LST=XN_LST+LST_BILL
+    SKIP
+  ENDDO
+  @ PROW()+1,5 SAY     "-------------------------------------------------------------------"
+  @ PROW()+1,45 SAY XN_PRE     PICT "99999999"
+  @ PROW(),54 SAY XN_LST     PICT "99999999"
+  @ PROW()+3,5 SAY "  "
+  @ PROW()+1,5 SAY "  "
+  SET DEVI  TO	SCRE
+  GOTO X_CKBN
+ENDIF
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  CHKREP_PNT
+PARAMETERS  P1,P2,P3
+X_CKBN=RECNO()
+SELE  7
+COUNT  TO XN_FILT
+SUM TTVUSE *U_PRICE  TO X_PREGET
+IF  XN_FILT  <=0
+  XN_FILT  =1
+ENDIF
+XNA_FILT=1
+GOTO   TOP
+DO WHILE .NOT.	EOF()
+  KK="PNT_OK&BPORT"+ "()"
+  KK=&KK
+  IF RDLPT(VAL(BPORT)-1)=144
+    set print to lpt&BPORT
+    ? chr(27) + "sp&BPORT;"
+    SET DEVI TO PRINT
+    ? CHR(27) + "~I;"
+    @ PROW(),2	SAY  CHR(27)+"C"+CHR(33)
+    SETPRC(0,PCOL())
+    @ 1,5 SAY  XMAKER_2
+    @ 2,5  SAY	XMAKER_3
+    @ 2,31 SAY	SDATE
+    @ 2,52 SAY	EDATE
+    @ 2,73 SAY XNA_FILT PICT "999"
+    @ 2,76 SAY "/"
+    @ 2,77 SAY LTRIM(STR(INT((XN_FILT/10)+0.9),3,0))
+    XN_LINE=1
+      @ PROW()+2,3  SAY " "
+    DO WHILE (.NOT. EOF()) .AND. XN_LINE <=10
+      @ PROW()+2,1 SAY SUBSTR(DTOC(LUDATE),1,5)
+      @ PROW(),10 SAY INT(RATNO/10)  PICT "9999"
+      @ PROW(),19 SAY TTVUSE PICT "99.9"
+      @ PROW(),27 SAY U_PRICE PICT "9999"
+      @ PROW(),35 SAY TTVUSE *U_PRICE PICT "999999"
+      @ PROW(),47 SAY 1  PICT "9"
+      @ PROW(),51 SAY SUBSTR(ALLTRIM(P1702),1,20)
+      @ PROW(),70 SAY "00" +LTRIM(STR(LAGNO1,6,0))
+      SKIP
+      XN_LINE=XN_LINE+1
+    ENDDO
+    @ 26,12  SAY  XN_PREGET  PICT "99999999"
+    @ 26,57  SAY  XN_FILT    PICT "999"
+    @ 28,12  SAY  XN_LSTBIL  PICT "99999999"
+    @ 28,40  SAY  X_PREGET  PICT "99999999"
+    @ 28,64  SAY  (X_PREGET -XN_PREGET +XN_LSTBIL)  PICT "99999999"
+    EJECT
+  ELSE
+    EXIT
+  ENDIF
+ENDDO
+SET DEVI  TO  SCRE
+GOTO X_CKBN
+retu
+**-----------------------------------------------------------------------------
+**-----------------------------------------------------------------------------
+PROCEDURE  CHKREPALL_PNT
+PARAMETERS  P1,P2,P3
+SELE  9
+INDE ON US2    TO US2	 UNIQUE
+SET INDE TO US2
+GOTO  TOP
+DO WHILE .NOT.EOF()
+  XMAKER=US2
+  X_P1501=XMAKER
+  IF EMPTY(X_P1501)=.F.
+    SELE 11
+    LOCA   FOR	P1501=X_P1501
+    IF	.NOT.  EOF()
+      XMAKER_2=SUBSTR(LTRIM(P1502),1,22)
+      XMAKER_3=P1503
+    ELSE
+      XMAKER_2="                      "
+    ENDIF
+  ENDIF
+  SELE 15
+  SUM PRE_GET TO  XN_PREGET  FOR (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. US2=XMAKER
+  SUM LST_BILL TO  XN_LSTBIL  FOR (LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. US2=XMAKER
+  SELE 7
+  SET FILT  TO	(LUDATE >= SDATE ) .AND. (LUDATE <= EDATE ) .AND. (US2=XMAKER	)
+  GOTO	TOP
+  IF RDLPT(VAL(BPORT)-1)=144
+    DO	CHKREP_PNT
+  ELSE
+    EXIT
+  ENDIF
+  SELE 9
+  SKIP
+ENDDO
+SET INDE TO
+&&-----------------------------------------------------------------------------
+PROCEDURE  DIS_PROC
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+ARR1 :={"°t¤ñ¥N¸¹ ","-¤ôªd¢°","-¤ôªd¢±(Kg/¤è)"}
+ARR2 :={"DSRATNO","DSCO1","DSCO2"}
+ARR3 :={"9999","999","999"}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 16
+goto top
+if  BOF()
+  APPE BLANK
+  REPL	DSDATE	WITH DATE()
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+P_FUNC2=" "
+_GET_BROW(18,5,5,3,ARR1,ARR2,ARR3,"_DMAKE1","16","Y")
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9
+SET COLOR TO &C7 +/ &C1
+DELE  FOR  DSRATNO=0
+PACK
+REPL  DSDATE WITH DATE()  FOR  RECNO()>1
+func_s="     "
+retu
+**-----------------------------------------------------------------------------
+FUNCTION M_TANK
+PARAMETERS  X_UL,Y_UL,X_DR,Y_DR,N_COLOR,X_OFFSET,X_PLUS,H_MTB,X_MTB
+LINE(X_UL+X_OFFSET,Y_UL,X_DR+X_OFFSET+X_PLUS,Y_UL,N_COLOR)
+LINE(X_DR+X_OFFSET+X_PLUS,Y_UL,X_DR+X_OFFSET+X_PLUS,Y_DR,N_COLOR)
+LINE(X_UL+X_OFFSET,Y_DR,X_DR+X_OFFSET+X_PLUS,Y_DR,N_COLOR)
+LINE(X_UL+X_OFFSET,Y_UL,X_UL+X_OFFSET,Y_DR,N_COLOR)
+&&  OUT LINE  ¢z¢w¢w¢{
+&&	      ¢x    ¢x
+&&	      ¢|¢w¢w¢}
+&&
+
+LINE(X_UL+1+X_OFFSET,Y_UL+1,X_DR-1+X_OFFSET+X_PLUS,Y_UL+1,N_COLOR)
+LINE(X_DR-1+X_OFFSET+X_PLUS,Y_UL+1,X_DR-1+X_OFFSET+X_PLUS,Y_DR-1,N_COLOR)
+*LINE(X_UL+1+X_OFFSET,Y_DR-1,X_DR-1+X_OFFSET+X_PLUS,Y_DR-1,N_COLOR)
+LINE(X_UL+1+X_OFFSET,Y_UL+1,X_UL+1+X_OFFSET,Y_DR-1,N_COLOR)
+&& INSIDE LINE	¢z¢w¢w¢{
+&&		¢x    ¢x
+&&		¢|¢w¢w¢}
+&&
+
+LINE(X_UL+X_OFFSET,Y_DR,X_UL+X_OFFSET+X_MTB,Y_DR+H_MTB,N_COLOR)
+LINE(X_UL+X_OFFSET+X_MTB,Y_DR+H_MTB,X_DR+X_OFFSET+X_PLUS-X_MTB,Y_DR+H_MTB,N_COLOR)
+LINE(X_DR+X_OFFSET+X_PLUS,Y_DR,X_DR+X_OFFSET+X_PLUS-X_MTB,Y_DR+H_MTB,N_COLOR)
+&& BOTTOM LINE
+&&	úZúYú[
+LINE(X_UL+X_OFFSET+1,Y_DR,X_UL+X_OFFSET+X_MTB,Y_DR+H_MTB-1,N_COLOR)
+LINE(X_DR+X_OFFSET+X_PLUS-1,Y_DR,X_DR+X_OFFSET+X_PLUS-X_MTB-1,Y_DR+H_MTB,N_COLOR)
+
+
+
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  SETPARN
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+ARR1 :={"NO. ","PA1 ","PA2 ","PA3 ","PA4 ","PA5 ","PA6 ","PA7 ","PA8 ","PA9 ","PA10   ","PA11   ","PA12   "}
+ARR2 :={"PARNO","PA1","PA2","PA3","PA4","PA5","PA6","PA7","PA8","PA9","PA10","PA11","PA12"}
+ARR3 :={"99","9999","9999","9999","9999","9999","9999","9999","9999","9999","9999.99","9999.99","9999.99"}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,2,2,2}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC2="FIND_1102"
+DLA_DSP=0
+_GET_BROW(1,3,18,13,ARR1,ARR2,ARR3,"_DMAKE1","5","Y")
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  RATEN
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+*ARR1 :={"NO. ","¥Û¢°","¥Û¢±","¥Û¢²","¬â¢°","¬â¢±"," Á`­« ²M¤ô","¦B¤ô","¤ôªd1","¤ôªd2","¤ôªd3","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(13)
+ARR1[1]="NO. "
+FOR I=1 TO 12
+  ARR1[I+1] :=A_M_NAME[I,17]
+  IF  I=6
+    ARR1[I+1] :=" Á`­« " + ARR1[I+1]
+  ENDIF
+NEXT
+ARR2 :={"RATNO","M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12"}
+ARR3 :={"9999","9999","9999","9999","9999","9999","9999","999","999","999","999","99.99","99.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={"dSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW","DSP_TOTW" }
+RET_X1=SPACE(4)
+C_TOP1="F7-¦C¦L"
+F7_FUNC="PNT_RATEN"
+sele 2
+goto top
+if  BOF()
+  APPE BLANK
+  ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0="dsp_totw"
+DLA_DSP=0
+IF  STAR=0
+  _GET_BROW(3,2,18,13,ARR1,ARR2,ARR3,"_DMAKE1","2","Y")
+ELSE
+  _GET_BROW(13,2,8,13,ARR1,ARR2,ARR3,"_DMAKE1","2","Y")
+ENDIF
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+STOR " "  TO C_TOP1,F7_FUNC
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  DSP_TOTW
+PARAMETERS  P1,P2,P3
+c_color=SETCOLOr()
+SET COLOR TO GR+ / BL
+@ Y_POSI,33  SAY  (M1+M2+M3+M4+M5+M6+M7+M8+M9+M10+M11+M12) PICT "9999"
+SET COLOR TO &c_color
+retu
+&&-----------------------------------------------------------------------------
+PROCEDURE  TDO_DWG
+PARAMETERS  P1,P2,P3
+SELE 5
+GOTO 40
+FBOX(PA1,PA3,PA4,PA2,0,65535)
+LINE(PA1,PA3,PA1,PA2,PA10)
+LINE(PA1,PA2,PA4,PA2,PA10)
+LINE(PA1,PA2,PA4,PA2,PA10)
+X=PA2-(PA2-PA3)*PMIXA/PA5
+LINE(PA1,X,PA4,X,PA9)
+X=PA1+(PA4-PA1)*PMIXTM/PA6
+LINE(X,PA3,X,PA2,PA9)
+Y=50
+Y1=(PA2-PA3)*50/PA5
+Y2=PA2-Y1
+DO  WHILE  Y<PA5
+  LINE(PA1-4,Y2,PA1,Y2,7)
+  Y2=Y2-Y1
+  Y=Y+50
+ENDDO
+Y=INT(PA3/18)
+@  Y-1,0  SAY ALLTRIM(STR(PA5,3,0))
+@  Y,0	SAY "A"
+
+X=10
+X1=(PA4-PA1)*10/PA6
+X2=PA1+X1
+DO  WHILE  X<PA6
+  LINE(X2,PA2,X2,PA2+4,7)
+  X2=X2+X1
+  X=X+10
+ENDDO
+Y=INT(PA2/18)
+X=INT((PA4+4)/8)
+@  Y-1,X-1  SAY ALLTRIM(STR(PA6,3,0))
+@  Y,X	SAY "¬í"
+@  Y,0	SAY "0"
+retu
+&&-----------------------------------------------------------------------------
+PROCEDURE  DSP3
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2="¸¨®t­×¥¿"
+*ARR1 :={"¥Û¢°","¥Û¢±","¥Û¢²","¬â¢°","¬â¢±","²M¤ô","¦B¤ô","¤ôªd1","¤ôªd2","¤ôªd3","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+ARR1 :=ARRAY(12)
+FOR I=1 TO 12
+  ARR1[I] :=A_M_NAME[I,1]
+NEXT
+*pppK
+ARR2 :={"PA1","PA2","PA3","PA4","PA5","PA6","PA7","PA8","PA9","PA10","PA11","PA12"}
+ARR3 :={"9999","9999","9999","9999","9999","9999","9999","9999","9999","9999","999.99","999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+stor  1  to  fist_rec,last_rec
+_GET_BROW(20,2,1,12,ARR1,ARR2,ARR3,"_DMAKE1","5","K")
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  DSP1
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2="¹sÂI­×¥¿"
+ARR1 :={"¥Û123 ","¬â¢°¢±","²M,¦B¤ô","¤ôªd¢°","¤ôªd¢±¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*ppp
+ARR2 :={"PA1","PA4","PA6","PA8","PA9","PA11","PA12"}
+ARR3 :={"9999","9999","9999","9999","9999","999.99","999.99",}
+ARR4 :={0,0,0,0,0,2,2}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 2
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+stor  2  to  fist_rec,last_rec
+_GET_BROW(20,2,1,7,ARR1,ARR2,ARR3,"_DMAKE1","5","K")
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  W_IN   && §t¤ô²v ADJ.
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2="§t¤ô²v­×¥¿ ¢H"
+ARR1 :={"¥Û¢° ","¥Û¢± ","¬â¢° ","¬â¢± "}
+*ppp
+ARR2 :={"PA1","PA2","PA3","PA4"}
+ARR3 :={"99.9","99.9","99.9","99.9"}
+ARR4 :={1,1,1,1}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 33
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+stor  33  to  fist_rec,last_rec
+_GET_BROW(20,2,1,4,ARR1,ARR2,ARR3,"_DMAKE1","5","K")
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+PROCEDURE  DSP4
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2=" "
+C_TOP1=" ¤p¤J®Æ "
+*ARR1 :={"¥Û¢°","¥Û¢±","¥Û¢²","¬â¢°","¬â¢±"," ²M¤ô","¦B¤ô","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(12)
+FOR I=1 TO 12
+  ARR1[I] :=A_M_NAME[I,1]
+NEXT
+ARR2 :={"PA1","PA2","PA3","PA4","PA5","PA6","PA7","PA8","PA9","PA10","PA11","PA12"}
+ARR3 :={"9999","9999","9999","9999","9999","9999","9999","9999","9999","9999","999.99","999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 3
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+stor  3  to  fist_rec,last_rec
+_GET_BROW(20,2,1,12,ARR1,ARR2,ARR3,"_DMAKE1","5","K")
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-----------------------------------------------------------------------------
+FUNCTION LU12_DSP
+PARAMETERS  LTYPE_N,UPTYPE_N
+SET COLOR TO &C2 / &C1
+*@ 0,0	CLEA TO 22,79
+SET COLOR TO &C5 +/ &C1
+@ 0,0 SAY "°t¤ñ®e¶q:        ²Ö­p¦Ì¼Æ:             ¤é´Á:     ¦~   ¤ë   ¤é ¡@  ®É¶¡:         "
+@ 1,0 SAY "                                                                                "
+*@ 2,0 SAY "       ¥Û¢° ¥Û¢± ¥Û¢² ¬â¢° ¬â¢± ¡@¡@²M¤ô ¦B¤ô ¤ôªd¢° ¤ôªd¢± ¤ôªd¢² ÃÄ¾¯¢° ÃÄ¾¯¢±"
+FOR  I=1  TO 12
+  @ 2,A_M_NAME[I,2]  SAY  A_M_NAME[I,1]
+NEXT
+SET COLOR TO &C2 / &C1
+SELE 5
+SET COLOR TO &C2 / &C1
+@ 3,0 SAY "¡@¡@                               "
+M_SETN :=ARRAY(12,3)
+M_SETN :={{4,7,"9999"},{4,12,"9999"},{4,17,"9999"},{4,22,"9999"},{4,27,"9999"},{4,36,"9999"},{4,41,"9999"},{4,47,"9999"},{4,54,"9999"},{4,61,"9999"},{4,67,"99.99"},{4,74,"99.99"}}
+MACT_SETN :=ARRAY(12,3)
+MACT_SETN :={{8,7,"9999"},{8,12,"9999"},{8,17,"9999"},{8,22,"9999"},{8,27,"9999"},{8,36,"9999"},{8,41,"9999"},{8,47,"9999"},{8,54,"9999"},{8,61,"9999"},{8,67,"99.99"},{8,74,"99.99"}}
+goto 34
+GOTO 35
+MTX1=PA1
+MTY1=PA2
+MTX2=PA3
+MTY2=PA4
+MCOLO=PA5
+x_plus=PA6
+h_MTB=PA7
+X_MTB=PA8
+GOTO 36
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA1,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA2,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA3,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA4,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA5,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA6,0,H_MTB,X_MTB)
+*_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,X_PLUS,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,0,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA8,X_PLUS,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA9,X_PLUS,H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA10,X_PLUS,H_MTB,X_MTB)
+IF PA11 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA11,X_PLUS,H_MTB,X_MTB)
+ENDIF
+IF PA12 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA12,X_PLUS,H_MTB,X_MTB)
+ENDIF
+SET COLOR TO &C5 +/ &C1
+@ 4,0 SAY "³]©w­È"
+SET COLOR TO &C4 / &C1
+DO CASE
+CASE LCHTYPE=1
+CASE LCHTYPE=2
+  SET COLOR TO &C2 / &C1
+  @ 10,0 SAY "½S¯¯­È"
+  SET COLOR TO &C5 +/ &C1
+  @  8,0 SAY "¹ê»Ú­È"
+  @ 10,0 SAY "½S¯¯­È"
+  GOTO 37
+  MTX1=PA1
+  MTY1=PA2
+  MTX2=PA3
+  MTY2=PA4
+  MCOLO=PA5
+  x_plus=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  GOTO 39
+  X_W1=PA1
+  X_W2=PA2
+  X_W3=PA3
+  X_W4=PA4
+  X_W5=PA5
+  X_W6=PA6
+  X_W7=PA7
+  X_W8=PA8
+  X_W9=PA9
+  X_W10=PA10
+  X_W11=PA11
+  GOTO 51
+  x_plus1=int(pa1)
+  x_plus2=int(pa2)
+  x_plus3=int(pa3)
+  x_plus4=int(pa4)
+  x_plus5=int(pa5)
+  x_plus6=int(pa6)
+  x_plus7=int(pa7)
+  x_plus8=int(pa8)
+  x_plus9=int(pa9)
+  x_plus10=int(pa10)
+  x_plus11=int(pa11)
+  x_plus12=int(pa12)
+  GOTO 38
+ *LINE(MTX1+PA1+(X_W1+MTX2-MTX1)/3,MTY1,MTX1+PA1+(X_W1+MTX2-MTX1)/3,(MTY2+MTY1)/2,MCOLO)
+ *LINE(MTX1+PA1+(X_W1+MTX2-MTX1)*2/3,MTY1,MTX1+PA1+(X_W1+MTX2-MTX1)*2/3,(MTY2+MTY1)/2,MCOLO)
+ *LINE(PA2+(MTX1+X_W2+MTX2)/2,MTY1,PA2+(MTX1+X_W2+MTX2)/2,(MTY2+MTY1)/2,MCOLO)
+  SET COLOR TO &C4 / &C1
+
+  GOTO 37
+  MTX1=PA1
+  MTY1=PA2
+  MTX2=PA3
+  MTY2=PA4
+  MCOLO=PA5
+  x_plus=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  GOTO 38
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA1,x_plus1,H_MTB,X_MTB)
+  LINE((MTX1+PA1),(MTY1+MTY2)/2,(MTX2+PA1+x_plus1),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA2,x_plus2,H_MTB,X_MTB)
+  LINE((MTX1+PA2),(MTY1+MTY2)/2,(MTX2+PA2+x_plus2),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA3,x_plus3,H_MTB,X_MTB)
+  LINE((MTX1+PA3),(MTY1+MTY2)/2,(MTX2+PA3+x_plus3),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA4,x_plus4,H_MTB,X_MTB)
+  LINE((MTX1+PA4),(MTY1+MTY2)/2,(MTX2+PA4+x_plus4),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA5,x_plus5,H_MTB,X_MTB)
+  LINE((MTX1+PA5),(MTY1+MTY2)/2,(MTX2+PA5+x_plus5),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA6,x_plus6,H_MTB,X_MTB)
+  LINE((MTX1+PA6),(MTY1+MTY2)/2,(MTX2+PA6+x_plus6),(MTY1+MTY2)/2,MCOLO)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,x_plus7,H_MTB,X_MTB)
+  LINE((MTX1+PA7),(MTY1+MTY2)/2,(MTX2+PA7+x_plus7),(MTY1+MTY2)/2,MCOLO)
+  IF PA8 <> 0
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA8,X_PLUS8,H_MTB,X_MTB)
+    LINE((MTX1+PA8),(MTY1+MTY2)/2,(MTX2+PA8+x_plus8),(MTY1+MTY2)/2,MCOLO)
+  ENDIF
+  IF PA9 <> 0
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA9,X_PLUS9,H_MTB,X_MTB)
+    LINE((MTX1+PA9),(MTY1+MTY2)/2,(MTX2+PA9+x_plus9),(MTY1+MTY2)/2,MCOLO)
+  ENDIF
+  IF PA10 <> 0
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA10,X_PLUS10,H_MTB,X_MTB)
+    LINE((MTX1+PA10),(MTY1+MTY2)/2,(MTX2+PA10+x_plus10),(MTY1+MTY2)/2,MCOLO)
+  ENDIF
+  IF PA11 <> 0
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA11,X_PLUS11,H_MTB,X_MTB)
+    LINE((MTX1+PA11),(MTY1+MTY2)/2,(MTX2+PA11+x_plus11),(MTY1+MTY2)/2,MCOLO)
+  ENDIF
+  IF PA12 <>0
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA12,X_PLUS12,H_MTB,X_MTB)
+    LINE((MTX1+PA12),(MTY1+MTY2)/2,(MTX2+PA12+x_plus12),(MTY1+MTY2)/2,MCOLO)
+  ENDIF
+
+
+  SET COLOR TO &C4 / &C1
+CASE LCHTYPE=3
+CASE LCHTYPE=4
+  SET COLOR TO &C2 / &C1
+  @ 10,0 SAY "½S¯¯­È"
+  SET COLOR TO &C5 +/ &C1
+  @  8,0 SAY "¹ê»Ú­È"
+  @ 10,0 SAY "½S¯¯­È"
+  GOTO 37
+  MTX1=PA1
+  MTY1=PA2
+  MTX2=PA3
+  MTY2=PA4
+  MCOLO=PA5
+  x_plus=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  GOTO 39
+  X_W1=PA1
+  X_W2=PA2
+  X_W3=PA3
+  X_W4=PA4
+  X_W5=PA5
+  X_W6=PA6
+  X_W7=PA7
+  X_W8=PA8
+  X_W9=PA9
+  X_W10=PA10
+  X_W11=PA11
+  GOTO 38
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA1,X_W1,H_MTB,X_MTB)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA2,X_W2,H_MTB,X_MTB)
+  LINE((MTX1+PA1),(MTY1+MTY2)/2,(MTX2+PA1+X_W1),(MTY1+MTY2)/2,MCOLO)
+  LINE(MTX1+PA1+(X_W1+MTX2-MTX1)/3,MTY1,MTX1+PA1+(X_W1+MTX2-MTX1)/3,(MTY2+MTY1)/2,MCOLO)
+  LINE(MTX1+PA1+(X_W1+MTX2-MTX1)*2/3,MTY1,MTX1+PA1+(X_W1+MTX2-MTX1)*2/3,(MTY2+MTY1)/2,MCOLO)
+
+  LINE((MTX1+PA2),(MTY1+MTY2)/2,(MTX2+PA2+X_W2),(MTY1+MTY2)/2,MCOLO)
+  LINE(PA2+(MTX1+X_W2+MTX2)/2,MTY1,PA2+(MTX1+X_W2+MTX2)/2,(MTY2+MTY1)/2,MCOLO)
+  SET COLOR TO &C4 / &C1
+CASE LCHTYPE=5
+ENDCASE
+DO CASE
+CASE UCHTYPE=1
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA3,X_W3,H_MTB,X_MTB)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA4,X_W4,H_MTB,X_MTB)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA5,X_W5,H_MTB,X_MTB)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA6,X_W6,H_MTB,X_MTB)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,X_w7,H_MTB,X_MTB)
+
+  LINE((MTX1+PA3),(MTY1+MTY2)/2,(MTX2+PA3+X_W3),(MTY1+MTY2)/2,MCOLO)
+  LINE(PA3+(MTX1+X_W3+MTX2)/2,MTY1,PA3+(MTX1+X_W3+MTX2)/2,(MTY2+MTY1)/2,MCOLO)
+
+  LINE((MTX1+PA4),(MTY1+MTY2)/2,(MTX2+PA4+X_W4),(MTY1+MTY2)/2,MCOLO)
+
+  LINE((MTX1+PA5),(MTY1+MTY2)/2,(MTX2+PA5+X_W5),(MTY1+MTY2)/2,MCOLO)
+  LINE(PA5+(MTX1+X_W5+MTX2)/2,MTY1,PA5+(MTX1+X_W5+MTX2)/2,(MTY2+MTY1)/2,MCOLO)
+
+  LINE((MTX1+PA6),(MTY1+MTY2)/2,(MTX2+PA6+X_W6),(MTY1+MTY2)/2,MCOLO)
+  LINE((MTX1+PA7),(MTY1+MTY2)/2,(MTX2+PA7+X_W7),(MTY1+MTY2)/2,MCOLO)
+  SET COLOR TO &C2 / &C1
+CASE UCHTYPE=2
+CASE UCHTYPE=3
+ENDCASE
+*SET COLOR TO &C4 / &C1
+*@ 12,0 SAY "      ¢z¢w¢wúR¢w¢w¢w¢w¢w¢w¢wúR¢w¢w¢w¢w¢{"
+*@ 13,0 SAY "      ¢|¢w¢wúQ¢w¢w¢w¢w¢w¢w¢wúQ¢w¢w¢w¢w¢}"
+*SET COLOR TO &C2 / &C1
+SET COLOR TO &C5 +/ &C1
+@ 14,52 SAY "²V¦X   ²V¦X   ¶}ªù   §t¤ô"
+@ 15,0 SAY "1.³]©w°t¤ñ:              "
+@ 16,0 SAY "2.³]©w¦Ì¼Æ:              "
+@ 17,0 SAY "3.°õ¦æ¦Ì¼Æ:              "
+@ 18,0 SAY "4.ºÏºÐ®e¶q:      ,000    "
+SET COLOR TO &C2 / &C1
+@ 13,43 		    SAY "  ¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢{"
+@ 14,39 		SAY "            ²V¦X   ²V¦X   ¶}ªù   §t¤ô ¢x"
+@ 15,23 SAY "¢z¢w¢w¢{¢z¢w¢w¢{¢x          ®É¶¡   ¹q¬y   ®É¶¡   ­×¥¿ ¢x"
+@ 16,23 SAY "¢x°_°Ê¢x¢x¤¤¤î¢x¢x  ³]©w­È                            ¢x"
+@ 17,23 SAY "¢u¢w¢w¢t¢u¢w¢w¢t¢x  ¹ê»Ú­È    ¬í     ¢Ï     ¬í      KG¢x"
+@ 18,23 SAY "¢|¢w¢w¢}¢|¢w¢w¢} úLúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúO "
+if star=1
+  SET COLOR TO R+/ &C1
+  @ 15,23 SAY "¢z¢w¢w¢{"
+  @ 16,23 SAY "¢x    ¢x"
+  @ 17,23 SAY "¢uúTúW¢t"
+  @ 18,23 SAY "¢|úSúX¢}"
+  SET COLOR TO w+  / &C1
+  @ 16,25 SAY "°_°Ê"
+else
+  SET COLOR TO &C2 / &C1
+  @ 15,23 SAY "¢z¢w¢w¢{¢z¢w¢w¢{"
+  @ 16,23 SAY "¢x°_°Ê¢x¢x¤¤¤î¢x"
+  @ 17,23 SAY "¢u¢w¢w¢t¢uúTúW¢t"
+  @ 18,23 SAY "¢|¢w¢w¢}¢|úSúX¢}"
+endif
+SET COLOR TO &C5 +/ &C1
+@ 14,44 SAY "       ²V¦X   ²V¦X   ¶}ªù   §t¤ô"
+@ 15,44 SAY "       ®É¶¡   ¹q¬y   ®É¶¡   ­×¥¿"
+@ 16,43 SAY "³]©w­È                           "
+@ 17,43 SAY "¹ê»Ú­È    ¬í     ¢Ï     ¬í      KG"
+@ 19,0 SAY "¡ü                                                                            ¡ü"
+*@ 20,0 SAY  "¡ü     ¥Û¢° ¥Û¢± ¥Û¢² ¬â¢° ¬â¢± ¡@²M¤ô ¦B¤ô ¤ôªd¢° ¤ôªd¢± ¤ôªd¢² ÃÄ¾¯¢° ÃÄ¾¯¢±¡ü"
+*pppK
+XPH=7
+XPH0=0
+FOR  I=0  TO 11
+  @ 20,XPH  SAY  A_M_NAME[I+1,1]
+  XPH0=LEN(A_M_NAME[I+1,1])+1
+  IF I=4
+    XPH0=XPH0+2
+  ENDIF
+  IF XPH0 <5
+    XPH0=5
+  ENDIF
+  XPH=XPH+XPH0
+NEXT
+
+
+
+
+@ 21,0 SAY "¡ü¹sÂI                                                                        ¡ü"
+@ 22,0 SAY "¡ü¸¨®t                                                                        ¡ü"
+SET COLOR TO &C6 / &C1
+&& 11/6/2002 @ 23,0 SAY "¡ü¤U¦¸°õ¦æ§Ç¸¹:       ¨®¸¹:           °t¤ñ¥N¸¹:        °õ¦æ¦Ì¼Æ:     §~«×:    ¡ü"
+@ 23,0 SAY "¡ü¤U¦¸°õ¦æ§Ç¸¹:       ¨®¸¹:           °t¤ñ¥N¸¹:        °õ¦æ¦Ì¼Æ:     §~«×:    ¡ü"
+@ 23,0 SAY   "¡ü¤U¦¸°õ¦æ§Ç¸¹:    ¨®¸¹:        °t¤ñ¥N¸¹:      ¦Ì¼Æ:    §~«×:     ³sÄò¦¸¼Æ:  ¡ü"
+SET COLOR TO W+  / &CF
+@ 24,0 SAY "¡ü¡ô¡õ-¨ä¥¦¥\¯à«ü¥Ü F1-§t¤ô²v   F2-°t¤ñ F3-¥X¨®      F4-°Ñ¼Æ F5-³øªí¦C¦L      ¡ü"
+SET COLOR TO  gr +/ &CF
+@ 24,2	SAY "¡ô¡õ"
+@ 24,20 SAY "F1"
+@ 24,32 SAY "F2"
+@ 24,40 SAY "F3"
+@ 24,53 SAY "F4"
+@ 24,61 SAY "F5"
+SET COLOR TO &C7 +/ &C1
+@ 0,26 say  lagw  pict "9999.9"
+@ 0,45 SAY  SUBSTR(DTOC(DATE()),7,4)
+@ 0,52 SAY  SUBSTR(DTOC(DATE()),1,2)
+@ 0,57 SAY  SUBSTR(DTOC(DATE()),4,2)
+@ 0,71 SAY  TIME()
+@ 0,10 SAY RATVOL  PICT "9.9"
+@ 16,52 SAY  PMIXTM PICT "99"
+@ 16,58 SAY  PMIXA  PICT "999"
+@ 16,65 SAY  PMIXOP PICT "99"
+sele 5
+goto 2
+if pa1<>0
+  @ 21,7  SAY  PA1   PICT "999"
+endif
+if pa2<>0
+  @ 21,12 SAY  PA2   PICT "999"
+endif
+if pa3<>0
+  @ 21,17 SAY  PA3   PICT "999"
+endif
+if pa4<>0
+  @ 21,22 SAY  PA4   PICT "999"
+endif
+if pa5<>0
+  @ 21,27 SAY  PA5   PICT "999"
+endif
+if pa6<>0
+  @ 21,34 SAY  PA6   PICT "999"
+endif
+if pa7<>0
+  @ 21,39 SAY  PA7   PICT "999"
+endif
+if pa8<>0
+  @ 21,44 SAY  PA8   PICT "999"
+endif
+if pa9<>0
+  @ 21,51 SAY  PA9   PICT "999"
+endif
+if pa10<>0
+  @ 21,58 SAY  PA10  PICT "999"
+endif
+if pa11<>0
+  @ 21,65 SAY  PA11  PICT "99.99"
+endif
+if pa12<>0
+  @ 21,72 SAY  PA12  PICT "99.99"
+endif
+GOTO 1
+@ 22,7	SAY  PA1    PICT "999"
+@ 22,12 SAY  PA2    PICT "999"
+@ 22,17 SAY  PA3    PICT "999"
+@ 22,22 SAY  PA4    PICT "999"
+@ 22,27 SAY  PA5    PICT "999"
+@ 22,34 SAY  PA6    PICT "999"
+@ 22,39 SAY  PA7    PICT "999"
+@ 22,44 SAY  PA8    PICT "999"
+@ 22,51 SAY  PA9    PICT "999"
+@ 22,58 SAY  PA10   PICT "999"
+@ 22,65 SAY  PA11   PICT "99.99"
+@ 22,72 SAY  PA12   PICT "99.99"
+x=INT(DISKSPACE( DAA )/1024)
+X_0=STR(X,4,0)
+X_1="K"
+IF X>9999
+  X=X/1024
+  X_1="M"
+  X_0=STR(X,4,0)
+  IF X>9999
+    X=X*10/1024
+    X_0=STR(X,4,1)
+    X_1="G"
+  ENDIF
+ENDIF
+@ 18,11  SAY x_0
+@ 18,15  SAY x_1
+*Sele 3
+*GOTO TOP
+*ASCANO=SCANO
+*ACARNO=CARNO
+*ARATNO=RATNO
+*AVUSE=VUSE
+*ATANDO=TANDO
+@ 23,15 SAY ASCANO  PICT "9999"
+@ 23,25 SAY ACARNO
+@ 23,42 SAY ARATNO  PICT "9999"
+@ 23,52 SAY AVUSE   PICT "99.9"
+@ 23,61 SAY ATANDO  PICT "9999"
+set dele off
+RETU
+
+&&-----------------------------------------------------------------------------
+FUNCTION MTANK_mark
+PARAMETERS  sm_kind,sm_no,sm_on
+if  sm_ON=1
+  @ SM_KIND,A_M_NAME[SM_NO,14] SAY "úD"
+else
+  @ SM_KIND,A_M_NAME[SM_NO,14] SAY "úP"
+endif
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION CTANK_mark
+PARAMETERS  sm_kind,sm_no,sm_on
+SET COLOR TO &C2 / &C1
+DO  CASE
+CASE sm_ON=0
+  @ SM_KIND,A_M_NAME[SM_NO,15] SAY "úP"
+CASE sm_ON=1
+  @ SM_KIND,A_M_NAME[SM_NO,15] SAY "úY"
+CASE sm_ON=2
+  @ SM_KIND,A_M_NAME[SM_NO,15] SAY "úD"
+ENDCASE
+SET COLOR TO &C4 / &C1
+RETU
+**-----------------------------------------------------------------------------
+PROCEDURE  SETPARN1
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+ARR1 :={"NO. ","PA1 ","PA2 ","PA3 ","PA4 ","PA5 ","PA6 ","PA7 ","PA8 ","PA9 ","PA10   ","PA11   ","PA12   "}
+ARR2 :={"PARNO","PA1","PA2","PA3","PA4","PA5","PA6","PA7","PA8","PA9","PA10","PA11","PA12"}
+ARR3 :={"99","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX","XXXXXX"}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,2,2,2}
+ARR_PCS :={" "," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 5
+SELE  PAR1
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC2="FIND_1102"
+DLA_DSP=0
+_GET_BROW(1,3,18,13,ARR1,ARR2,ARR3,"_DMAKE1","5","Y")
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+SET COLOR TO &C7 +/ &C1
+sele 5
+SELE  PAR
+retu
+**-----------------------------------------------------------------------------
+FUNCTION FILL_A_D4
+PARAMETERS  A_N,X1,X2,X3,X4,X5,XN
+FOR XAN1=X2 TO	X3
+  FOR XAN2=1  TO  X4
+    FOR XAN3=1 TO  X5
+      A_N[X1,XAN1,XAN2,XAN3] :=XN
+    NEXT
+  NEXT
+NEXT
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION FILL_A_D2
+PARAMETERS  A_N,X1,X2,X3,XN
+FOR XAN1=X1 TO	X2
+  FOR XAN2=1  TO  X3
+    A_N[XAN1,XAN2] :=XN
+  NEXT
+NEXT
+RETU
+**-----------------------------------------------------------------------------
+FUNCTION A_COPY_4
+PARAMETERS  A_N,X1,X2
+FOR XAN1=1 TO  20
+  FOR XAN2=X1  TO  X2
+    FOR XAN3=1 TO  7
+      A_N[2,XAN1,XAN2,XAN3] :=A_N[1,XAN1,XAN2,XAN3]
+    NEXT
+  NEXT
+NEXT
+RETU
+&&>>>------------------------------------------------------------------------------------------------
+FUNCTION _DSP_VBROW
+PARAMETERS  Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI,_PRINT  &&
+DSP_MH=INT((79-X1_N-YL_N-2)/YL_N)
+IF _MODI="Y"
+  STOR 0 TO FIST_REC,LAST_REC
+ENDIF
+_DATA_MODIFY =0
+X_G_B=SAVESCREEN(Y1_N-1,0,Y1_N+TIT_N+1,79)
+XCOR=SETCOLOR()
+XXP=LEN(C_TOP2)+1
+IF EMPTY(C_TOP2)=.T.
+  XXP=0
+ENDIF
+ARR_DSPN=ARRAY(1)
+XX=X1_N+XXP +1+YL_N
+ARR_DSPN[1] :=XX -1-LEN(ARR3[1])
+X=2
+*XX=X1_N+XXP
+DO WHILE  X <=	TIT_N
+  AADD(ARR_DSPN,XX -LEN(ARR3[X])-1)
+  X=X+1
+ENDDO
+X=1
+D_C=ALLTRIM(C_TOP2) +" "
+DO WHILE  X <=	TIT_N
+  D_C=D_C +ARR_TITLE[X]
+  X=X+1
+  IF X <= TIT_N
+    D_C=D_C +" "
+  ENDIF
+ENDDO
+DC_L=LEN(D_C)
+SET DEVI TO SCRE
+X_C2="¡ô¡õ¤W¤U­¶ Esc¸õÂ÷"
+IF  (_MODI="Y") .OR. (_MODI="K")
+  X_C1="¡ô¡õ¤W¤Uµ§ F3-­×§ï  Esc¸õÂ÷ "
+ELSE
+  X_C1=""
+ENDIF
+IF (FIST_REC<>0).AND. (FIST_REC=LAST_REC)
+  X_C1=" F3-­×§ï  Esc¸õÂ÷ "
+  X_C2=""
+ENDIF
+X=LEN(X_C1)
+IF X>DC_L
+  XX=INT((X-DC_L)/2)
+ELSE
+  XX=0
+ENDIF
+SET COLOR TO GR+ / BL
+@ Y1_N-1,X1_N-2-XX  CLEA TO Y1_N+TIT_N+2,X1_N + (YL_N*DSP_MH)+1
+BOX_S(Y1_N-1,X1_N-2-XX-LEN(ARR_TITLE[1]),Y1_N+TIT_N+1,X1_N + (YL_N*DSP_MH)+1 )
+SET COLOR TO GR+ / R
+*@ Y1_N+YL_N,X1_N  SAY	 SPACE(DC_L)
+IF  DC_L>LEN(X_C1)+LEN(X_C2)+1
+  X=LEN(X_C1)+LEN(X_C2)
+  @ Y1_N+TIT_N+1,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY   X_C2+" "+X_C1
+ELSE
+  @ Y1_N+TIT_N,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY	 X_C1
+  @ Y1_N+TIT_N+1,(X1_N +INT((DC_L*0.5) -(X *.5)))-1  SAY   X_C2
+ENDIF
+IF EMPTY(C_TOP1)= .F.
+  @ Y1_N+TIT_N+1,X1_N	SAY   C_TOP1
+ENDIF
+X=1
+DO WHILE  X <=	TIT_N
+  @ Y1_N-1+X,X1_N-1-LEN(ARR_TITLE[X])	SAY ARR_TITLE[X]
+  X=X+1
+ENDDO
+SELE &N_SELE
+N_YN=Y1_N
+N_REC=1
+GOTO TOP
+SET COLOR TO W+ / BL
+S_REC=RECNO()
+DO _DSP_VALL
+N_REC=RECNO()
+*N_YN=Y1_N
+*GOTO TOP
+_LOOP_BR=1
+DO WHILE _LOOP_BR =1
+  T=0
+  DO WHILE T=0
+    T=INKEY()
+    IF DLA_DSP=1
+      DO DSP2
+    ENDIF
+    DO LUSTP
+    IF _PRINT=1
+      T=3
+      IF  EOF()
+	T=27
+      ENDIF
+    ENDIF
+  ENDDO
+  SELE &N_SELE
+  DO CASE
+  CASE T=K_F7
+    IF	EMPTY(F7_FUNC) =.F.
+      DO &F7_FUNC
+    ENDIF
+  CASE T=K_F8
+    IF	EMPTY(F8_FUNC) =.F.
+      DO &F8_FUNC
+    ENDIF
+  CASE T=-2   .AND. (_MODI="Y"  .OR.    _MODI="K"  )
+    &&TNSTP=READ_A(S_Y,S_X1,XPA1,"C",8,0,TNSTP,"P_FUNC&GET_STPC")
+    _GET_STP=1
+    DO WHILE ( _GET_STP >=0 )  .AND. ( _GET_STP <=TIT_N )
+       R_C=ARR_REC_NAME[_GET_STP]
+       T_C=ARR_TYPE[_GET_STP]
+       _D_TYPE=TYPE("&R_C")
+       C_L=LEN(ARR_TYPE[_GET_STP])
+       SET COLOR TO  &12 /&11
+       @ N_YN,ARR_DSPN[_GET_STP]  SAY &R_C   PICT "&T_C"
+       GET_STPC=ALLTRIM(STR(_GET_STP,2,0))
+       p_func=P_FUNC&GET_STPC
+       X_GETSTP=_GET_STP
+       set  colo  to gr + /w
+       _REC_DSP(N_YN)
+      _GET_STP=READ_A(N_YN,ARR_DSPN[_GET_STP],&R_C,"&_D_TYPE",C_L,ARR4[_GET_STP],_GET_STP,"&P_FUNC")
+      IF T_C="!" .AND. (VALTYPE(_ACT_PX)="C")
+	_ACT_PX=UPPER(_ACT_PX)
+      ELSE
+	IF _ACT_PX >INT(VAL(ARR3[X_GETSTP]))
+	  _ACT_PX =INT(VAL(ARR3[X_GETSTP]))
+	ENDIF
+      ENDIF
+      T_C=ARR_TYPE[X_GETSTP]
+      @ N_YN,ARR_DSPN[X_GETSTP]   SAY  _ACT_PX	PICT "&T_C"
+      SELE &N_SELE
+      REPL  &R_C  WITH _ACT_PX
+      IF  EMPTY(ARR_PCS[X_GETSTP]) =.F.
+	PCS_CF(N_YN,&R_C,X_GETSTP,RECNO())
+      ENDIF
+    ENDDO
+    set  colo to  gr + /w
+    _REC_DSP(N_YN)
+    T=0
+    _DATA_MODIFY=1
+  CASE T=5   .OR. T=18
+    GOTO  S_REC
+    SKIP (-DSP_MH)
+    S_REC=RECNO()
+    IF BOF()
+      GOTO  TOP
+    ENDIF
+    GOTO  S_REC
+    DO _DSP_VALL
+  CASE T=24 .OR. T=3
+    SKIP
+    S_REC=RECNO()
+    DO _DSP_VALL
+    IF	_MODI="Y"
+      SKIP
+      IF  EOF()
+	SKIP -1
+	FOR  X =1 TO TIT_N
+	  R_C=ARR_REC_NAME[X]
+	  IF EMPTY(&R_C)=.F.
+	    APPE BLANK
+	    EXIT
+	  ENDIF
+	NEXT
+	SKIP
+      ENDIF
+      SKIP -1
+    ENDIF
+  CASE T=7 .and. _modi="Y"
+    DELE
+    PACK
+    IF	EOF()
+      SKIP -1
+      IF  EOF()
+	APPE BLANK
+      ENDIF
+    ENDIF
+    N_REC=RECNO()
+    N_YN=Y1_N
+    SET COLOR TO W+ / BL
+    DO _DSP_ALL
+    SET COLOR TO GR+ / W+
+    GOTO N_REC
+    _REC_DSP(N_YN)
+    _DATA_MODIFY =1
+  CASE T=23 .OR. T=27
+    _LOOP_BR=0
+  ENDCASE
+ENDDO
+T=0
+SET COLO TO &XCOR
+RESTSCREEN(Y1_N-1,0,Y1_N+YL_N+1,79,X_G_B)
+RETU
+&&>>>------------------------------------------------------------------------------------------------
+&&-----------------------------------------------------------------------------
+PROCEDURE    _DSP_VALL
+PARAMETERS  P1,P2,P3
+XAL=1
+Y_X=Y1_N
+@ Y1_N,X1_N  CLEA TO Y1_N+TIT_N,X1_N + (YL_N *DSP_MH)
+A_PRINT =ARRAY(TIT_N+1,6)
+IF .NOT. EOF()
+  X_COL=1
+    DO WHILE  (XAL <=DSP_MH)  .AND. (.NOT. EOF())
+      _REC_VDSP(Y_X)
+      SKIP
+      X_COL=1+X_COL
+      XAL=XAL+1
+    ENDDO
+    IF (_PRINT=1 )  .and. ( pnt1_ok=1)
+      SET  DEVI  TO  PRINT
+      set print to lpt1
+      ? chr(27) + "sp1;"
+      FOR P_NY=1 TO TIT_N
+	@ PROW()+1,X1_N-1-LEN(ARR_TITLE[P_NY])	 SAY ARR_TITLE[P_NY]
+	FOR P_NX=1 TO X_COL-1
+	  @ PROW(),YL_N *(P_NX-1)+ARR_DSPN[1]  SAY A_PRINT[P_NY,P_NX]
+	NEXT
+	@ PROW(),70  SAY A_TOTW[P_NY]
+      NEXT
+	@ PROW()+1,0 SAY       "¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w"
+	@ PROW()+1,0 SAY       " "
+      FOR P_NX=1 TO X_COL-1
+	@ PROW(),YL_N *(P_NX-1)+ARR_DSPN[1]-2  SAY  A_PRINT[TIT_N+1,P_NX]
+      NEXT
+	@ PROW(),70  SAY A_TOTW[17]
+	@ PROW()+1,70  SAY " "
+	@ PROW()+1,70  SAY " "
+      SET  DEVI  TO  SCRE
+      INKEY(5)
+    ENDIF
+  SKIP -1
+  N_YN=Y_X -1
+ENDIF
+N_REC=RECNO()
+RETU
+&&-----------------------------------------------------------------------------
+**--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE  DSPTT
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2=" "
+C_TOP1=" "
+*ARR1 :={" ¤é´Á "," ¦Ì¼Æ ","  ¥Û¢°","  ¥Û¢±","  ¥Û¢²","  ¬â¢°","  ¬â¢±","  ²M¤ô","  ¦B¤ô","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(14)
+ARR1[1]=" ¤é´Á "
+ARR1[2]=" ¦Ì¼Æ "
+FOR I=1 TO 12
+  ARR1[I+2] :=SUBSTR("      "+ A_M_NAME[I,1],-6,6)
+NEXT
+ARR2 :={"LUDATE","TOTVUSE","TOTM1","TOTM2","TOTM3","TOTM4","TOTM5","TOTM6","TOTM7","TOTM8","TOTM9","TOTM10","TOTM11","TOTM12"}
+ARR3 :={"XXXXXXXXXX","999999.9","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999.99","99999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={"DSP_TOTWV"," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 9
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 9
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+_DSP_VBROW(4,10,11,14,ARR1,ARR2,ARR3,"_DMAKE1","9"," ",0)
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FUNCTION   _REC_VDSP
+PARAMETERS  YD_N
+X=1
+X_TTW=0
+DO WHILE  X <=TIT_N
+  R_CB=ARR_REC_NAME[X]
+  T_CB=ARR_TYPE[X]
+  @ YD_N-1+X,YL_N *(X_COL-1)+ARR_DSPN[X]  SAY &R_CB   PICT "&T_CB"
+  A_PRINT[X,X_COL] := &R_CB
+  X=X+1
+ENDDO
+  A_PRINT[TIT_N+1,X_COL] := TOTM1+TOTM2+TOTM3+TOTM4+TOTM5+TOTM6+TOTM7+TOTM8+TOTM9+TOTM10+TOTM11+TOTM12
+  IF  EMPTY(ARR_PCS[1]) =.F.
+    PCS_CF(YD_N,&R_CB,1,RECNO())
+  ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE  DSP_TOTWV
+PARAMETERS  P1,P2,P3
+c_color=SETCOLOr()
+SET COLOR TO GR+ / BL
+@ YD_N-1+X,YL_N *(X_COL-1)+ARR_DSPN[1]+2  SAY  (TOTM1+TOTM2+TOTM3+TOTM4+TOTM5+TOTM6+TOTM7+TOTM8+TOTM9+TOTM10+TOTM11+TOTM12) PICT "99999999"
+SET COLOR TO &c_color
+retu
+&&-----------------------------------------------------------------------------
+**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE  DSPTV
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2=" "
+C_TOP1=" "
+*ARR1 :={" ¤é´Á "," °t¤ñ "," ¦Ì¼Æ ","  ¥Û¢°","  ¥Û¢±","  ¥Û¢²","  ¬â¢°","  ¬â¢±","  ²M¤ô","  ¦B¤ô","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(15)
+ARR1[1]=" ¤é´Á "
+ARR1[2]=" °t¤ñ "
+ARR1[3]=" ¦Ì¼Æ "
+FOR I=1 TO 12
+  ARR1[I+3] :=SUBSTR("      "+ A_M_NAME[I,1],-6,6)
+NEXT
+ARR2 :={"LUDATE","RATNO","TOTVUSE","TOTM1","TOTM2","TOTM3","TOTM4","TOTM5","TOTM6","TOTM7","TOTM8","TOTM9","TOTM10","TOTM11","TOTM12"}
+ARR3 :={"XXXXXXXXXX","99999999","999999.9","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999.99","99999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={"DSP_TOTWV"," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 9
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 9
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+_DSP_VBROW(4,10,11,15,ARR1,ARR2,ARR3,"_DMAKE1","9"," ",0)
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE  DSPTTP
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2=" "
+C_TOP1=" "
+*ARR1 :={" ¤é´Á "," ¦Ì¼Æ ","  ¥Û¢°","  ¥Û¢±","  ¥Û¢²","  ¬â¢°","  ¬â¢±","  ²M¤ô","  ¦B¤ô","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(14)
+ARR1[1]=" ¤é´Á "
+ARR1[2]=" ¦Ì¼Æ "
+FOR I=1 TO 12
+  ARR1[I+2] :=SUBSTR("      "+ A_M_NAME[I,1],-6,6)
+NEXT
+ARR2 :={"LUDATE","TOTVUSE","TOTM1","TOTM2","TOTM3","TOTM4","TOTM5","TOTM6","TOTM7","TOTM8","TOTM9","TOTM10","TOTM11","TOTM12"}
+ARR3 :={"XXXXXXXXXX","999999.9","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999.99","99999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={"DSP_TOTWV"," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 9
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 9
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+_DSP_VBROW(4,10,11,14,ARR1,ARR2,ARR3,"_DMAKE1","9"," ",1)
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE  DSPTVP
+PARAMETERS  P1,P2,P3
+*_GET_BROW(Y1_N,X1_N,YL_N,TIT_N,ARR_TITLE,ARR_REC_NAME,ARR_TYPE,P_FUNC,N_SELE,_MODI)
+C_TOP2=" "
+C_TOP1=" "
+*ARR1 :={" ¤é´Á "," °t¤ñ "," ¦Ì¼Æ ","  ¥Û¢°","  ¥Û¢±","  ¥Û¢²","  ¬â¢°","  ¬â¢±","  ²M¤ô","  ¦B¤ô","¤ôªd¢°","¤ôªd¢±","¤ôªd¢²","ÃÄ¾¯¢°","ÃÄ¾¯¢±"}
+*pppK
+ARR1 :=ARRAY(15)
+ARR1[1]=" ¤é´Á "
+ARR1[2]=" °t¤ñ "
+ARR1[3]=" ¦Ì¼Æ "
+FOR I=1 TO 12
+  ARR1[I+3] :=SUBSTR("      "+ A_M_NAME[I,1],-6,6)
+NEXT
+ARR2 :={"LUDATE","RATNO","TOTVUSE","TOTM1","TOTM2","TOTM3","TOTM4","TOTM5","TOTM6","TOTM7","TOTM8","TOTM9","TOTM10","TOTM11","TOTM12"}
+ARR3 :={"XXXXXXXXXX","99999999","999999.9","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999999","99999.99","99999.99",}
+ARR4 :={0,0,0,0,0,0,0,0,0,0,0,0,0,2,2}
+ARR_PCS :={"DSP_TOTWV"," "," "," "," "," "," "," "," "," "," "," "," "," " }
+RET_X1=SPACE(4)
+sele 9
+goto top
+if  BOF()
+  APPE BLANK
+ENDIF
+GOTO 9
+n_rec=recno()
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13
+P_FUNC0=" "
+DLA_DSP=0
+_DSP_VBROW(4,10,11,15,ARR1,ARR2,ARR3,"_DMAKE1","9"," ",1)
+stor  0  to  fist_rec,last_rec
+DLA_DSP=1
+STOR " " TO P_FUNC0,P_FUNC1,P_FUNC2,P_FUNC3,P_FUNC4,P_FUNC5,P_FUNC6,P_FUNC7,P_FUNC8,P_FUNC9,P_FUNC10,P_FUNC11,P_FUNC12,P_FUNC13,C_TOP1,C_TOP2
+SET COLOR TO &C7 +/ &C1
+retu
+**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PROCEDURE  PNT_RATEN
+PARAMETERS  P1,P2,P3
+IF RDLPT(val(aport)-1)=144
+  SET CONS OFF
+  do case
+  case aport="1"
+    set print to lpt1
+    ? chr(27) + "sp1;"
+  case aport="2"
+    set print to lpt2
+    ? chr(27) + "sp2;"
+  case aport="3"
+    set print to lpt3
+    ? chr(27) + "sp3;"
+  endcase
+  SET DEVI TO PRINT
+  @ PROW()+3,3	SAY "¤é´Á:"
+  @ PROW(),8  SAY DATE()
+  *@ PROW()+1,1 SAY "NO.  ¥Û¢° ¥Û¢± ¥Û¢² ¬â¢° ¬â¢±  Á`­« ²M¤ô ¦B¤ô ¤ôªd1 ¤ôªd2 ¤ôªd3 ÃÄ¾¯¢° ÃÄ¾¯¢±"
+  *ppp
+  XTIT="NO. "
+  FOR I=1 TO 12
+    XTIT=XTIT +" "+ A_M_NAME[I,17]
+    IF	I=5
+      XTIT=XTIT +" Á`­« "
+    ENDIF
+  NEXT
+  @ PROW()+1,1 SAY  XTIT
+  @ PROW()+1,1	SAY "-------------------------------------------------------------------------------"
+  SELE 2
+  REC_OLD=RECNO()
+  GOTO TOP
+  DO WHILE .NOT. EOF()
+    XN_TOTW=0
+    XCNR="1"
+    @ PROW()+1,1 SAY RATNO PICT "9999"
+    @ PROW(),5 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),10 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),15 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),20 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),25 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),36 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),41 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),46 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),52 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),58 SAY M&XCNR  PICT "9999"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),64 SAY M&XCNR  PICT "99.99"
+    XN_TOTW=XN_TOTW + M&XCNR
+    XCNR=ALLTRIM(STR(VAL(XCNR)+1,2,0))
+    @ PROW(),71 SAY M&XCNR  PICT "99.99"
+    XN_TOTW=XN_TOTW + M&XCNR
+    @ PROW(),30 SAY XN_TOTW  PICT "99999"
+    SKIP
+  ENDDO
+  @ PROW()+1,1	SAY "-------------------------------------------------------------------------------"
+  @ PROW()+1,1	SAY " "
+  @ PROW()+1,1	SAY " "
+  SET DEVI TO SCRE
+  GOTO	REC_OLD
+ENDIF
+RETU
+&&-----------------------------------------------------------------------------
+

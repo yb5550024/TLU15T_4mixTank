@@ -1,0 +1,185 @@
+
+
+
+SCRNO=0
+y1=0
+yy1=0
+
+
+ SetColor( "&C7 +/ &C1" )
+
+DevPos( SCRNO, 26 ) ; DevOutPict( LAGW, "9999.9" )
+
+XLAGW=LAGW
+SetColor( "&C1 / &C7 +" )
+
+DevPos( SCRNO, 26 ) ; DevOutPict( XLAGW, "9999.9" )
+SetColor( "&C7 +/ &C1" )
+     GETNO=2
+     CHRN=STR(XLAGW,6,1)
+     X1=26
+     XP=0
+     FGETNO=0
+   while GETNO<=2
+       t=0
+
+       XX1=X1+XP
+       YY1=Y1
+       T1=0
+       TN1=0
+       SetColor( "&C1 / &C7 +" )
+       DevPos( y1, x1 ) ; DevOut( chrn )
+       SetColor( "gr + * /bl" )
+       DevPos( y1, x1+xp ) ; DevOut( substr(chrn,XP+1,1) )
+       SetColor( "&C1 / &C7 +" )
+       while T1<>233
+       T=0
+       while T=0
+       T=INKEY( )
+       DO DSP2
+       DO LUSTP
+       ENDDO
+       DO CASE
+      case    T=19
+        IF XP>=1
+        XP=XP-1
+
+
+        XX1=X1+XP
+        YY1=Y1
+        ENDIF
+        SetColor( "&C1 / &C7 +" )
+        DevPos( y1, x1 ) ; DevOut( chrn )
+        SetColor( "gr + * /bl" )
+        DevPos( y1, x1+xp ) ; DevOut( substr(chrn,XP+1,1) )
+        SetColor( "&C1 / &C7 +" )
+      CASE    T=4
+        IF GETNO=2
+        LANPA=5
+        ELSE
+        LANPA=2
+        ENDIF
+        IF XP<=LANPA
+        XP=XP+1
+
+
+        XX1=X1+XP
+        YY1=Y1
+        ENDIF
+        SetColor( "&C1 / &C7 +" )
+        DevPos( y1, x1 ) ; DevOut( chrn )
+        SetColor( "gr + * /bl" )
+        DevPos( y1, x1+xp ) ; DevOut( substr(chrn,XP+1,1) )
+        SetColor( "&C1 / &C7 +" )
+      CASE     T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+         XP=XP+1
+         IF TN1=0 .AND. XP=1
+         TN1=1
+         CHRN="      "
+         ENDIF
+         IF XP<6
+         CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,6-XP)
+SetColor( "&C1 / &C7 +" )
+         DevPos( SCRNO, X1 ) ; DevOut( CHRN )
+SetColor( "&C7 +/ &C1" )
+
+
+         XX1=X1+XP
+         YY1=Y1
+         ELSE
+         CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+SetColor( "&C1 / &C7 +" )
+         DevPos( SCRNO, X1 ) ; DevOut( CHRN )
+SetColor( "&C7 +/ &C1" )
+         XP=XP-1
+
+         XP=5
+         XX1=X1+XP
+        yY1=Y1
+         ENDIF
+         SetColor( "&C1 / &C7 +" )
+         DevPos( y1, x1 ) ; DevOut( chrn )
+         SetColor( "gr + * /bl" )
+         DevPos( y1, x1+xp ) ; DevOut( substr(chrn,XP+1,1) )
+         SetColor( "&C1 / &C7 +" )
+      CASE T=13
+         FGETNO=GETNO+1
+           T1=233
+      CASE T=5
+        IF GETNO>1
+        FGETNO=GETNO+1
+        T1=233
+        ELSE
+        FGETNO=3
+        T1=233
+        ENDIF
+      CASE T=27
+         T1=233
+         GETNO=6
+      CASE T=23
+         T1=233
+         T2=0
+        FGETNO=3
+      CASE T=27
+      T1=233
+      CASE T=24
+        T1=233
+        FGETNO=3
+
+
+
+
+
+
+       ENDCASE
+       ENDDO
+SetColor( "&C1 / &C7 +" )
+       DO CASE
+       CASE GETNO=1
+
+
+       DevPos( SCRNO, 26 ) ; DevOutPict( XLAGW, "9999.9" )
+       CASE GETNO=2
+        Set( 3, 1 )
+        XLAGW=VAL(CHRN)
+        IF XLAGW>=10000
+          XLAGW=0
+          FGETNO=2
+        ENDIF
+       DevPos( SCRNO, 26 ) ; DevOutPict( XLAGW, "9999.9" )
+       ENDCASE
+
+       SetColor( "&C7 +/ &C1" )
+       DO CASE
+      CASE FGETNO=1
+
+           X1=28
+           XP=0
+           FGETNO=0
+           GETNO=1
+      CASE FGETNO=2
+           GETNO=2
+           CHRN=STR(XLAGW,6,1)
+           X1=42
+           XP=0
+           FGETNO=0
+      CASE FGETNO=3
+          LAGW=XLAGW
+
+          __MSave( "LAGDATA9", "LAG*", .T. )
+          T1=233
+          GETNO=3
+          T=23
+       ENDCASE
+
+       ENDDO
+       DO CASE
+
+       CASE T=23
+       T=0
+       RETU
+       ENDCASE
+
+
+
+     T=0

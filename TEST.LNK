@@ -1,0 +1,10 @@
+
+
+
+FI TEST
+LIB \cl52\lib\EXTEND
+LIB \cl52\lib\CLIPPER
+LIB \cl52\lib\pcbios
+LIB \cl52\lib\DBFNTX
+LIB \cl52\lib\TERMINAL
+

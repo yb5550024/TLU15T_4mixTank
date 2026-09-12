@@ -1,0 +1,862 @@
+#line 1 "T15_COM.H"
+#line 3 "LU12_DSP.PRG"
+MAT_POSX0 :=ARRAY(15,2)
+
+for x=1 to (klchn +kuchn)
+SETLZA(x-1,A_M_NAME[x,7])
+next
+
+public send_txt1
+PUBLIC SECR :={0,0,0}
+
+
+
+send_txt1 =chr(96) +chr(32) +chr(5) +chr(6) + chr(2)
+IF KOT=0
+    SetColor( "&C4 / &C1" )
+    SetColor( "&C4 / &C1" )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    DevPos( 2, UPTANK[5,1]-2 ) ; DevOut( " «Ý¤æ" )
+    DevPos( 3, UPTANK[5,1]-2 ) ; DevOut( "¢z¢w¢{" )
+    DevPos( 4, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 5, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢}" )
+    DevPos( 6, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢{" )
+    DevPos( 7, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 8, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢t" )
+    DevPos( 9, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 10, UPTANK[5,1]-2 ) ; DevOut( "¢u¢w¢t" )
+    DevPos( 11, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 12, UPTANK[5,1]-2 ) ; DevOut( "¢x  ¢x" )
+    DevPos( 13, UPTANK[5,1]-2 ) ; DevOut( "úG--úH" )
+    X= UPTANK[5,1]-29
+    IF X <0
+      X=1
+    ENDIF
+
+    DevPos( 13, X ) ; DevOut( " ¢z¢wúR¢w¢w¢w¢wúR¢w¢w¢w¢w¢{" )
+    DevPos( 14, X ) ; DevOut( " ¢|¢wúQ¢w¢w¢w¢wúQ¢w¢w¢w¢w¢}" )
+    DevPos( 13, UPTANK[5,1]-4 ) ; DevOut( "¢{úG--úH " )
+    DevPos( 14, UPTANK[5,1]-4 ) ; DevOut( "¢}       " )
+
+
+
+
+
+
+
+
+
+
+
+
+
+    SetColor( "W+/&C1" )
+    DevPos( 4, UPTANK[5,1] ) ; DevOutPict( UPTANK[4,1], "99" )
+    DevPos( 7, UPTANK[5,1] ) ; DevOutPict( UPTANK[1,1], "99" )
+    DevPos( 9, UPTANK[5,1] ) ; DevOutPict( UPTANK[2,1], "99" )
+    DevPos( 11, UPTANK[5,1] ) ; DevOutPict( UPTANK[3,1], "99" )
+ENDIF
+SetColor( "&C2 / &C1" )
+
+SetColor( "&C5 +/ &C1" )
+DevPos( 0, 0 ) ; DevOut( "°t¤ñ®e¶q:        ²Ö­p¦Ì¼Æ:             ¤é´Á:     ¦~   ¤ë   ¤é ¡@  ®É¶¡:         " )
+DevPos( 1, 0 ) ; DevOut( "                                                                                " )
+
+if dspd_nor=1
+  SetColor( "w +/ &C1" )
+  DevPos( 0, 66 ) ; DevOut( "®É¶¡" )
+endif
+
+
+
+
+
+
+SetColor( "&C2 / &C1" )
+dbSelectArea( "5" )
+SetColor( "&C2 / &C1" )
+DevPos( 3, 0 ) ; DevOut( "¡@                    " )
+M_SETN :=ARRAY(14,3)
+M_SETN :={{4,7,"9999"},{4,12,"9999"},{4,17,"9999"},{4,22,"9999"},{4,27,"9999"},{4,36,"9999"},{4,41,"9999"},{4,47,"9999"},{4,54,"9999"},{4,61,"9999"},{4,67,"99.99"},{4,74,"99.99"}}
+MACT_SETN :=ARRAY(14,3)
+MACT_SETN :={{8,7,"9999"},{8,12,"9999"},{8,17,"9999"},{8,22,"9999"},{8,27,"9999"},{8,36,"9999"},{8,41,"9999"},{8,47,"9999"},{8,54,"9999"},{8,61,"9999"},{8,67,"99.99"},{8,74,"99.99"}}
+
+
+dbGoto(31)
+PUBLIC S_PORT,S2_PORT,PCL745
+S_PORT=int(pa2)
+S2_PORT=int(pa6)
+PCL745=99
+SIO1_FAULT=1
+SIO2_FAULT=1
+if lchtype=6  .OR. lchtype=16  .OR.   (LCHTYPE=17)
+   _FIELD->PA3 := 10; _FIELD->PA4 := 3
+
+endif
+IF  (PA1=745)
+  PCL745=SIO_IOCTL(S_PORT,PA3,PA4) 
+  IF PCL745=0
+    s_port=int(pa2)
+    PCL745=SIO_OPEN(PA2)
+  ENDIF
+  SIO1_FAULT=PCL745
+
+  IF PCL745=0
+  ELSE
+    SetColor( "GR+ /&C1" )
+    DevPos( 2, 1 ) ; DevOut( "!!! RS232¬É­± ¿ù»~ !!!" )
+    INKEY(5)
+    SetColor( "&C2 /&C1" )
+  ENDIF
+ENDIF
+IF  (PA5=745)
+  IF (PA5=745)
+    PCL745=SIO_IOCTL(S2_PORT,PA7,PA8) 
+    IF PCL745=0
+      PCL745=SIO_OPEN(S2_PORT)
+
+    ENDIF
+    SIO2_FAULT=PCL745
+  ENDIF
+
+  IF PCL745=0
+  ELSE
+    SetColor( "GR+ /&C1" )
+    DevPos( 2, 1 ) ; DevOut( "!!! RS232¬É­± ¿ù»~ !!!" )
+    INKEY(5)
+    SetColor( "&C2 /&C1" )
+  ENDIF
+ENDIF
+dbGoto(53)
+public DSP_DIV
+DSP_DIV :=ARRAY(14)
+FOR XDIV=1 TO 14
+  CXD=ltrim(STR(XDIV,2,0))
+  DSP_DIV[XDIV] := PA&CXD
+  IF DSP_DIV[XDIV] <=0
+    DSP_DIV[XDIV] := 1
+    DO    CASE
+    CASE UCHTYPE=7
+      IF XDIV >=10
+    DSP_DIV[XDIV] := 0.01
+      ENDIF
+    CASE UCHTYPE=8
+      IF XDIV >=6
+    DSP_DIV[XDIV] := 0.01
+      ENDIF
+    ENDCASE
+  ENDIF
+NEXT
+dbGoto(52)
+LED_IO =int(PA1)
+IF PA1=512
+  _OUT(LED_IO+3,128) 
+  _OUT(LED_IO+0,0) 
+  _OUT(LED_IO+1,255) 
+  _OUT(LED_IO+2,0) 
+  _OUT(576+3,128) 
+  _OUT(576   +0,0) 
+  _OUT(576   +1,255) 
+  _OUT(576   +2,0) 
+ENDIF
+
+
+MAT_TANK()
+
+WEI_TANK_OLD()
+
+SetColor( "&C5 +/ &C1" )
+DevPos( 14, 52 ) ; DevOut( "²V¦X   ²V¦X   ¶}ªù   §t¤ô" )
+DevPos( 15, 0 ) ; DevOut( "1.³]©w°t¤ñ:              " )
+DevPos( 16, 0 ) ; DevOut( "2.³]©w¦Ì¼Æ:              " )
+DevPos( 17, 0 ) ; DevOut( "3.°õ¦æ¦Ì¼Æ:              " )
+DevPos( 18, 0 ) ; DevOut( "4.ºÏºÐ®e¶q:      ,000    " )
+X=_Tot_d_a[20,4] +2
+
+
+if ( _Tot_d_a[10,X] <>    NIL )
+  if ( _Tot_d_a[10,X] > 0)  .AND.  star=1
+    SetColor( "w+ /n" )
+    DevPos( 15, 12 ) ; DevOut( _Tot_d_a[18,X] )
+    DevPos( 16, 12 ) ; DevOutPict( _Tot_d_a[10,X], "99.9" )
+    DevPos( 17, 12 ) ; DevOutPict( ACT_V, "99.9" )
+  ENDIF
+ENDIF
+SetColor( "&C2 / &C1" )
+if  (lchtype=21)  .OR.     (UCHTYPE=99)
+  DevPos( 13, 51 ) ; DevOut( "¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢{" )
+else
+
+endif
+DevPos( 14, 45 ) ; DevOut( "      ²V¦X   ²V¦X   ¶}ªù   §t¤ô ¢x" )
+DevPos( 15, 23 ) ; DevOut( "¢z¢w¢w¢{¢z¢w¢w¢{¢x          ®É¶¡   ¹q¬y   ®É¶¡   ­×¥¿ ¢x" )
+DevPos( 16, 23 ) ; DevOut( "¢x°_°Ê¢x¢x¤¤¤î¢x¢x  ³]©w­È                            ¢x" )
+DevPos( 17, 23 ) ; DevOut( "¢u¢w¢w¢t¢u¢w¢w¢t¢x  ¹ê»Ú­È     ¬í     ¢Ï     ¬í     KG¢x" )
+DevPos( 18, 23 ) ; DevOut( "¢|¢w¢w¢}¢|¢w¢w¢} úLúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúPúO " )
+if star=1
+  SetColor( "R+/ &C1" )
+  DevPos( 15, 23 ) ; DevOut( "¢z¢w¢w¢{" )
+  DevPos( 16, 23 ) ; DevOut( "¢x    ¢x" )
+  DevPos( 17, 23 ) ; DevOut( "¢uúTúW¢t" )
+  DevPos( 18, 23 ) ; DevOut( "¢|úSúX¢}" )
+  SetColor( "w+  / &C1" )
+  DevPos( 16, 25 ) ; DevOut( "°_°Ê" )
+else
+  SetColor( "&C2 / &C1" )
+  DevPos( 15, 23 ) ; DevOut( "¢z¢w¢w¢{¢z¢w¢w¢{" )
+  DevPos( 16, 23 ) ; DevOut( "¢x°_°Ê¢x¢x¤¤¤î¢x" )
+  DevPos( 17, 23 ) ; DevOut( "¢u¢w¢w¢t¢uúTúW¢t" )
+  DevPos( 18, 23 ) ; DevOut( "¢|¢w¢w¢}¢|úSúX¢}" )
+endif
+SetColor( "&C5 +/ &C1" )
+DevPos( 14, 44 ) ; DevOut( "       ²V¦X   ²V¦X   ¶}ªù   §t¤ô" )
+DevPos( 15, 44 ) ; DevOut( "       ®É¶¡   ¹q¬y   ®É¶¡   ­×¥¿" )
+DevPos( 16, 43 ) ; DevOut( "³]©w­È                           " )
+DevPos( 17, 43 ) ; DevOut( "¹ê»Ú­È     ¬í     ¢Ï     ¬í     KG" )
+DevPos( 19, 0 ) ; DevOut( "¡ü                                                                            ¡ü" )
+
+
+XPH=7
+XPH0=0
+
+
+
+
+
+
+
+XPH=7
+XPH0=0
+
+
+
+
+SetColor( "&C6 / &C1" )
+
+
+DevPos( 23, 0 ) ; DevOut( "¤U¦¸§Ç¸¹:          ¨®¸¹:        °t¤ñ:          ¦Ì¼Æ:    §~«×:     ³sÄò¦¸¼Æ:  ¡ü" )
+IF WASTE=1
+
+   DevPos( 23, 0 ) ; DevOut( "¤U¦¸§Ç¸¹:          ¨®¸¹:        °t¤ñ:          ¦Ì¼Æ:    §~«×:     ¤u¦a:      ¡ü" )
+ELSE
+  DevPos( 23, 0 ) ; DevOut( "¤U¦¸§Ç¸¹:          ¨®¸¹:        °t¤ñ:          ¦Ì¼Æ:    §~«×:     ³sÄò¦¸¼Æ:  ¡ü" )
+ENDIF
+SetColor( "W+  / &CF" )
+DevPos( 24, 0 ) ; DevOut( "¡ü¡ô¡õ-¨ä¥¦¥\¯à«ü¥Ü F1-§t¤ô²v   F2-°t¤ñ F3-¥X¨®      F4-°Ñ¼Æ F5-³øªí¦C¦L      ¡ü" )
+SetColor( "gr +/ &CF" )
+DevPos( 24, 2 ) ; DevOut( "¡ô¡õ" )
+DevPos( 24, 20 ) ; DevOut( "F1" )
+DevPos( 24, 32 ) ; DevOut( "F2" )
+DevPos( 24, 40 ) ; DevOut( "F3" )
+DevPos( 24, 53 ) ; DevOut( "F4" )
+DevPos( 24, 61 ) ; DevOut( "F5" )
+SetColor( "&C7 +/ &C1" )
+DevPos( 0, 26 ) ; DevOutPict( lagw, "9999.9" )
+DevPos( 0, 45 ) ; DevOut( SUBSTR(DTOC(DATE()),7,4) )
+DevPos( 0, 52 ) ; DevOut( SUBSTR(DTOC(DATE()),1,2) )
+DevPos( 0, 57 ) ; DevOut( SUBSTR(DTOC(DATE()),4,2) )
+DevPos( 0, 71 ) ; DevOut( TIME() )
+IF W0_EN=1
+  SetColor( "R / &C1" )
+ENDIF
+DevPos( 0, 10 ) ; DevOutPict( RATVOL, "9.9" )
+SetColor( "&C7 +/ &C1" )
+DevPos( 16, 51 ) ; DevOutPict( PMIXTM, "999" )
+DevPos( 16, 58 ) ; DevOutPict( PMIXA, "999" )
+DevPos( 16, 65 ) ; DevOutPict( PMIXOP, "99" )
+dbSelectArea( "5" )
+dbGoto(2)
+dbGoto(2)
+
+
+
+
+
+
+
+
+
+
+dbGoto(1)
+
+
+
+
+
+
+
+
+
+
+x=INT(DISKSPACE( DAA )/1024)
+X_0=STR(X,4,0)
+X_1="K"
+IF X>9999
+  X=X/1024
+  X_1="M"
+  X_0=STR(X,4,0)
+  IF X>9999
+    X=X*10/1024
+    X_0=STR(X,4,1)
+    X_1="G"
+  ENDIF
+ENDIF
+DISKVOL=x_0 + X_1
+
+
+DevPos( 18, 11 ) ; DevOut( DISKVOL )
+DevPos( 23, 9 ) ; DevOut( SUBSTR(SPACE(7)+ALLTRIM(ASCANO),-9,9) )
+do  dsp_rcp
+Set( 11, "off" )
+dbSelectArea( "5" )
+dbGoto(33)
+icx=alltrim(str(gs_tot+1,2,0))
+wadj_cn =pa&icx
+if wadj_cn > gs_tot
+   wadj_cn =gs_tot
+ELSEIF wadj_cn < g_tot+1
+   wadj_cn =g_tot+1
+endif
+WAdjCur(water_input,wadj_cn,14)
+IF PLOT_E=1
+  IF (TANKSTP >0 )   .AND.  (TANKSTP <5)
+    DO PLOT_MIXAS
+  ENDIF
+ENDIF
+X=MEMORY(0)
+
+
+
+
+
+function  WAdjCur
+PARAMETERS  xwADJ,_WADJ_CN,_COLOR
+  if xwadj=0
+    retu
+  endif
+  fCursor(2,A_M_NAME[_wadj_cn,2],4,_COLOR) 
+return
+
+PROCEDURE   D_REMOTE
+PARAMETERS  P1,P2,P3
+DevPos( 21, 78 ) ; DevOutPict( REMOTE[11], "99" )
+while T=0
+  T=INKEY( )
+  if t >0
+    DO    CASE
+    CASE T=23
+      EXIT
+    CASE T=4
+      REMOTE[11]=REMOTE[11]+1
+      IF REMOTE[11] >10
+    REMOTE[11]=1
+      ENDIF
+      DevPos( 21, 78 ) ; DevOutPict( REMOTE[11], "99" )
+    CASE T=19
+      REMOTE[11]=REMOTE[11]-1
+      IF REMOTE[11] <1
+    REMOTE[11]=10
+      ENDIF
+      DevPos( 21, 78 ) ; DevOutPict( REMOTE[11], "99" )
+    CASE T=27
+    x=REMOTE[11]
+    REMOTE[x]=0
+    OTHERWISE
+      EXIT
+    ENDCASE
+  endif
+  x= din(14)
+  if x <> remote[12]
+    remote[12]=x
+    if x=1
+       x=remote[11]
+       remote[x]=remote[x] + 1
+    endif
+  endif
+  x= din(11)
+  if x <> remote[13]
+    remote[13]=x
+    if x=1
+       x=remote[11]
+       remote[x]=remote[x] - 1
+    endif
+  endif
+  DO DSP2
+  T=0
+ENDDO
+RETU
+
+PROCEDURE   LU12_DSP91
+PARAMETERS  P1,P2,P3
+  SetColor( "&C2 / &C1" )
+  DevPos( 10, 0 ) ; DevOut( "½S¯¯­È" )
+  SetColor( "&C5 +/ &C1" )
+  DevPos( 4, 0 ) ; DevOut( "³]©w­È" )
+  DevPos( 8, 0 ) ; DevOut( "¹ê»Ú­È" )
+  DevPos( 10, 0 ) ; DevOut( "½S¯¯­È" )
+  dbGoto(37)
+  MTX1=PA1
+  MTY1=PA2
+  MTX2=PA3
+  MTY2=PA4
+  MCOLO=PA5
+  x_plus=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  dbGoto(39)
+  X_W1=PA1
+  X_W2=PA2
+  X_W3=PA3
+  X_W4=PA4
+  X_W5=PA5
+  X_W6=PA6
+  X_W7=PA7
+  X_W8=PA8
+  X_W9=PA9
+  X_W10=PA10
+  X_W11=PA11
+  dbGoto(51)
+  x_plus1=int(pa1)
+  x_plus2=int(pa2)
+  x_plus3=int(pa3)
+  x_plus4=int(pa4)
+  x_plus5=int(pa5)
+  x_plus6=int(pa6)
+  x_plus7=int(pa7)
+  x_plus8=int(pa8)
+  x_plus9=int(pa9)
+  x_plus10=int(pa10)
+  x_plus11=int(pa11)
+  x_plus12=int(pa12)
+  x_plus13=int(pa13)
+  x_plus14=int(pa14)
+  dbGoto(38)
+
+
+
+  SetColor( "&C4 / &C1" )
+
+  dbGoto(37)
+  MTX1=PA1
+  MTY1=PA2
+  MTX2=PA3
+  MTY2=PA4
+  MCOLO=PA5
+  x_plus=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  dbGoto(38)
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA1,x_plus1,H_MTB,X_MTB)
+  LINE((MTX1+PA1),(MTY1+MTY2)/2,(MTX2+PA1+x_plus1),(MTY1+MTY2)/2,MCOLO)
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA2,x_plus2,H_MTB,X_MTB)
+  LINE((MTX1+PA2),(MTY1+MTY2)/2,(MTX2+PA2+x_plus2),(MTY1+MTY2)/2,MCOLO)
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA3,x_plus3,H_MTB,X_MTB)
+  LINE((MTX1+PA3),(MTY1+MTY2)/2,(MTX2+PA3+x_plus3),(MTY1+MTY2)/2,MCOLO)
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA4,x_plus4,H_MTB,X_MTB)
+  LINE((MTX1+PA4),(MTY1+MTY2)/2,(MTX2+PA4+x_plus4),(MTY1+MTY2)/2,MCOLO)
+
+
+
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA5,x_plus5,H_MTB,X_MTB)
+  LINE((MTX1+PA5),(MTY1+MTY2)/2,(MTX2+PA5+x_plus5),(MTY1+MTY2)/2,MCOLO)
+
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA6,x_plus6,H_MTB,X_MTB)
+  LINE((MTX1+PA6),(MTY1+MTY2)/2,(MTX2+PA6+x_plus6),(MTY1+MTY2)/2,MCOLO)
+
+
+
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,x_plus7,H_MTB,X_MTB)
+  LINE((MTX1+PA7),(MTY1+MTY2)/2,(MTX2+PA7+x_plus7),(MTY1+MTY2)/2,MCOLO)
+
+  LINE(PA7+(MTX1+MTX2+x_plus7)/2,MTY1,PA7+(MTX1+x_plus7+MTX2)/2,(MTY2+MTY1)/2,MCOLO)
+
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA8,x_plus8,H_MTB,X_MTB)
+  LINE((MTX1+PA8),(MTY1+MTY2)/2,(MTX2+PA8+x_plus8),(MTY1+MTY2)/2,MCOLO)
+
+
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA9,x_plus9,H_MTB,X_MTB)
+  LINE((MTX1+PA9),(MTY1+MTY2)/2,(MTX2+PA9+x_plus9),(MTY1+MTY2)/2,MCOLO)
+
+
+  SetColor( "&C4 / &C1" )
+RETU
+
+
+  FUNCTION WEI_TANK_OLD
+  PARAMETERS  WEICH0,WEICH1
+  divn :=ARRAY(14)
+  dbGoto(60)
+  FOR I=1 TO  14
+    IX_C=ALLTRIM(STR(I,2,0))
+    DIVN[I] :=PA&IX_C
+    IF DIVN[I] <=0
+      DIVN[I] :=1
+    ENDIF
+  NEXT
+  dbGoto(36)
+  SetColor( "&C2 / &C1" )
+  SetColor( "&C5 +/ &C1" )
+  IF PA1 >16
+    DevPos( 4, 0 ) ; DevOut( "³]©w­È" )
+    DevPos( 8, 0 ) ; DevOut( "¹ê»Ú­È" )
+    DevPos( 10, 0 ) ; DevOut( "½S¯¯­È" )
+  ELSE
+    DevPos( 7, 0 ) ; DevOut( "¹ê" )
+    DevPos( 8, 0 ) ; DevOut( "»Ú" )
+    DevPos( 10, 0 ) ; DevOut( "½S" )
+    DevPos( 11, 0 ) ; DevOut( "¯¯" )
+  ENDIF
+  dbGoto(35)
+  MTX1=PA1
+  MTX2=PA3
+  W_BASE=PA3-PA1
+  MCOLO=PA5
+  x_plus0=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  dbGoto(37)
+  MTY1=PA2
+  MTY2=PA4
+  dbGoto(50)
+  x_plus :=array(15)
+  for xn=1 to  15
+   xc=alltrim(str(xn,2,0))
+   x_plus[xn]=PA&XC
+  next
+  SetColor( "&C4 / &C1" )
+  dbGoto(38)
+  XRST=PA1
+  dbGoto(36)
+  Y=0
+  ya=0
+  FOR I=1 TO  KLCHN+KUCHN
+    XN=I
+    IX_E=ALLTRIM(STR(I,2,0))
+    IX_C=ALLTRIM(STR(I+Y,2,0))
+    Y=Y+DIVN[I]-1
+    IX_D=ALLTRIM(STR(I+Y,2,0))
+    X_PLUS0=PA&IX_D -PA&IX_C + X_PLUS[I+y]
+    M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA&IX_C,x_plus0,H_MTB,X_MTB)
+    LINE((MTX1+PA&IX_C),(MTY1+MTY2)/2,(MTX2+PA&IX_C+x_plus0),(MTY1+MTY2)/2,MCOLO)
+
+
+
+
+
+
+
+    TANK_W=w_base + X_PLUS0
+    tmp_w=  TANK_W
+    A_M_NAME[I,16] :=int(INT((MAT_POSX0[ya+1,1] + (tmp_w/2)+3)-(len(alltrim(A_M_NAME[I,5]))*4))/8)
+    A_M_NAME[I,20] :=int(MAT_POSX0[ya+1,1] + (tmp_w/2))
+    A_M_NAME[I,22] :=tmp_w
+    Ya=Ya+DIVN[I]
+
+    IF (XRST <= 0)
+      X_N1=PA&IX_C
+      dbGoto(38)
+      _FIELD->PA&IX_E := X_N1
+      dbGoto(51)
+      _FIELD->PA&IX_E := X_PLUS0
+      dbGoto(36)
+    ENDIF
+
+    IF DIVN[I] >1
+      XP= +(MTX2-MTX1+x_plus0)/DIVN[I]
+      XP0=PA&IX_C + MTX1
+      FOR J=1 TO  (DIVN[I]-1)
+    LINE(XP * J + XP0 ,MTY1,XP * J + XP0,(MTY2+MTY1)/2,MCOLO)
+      NEXT
+    ENDIF
+  NEXT
+  SetColor( "&C4 / &C1" )
+RETU
+
+FUNCTION MAT_TANK_OLD
+PARAMETERS  P1,P2
+dbGoto(50)
+x_plus :=array(15)
+for xn=1 to  15
+ xc=alltrim(str(xn,2,0))
+ x_plus[xn]=PA&XC
+next
+dbGoto(35)
+MTX1=PA1
+MTY1=PA2
+MTX2=PA3
+MTY2=PA4
+MCOLO=PA5
+x_plus1=PA6
+h_MTB=PA7
+X_MTB=PA8
+dbGoto(36)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA1,x_plus[1],H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA2,x_plus[2],H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA3,x_plus[3],H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA4,x_plus[4],H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA5,x_plus[5],H_MTB,X_MTB)
+M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA6,x_plus[6],H_MTB,X_MTB)
+IF PA7 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA7,x_plus[7],H_MTB,X_MTB)
+endif
+IF PA8 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA8,x_plus[8],H_MTB,X_MTB)
+endif
+IF PA9 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA9,x_plus[9],H_MTB,X_MTB)
+endif
+IF PA10 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA10,x_plus[10],H_MTB,X_MTB)
+endif
+IF PA11 <> 0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA11,x_plus[11],H_MTB,X_MTB)
+ENDIF
+IF PA12 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA12,x_plus[12],H_MTB,X_MTB)
+ENDIF
+IF PA13 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA13,x_plus[13],H_MTB,X_MTB)
+ENDIF
+IF PA14 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA14,x_plus[14],H_MTB,X_MTB)
+ENDIF
+IF PA15 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA15,x_plus[15],H_MTB,X_MTB)
+ENDIF
+IF PA16 <>0
+  M_TANK(MTX1,MTY1,MTX2,MTY2,MCOLO,PA16,x_plus[16],H_MTB,X_MTB)
+ENDIF
+RETU
+
+FUNCTION MAT_TANK
+PARAMETERS  P1,P2
+
+dbGoto(36)
+SetColor( "&C5 +/ &C1" )
+IF PA1 >16
+  DevPos( 4, 0 ) ; DevOut( "³]©w­È" )
+ELSE
+  DevPos( 3, 0 ) ; DevOut( "³]" )
+  DevPos( 4, 0 ) ; DevOut( "©w" )
+ENDIF
+  SetColor( "&C2 / &C1" )
+dbGoto(35)
+MTX1=PA1
+MTY1=PA2
+MTX2=PA3
+MTY2=PA4
+MCOLO=PA5
+x_plus1=PA6
+h_MTB=PA7
+X_MTB=PA8
+x_CAP :=array(15)
+x_plus :=array(15)
+tank_tot= gs_tot +uwc_tot
+for xn=1 to tank_tot
+  dbGoto(50)
+  xc=alltrim(str(xn,2,0))
+  x_plus[xn]=PA&XC
+  dbGoto(36)
+  x_CAP[xn]=PA&XC
+next
+X_OFFSET=0
+W_BASE=MTX2-MTX1+2
+Y_OFFSET=0
+h_plus=0
+h_plus_S=55
+A_M_NAME[7,18]= A_M_NAME[3,18] + h_plus_S
+for xn=1 to  tank_tot
+
+
+
+
+
+  Y_OFFSET=0
+  if xn >1
+    X_OFFSET= X_CAP[XN]
+  else
+    X_OFFSET= X_CAP[XN]
+  endif
+  h_plus=h_plus_S
+  tmpx0=MTX1 +    X_OFFSET
+  A_M_NAME[xn,2] :=int((tmpx0+4)/8)   
+  TMPY0=MTY1 + Y_OFFSET
+  MAT_POSX0[xn,1] :=TMPX0
+  tmp_w=w_base + x_plus[XN]
+  A_M_NAME[xn,23] :=int((TMPY0+3)/18)    
+  SetColor( "&C5 +/ &C1" )
+  DevPos( A_M_NAME[XN,23]-1, A_M_NAME[XN,2] ) ; DevOut( A_M_NAME[XN,1] )
+  SetColor( "&C2 / &C1" )
+  A_M_NAME[xn,13] :=int(INT((tmpx0 + (tmp_w/2)+3)-(len(alltrim(A_M_NAME[xn,3]))*4))/8)
+  A_M_NAME[xn,19] :=int(tmpx0 + (tmp_w/2))
+  MAT_POSX0[xn,2] := x_plus[XN]
+  Y_OFFSET=0
+  if xn >1
+    X_OFFSET= X_CAP[XN]
+  else
+    X_OFFSET= X_CAP[XN]
+  endif
+  M_TANK(MTX1,TMPY0,MTX2,MTY2 + h_plus + Y_OFFSET,MCOLO,X_OFFSET,x_plus[XN] ,H_MTB,X_MTB)
+
+
+
+
+
+
+
+
+  Y_OFFSET=0
+next
+retu
+
+FUNCTION DSP_TITL0
+PARAMETERS  P1,P2
+SetColor( "&C5 +/ &C1" )
+FOR  I=1  TO gs_tot+uwc_tot
+  IF EMPTY(A_M_NAME[I,1]) <> .T.
+    DevPos( A_M_NAME[I,23]-1, A_M_NAME[I,2] ) ; DevOut( A_M_NAME[I,1] )
+  ENDIF
+NEXT
+SetColor( "&C2 / &C1" )
+retu
+
+FUNCTION WEI_TANK
+  PARAMETERS  WEICH0,WEICH1
+  divn :=ARRAY(14)
+  dbGoto(60)
+  FOR I=1 TO  14
+    IX_C=ALLTRIM(STR(I,2,0))
+    DIVN[I] :=PA&IX_C
+    IF DIVN[I] <=0
+      DIVN[I] :=1
+    ENDIF
+  NEXT
+  dbGoto(36)
+  SetColor( "&C2 / &C1" )
+  SetColor( "&C5 +/ &C1" )
+  IF PA1 >16
+
+    DevPos( 8, 0 ) ; DevOut( "¹ê»Ú­È" )
+    DevPos( 10, 0 ) ; DevOut( "½S¯¯­È" )
+  ELSE
+    DevPos( 7, 0 ) ; DevOut( "¹ê" )
+    DevPos( 8, 0 ) ; DevOut( "»Ú" )
+    DevPos( 10, 0 ) ; DevOut( "½S" )
+    DevPos( 11, 0 ) ; DevOut( "¯¯" )
+  ENDIF
+  dbGoto(35)
+
+
+  MTX1=PA1
+  MTX2=PA3
+  W_BASE=PA3-PA1
+  MCOLO=PA5
+  x_plus0=PA6
+  h_MTB=PA7
+  X_MTB=PA8
+  dbGoto(37)
+  MTY1=PA2
+  MTY2=PA4
+  dbGoto(50)
+  x_plus :=array(15)
+  for xn=1 to  15
+   xc=alltrim(str(xn,2,0))
+   x_plus[xn]=PA&XC
+  next
+  SetColor( "&C4 / &C1" )
+  dbGoto(38)
+  XRST=PA1
+  dbGoto(36)
+  Y=0
+  XN=1
+  HLineLow_y=10*18 +8
+  HLineMid_y=9*18-1
+  FOR I=1 TO  KLCHN+KUCHN
+    IX_E=ALLTRIM(STR(I,2,0))
+    IX_C=ALLTRIM(STR(I+Y,2,0))
+    Y=Y+DIVN[I]-1
+    IX_D=ALLTRIM(STR(I+Y,2,0))
+    X_PLUS0=MAT_POSX0[XN,1]
+
+
+
+
+
+
+    TANK_W=w_base + (MAT_POSX0[XN + 2,1]-MAT_POSX0[XN,1])+MAT_POSX0[XN+2,2]
+    tmp_w=  TANK_W
+    A_M_NAME[I,16] :=int(INT((MAT_POSX0[XN,1] + (tmp_w/2)+3)-(len(alltrim(A_M_NAME[I,5]))*4))/8)
+    A_M_NAME[I,20] :=int(MAT_POSX0[XN,1] + (tmp_w/2))
+    A_M_NAME[I,22] :=tmp_w
+
+    M_TANK(MAT_POSX0[XN,1],MTY1,W_BASE + MAT_POSX0[XN,1],MTY2,MCOLO,0,TANK_W,H_MTB,X_MTB)
+    LINE(MAT_POSX0[XN,1],HLineLow_y,MAT_POSX0[XN,1] + tmp_w,HLineLow_y,MCOLO)
+    DO CASE
+    CASE    WSCALE_TYPE[I]=1
+    XN=XN+1
+    CASE    WSCALE_TYPE[I]=2
+    LINE(MAT_POSX0[XN,1],HLineMid_y,MAT_POSX0[XN,1] + tmp_w,HLineMid_y,MCOLO)
+    XN=XN+2
+    CASE    WSCALE_TYPE[I]=3
+    x_tmp= MAT_POSX0[XN,1] +(tmp_w/2)
+    LINE(x_tmp,MTY1,x_tmp,HLineLow_y,MCOLO)
+    LINE(MAT_POSX0[XN,1],HLineMid_y,x_tmp,HLineMid_y,MCOLO)
+    XN=XN+3
+    ENDCASE
+
+
+
+
+
+
+
+
+
+
+  NEXT
+  SetColor( "&C4 / &C1" )
+RETU
+
+PROCEDURE   dsp_rcp
+PARAMETERS  P1,P2,P3
+SetColor( "&C7 +/ &C1" )
+DevPos( 23, 25 ) ; DevOut( ACARNO )
+DevPos( 23, 37 ) ; DevOut( ARATNO )
+DevPos( 23, 52 ) ; DevOutPict( AVUSE, "99.9" )
+DevPos( 23, 61 ) ; DevOutPict( ATANDO, "9999" )
+DevPos( 23, 71 ) ; DevOut( substr(space(10)+alltrim(APOSITION),-9,9) )
+RETU
+
+
+PROCEDURE    show_siopic 
+PARAMETERS  xpos,xindex
+   SetColor( "w+ /&c1" )
+   if xindex=0
+     DevPos( 0, xpos ) ; DevOut( "" )
+   else
+
+   endif
+SetColor( "&C2 / &C1" )
+RETU

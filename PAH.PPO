@@ -1,0 +1,540 @@
+dbSelectArea( "3" )
+SetColor( "&C7 +/ &C1" )
+LUDBF="3"
+SetCursor( if(Upper("OFF") == "ON", 1, 0) )
+Set( 17, "on" )
+dbGoTop()
+XX1=6
+SCRCC=1
+YY1=21
+Scroll( 20, 2, 22, 77 ) ; SetPos( 20, 2 )
+Scroll( 24, 2, 24, 77 ) ; SetPos( 24, 2 )
+SCRNO=21
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+
+     SetColor( "&C6 / &C1" )
+ DevPos( 20, 0 ) ; DevOut( "∥    ＮＯ.    車   號    配比代號     執行米數    　坍度                     ∥" )
+ DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-全畫面編輯  F9-插入 F10-刪除 ↑↓上下筆  Ctl-End結束        ∥" )
+ SetColor( "gr +/ &C1" )
+ DevPos( 24, 4 ) ; DevOut( "排程輸入" )
+ DevPos( 24, 15 ) ; DevOut( "F1" )
+ DevPos( 24, 30 ) ; DevOut( "F9" )
+ DevPos( 24, 38 ) ; DevOut( "F10" )
+ DevPos( 24, 47 ) ; DevOut( "↑↓" )
+ DevPos( 24, 59 ) ; DevOut( "Ctl-End" )
+ SetColor( "&C7 +/ &C1" )
+ dbGoBottom()
+dbSkip( (-1) )
+DevPos( SCRNO, 6 ) ; DevOutPict( SCANO, "9999" )
+DevPos( SCRNO, 16 ) ; DevOut( CARNO )
+DevPos( SCRNO, 28 ) ; DevOutPict( RATNO, "9999" )
+DevPos( SCRNO, 42 ) ; DevOutPict( VUSE, "99.9" )
+DevPos( SCRNO, 53 ) ; DevOutPict( TANDO, "9999" )
+IF  VUSE=0
+SCRNO=SCRNO-1
+ENDIF
+dbSkip(1)
+T2=1
+IF EOF()
+dbAppend()
+ENDIF
+SCRNO=SCRNO+1
+Y1=SCRNO
+IF SCRNO >END_Y
+SCRNO = END_Y
+SCROLL(STAR_Y,STAR_X,END_Y,END_X,1)
+ENDIF
+while T2<>0
+XSCANO=SCANO
+XCARNO=CARNO
+XRATNO=RATNO
+XVUSE=VUSE
+XTANDO=TANDO
+SetColor( "&C1 / &C7 +" )
+DevPos( SCRNO, 6 ) ; DevOutPict( xSCANO, "9999" )
+DevPos( SCRNO, 16 ) ; DevOut( XCARNO )
+DevPos( SCRNO, 28 ) ; DevOutPict( XRATNO, "9999" )
+DevPos( SCRNO, 42 ) ; DevOutPict( XVUSE, "99.9" )
+DevPos( SCRNO, 53 ) ; DevOutPict( XTANDO, "9999" )
+SetColor( "&C7 +/ &C1" )
+     CHRN=STR(XSCANO,4)
+     ph_xn=6
+     XP=0
+     FGETNO=1
+       Y1=SCRNO
+       YY1=Y1
+       GETNO=1
+   while GETNO<=5
+       t=0
+
+       SetColor( "&c1    /&c7 +" )
+       DevPos( y1, ph_xn ) ; DevOut( chrn )
+       SetColor( "gr + * /bl" )
+       DevPos( y1, ph_xn ) ; DevOut( substr(chrn,XP+1,1) )
+     SetColor( "&c7 + /&c1" )
+       XX1=ph_xn+XP
+       YY1=Y1
+       T1=0
+       TN1=0
+       while T1<>233
+       T=0
+       LURECNO=RECNO()
+       INFUNC=1
+       while T=0
+     IF SCRCC=1
+       DO DSP2
+     ENDIF
+     DO LUSTP
+     T=INKEY( )
+     IF T0A <>0
+       T=T0A
+       T0A=0
+     ENDIF
+       ENDDO
+       dbSelectArea( LUDBF )
+       dbGoto(LURECNO)
+       DO CASE
+      case    T=19
+        IF XP>=1
+        XP=XP-1
+
+
+        SetColor( "&c1  /&c7 +" )
+        DevPos( y1, ph_xn ) ; DevOut( chrn )
+        SetColor( "gr + * /bl" )
+        DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+        SetColor( "&c7 + /&c1" )
+        XX1=ph_xn+XP
+        YY1=Y1
+        ENDIF
+      CASE    T=4
+        IF GETNO=2
+        LANPA=5
+        ELSE
+        LANPA=2
+        ENDIF
+        IF XP<=LANPA
+        XP=XP+1
+
+
+        SetColor( "&c1  /&c7 +" )
+        DevPos( y1, ph_xn ) ; DevOut( chrn )
+        SetColor( "gr + * /bl" )
+        DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+        SetColor( "&c7 + /&c1" )
+        XX1=ph_xn+XP
+        YY1=Y1
+        ENDIF
+      CASE     (t>=45  .AND. T<=90 .AND. GETNO=2)  .OR. (T=32 .AND. GETNO=2) .OR. (T>=97  .AND. T<=122 .AND. GETNO=2)
+        XP=XP+1
+        IF TN1=0 .AND. XP=1
+          TN1=1
+          CHRN="    "
+        ENDIF
+        IF XP<7
+          CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,4-XP)
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+          SetColor( "&C7 +/ &C1" )
+
+
+          SetColor( "&c1  /&c7 +" )
+          DevPos( y1, ph_xn ) ; DevOut( chrn )
+          SetColor( "gr + * /bl" )
+          DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+          SetColor( "&c7 + /&c1" )
+          XX1=ph_xn+XP
+          YY1=Y1
+          ELSE
+          CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+          SetColor( "&C7 +/ &C1" )
+          XP=XP-1
+
+          SetColor( "&c1  /&c7 +" )
+          DevPos( y1, ph_xn ) ; DevOut( chrn )
+          SetColor( "gr + * /bl" )
+          DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+          SetColor( "&c7 + /&c1" )
+          XP=6
+          XX1=ph_xn+XP
+          YY1=Y1
+        ENDIF
+      CASE     T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+        XP=XP+1
+        IF TN1=0 .AND. XP=1
+          TN1=1
+          CHRN="    "
+        ENDIF
+        IF XP<4
+          CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,4-XP)
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+          SetColor( "&C7 +/ &C1" )
+
+
+          SetColor( "&c1  /&c7 +" )
+          DevPos( y1, ph_xn ) ; DevOut( chrn )
+          SetColor( "gr + * /bl" )
+          DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+          SetColor( "&c7 + /&c1" )
+          XX1=ph_xn+XP
+          YY1=Y1
+        ELSE
+          CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+          SetColor( "&C7 +/ &C1" )
+          XP=XP-1
+
+          SetColor( "&c1  /&c7 +" )
+          DevPos( y1, ph_xn ) ; DevOut( chrn )
+          SetColor( "gr + * /bl" )
+          DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+          SetColor( "&c7 + /&c1" )
+          XP=3
+          XX1=ph_xn+XP
+          YY1=Y1
+        ENDIF
+      CASE T=13
+         FGETNO=GETNO+1
+           T1=233
+           INFUNC=0
+      CASE T=5
+        IF GETNO>1
+        FGETNO=GETNO-1
+        T1=233
+        ELSE
+        FGETNO=6
+        T1=233
+        ENDIF
+           INFUNC=0
+      CASE T=27
+         T1=233
+         GETNO=6
+           INFUNC=0
+      CASE T=23
+         T1=233
+         T2=0
+        FGETNO=6
+           INFUNC=0
+      CASE T=27
+      T1=233
+      CASE T=24
+        T1=233
+        FGETNO=6
+           INFUNC=0
+      case T=3 .AND. SCRCC=0
+           T1=233
+        FGETNO=6
+           INFUNC=0
+      case T=18 .AND. SCRCC=0
+           T1=233
+        FGETNO=6
+           INFUNC=0
+      case T=-8 .OR. T=-9
+        T1=233
+        FGETNO=6
+           INFUNC=0
+      CASE T=28  .AND. STAR=0
+        IF SCRCC=1
+          SCRRA1 := SaveScreen( 0, 0, Maxrow(), Maxcol() )
+          Scroll( 0, 0, 22, 79 ) ; SetPos( 0, 0 )
+          SetColor( "&C6 / &C1" )
+          DevPos( 0, 0 ) ; DevOut( "      ＮＯ.    車   號    配比代號     執行米數    　坍度                       " )
+          SetColor( "&C7 +/ &C1" )
+          XX1=RECNO()
+          dbSkip( -10 )
+          XX=1
+          while ( ! EOF()    )   .AND. XX <= END_Y
+        DevPos( XX, 6 ) ; DevOutPict( SCANO, "9999" )
+        DevPos( XX, 16 ) ; DevOut( CARNO )
+        DevPos( XX, 28 ) ; DevOutPict( RATNO, "9999" )
+        DevPos( XX, 42 ) ; DevOutPict( VUSE, "99.9" )
+        DevPos( XX, 53 ) ; DevOutPict( TANDO, "9999" )
+        IF  XX1=RECNO()
+          SCRNO=XX
+          Y1=SCRNO
+        ENDIF
+        dbSkip(1)
+        XX=XX+1
+          ENDDO
+          dbGoto(XX1)
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, 6 ) ; DevOutPict( xSCANO, "9999" )
+          DevPos( SCRNO, 16 ) ; DevOut( XCARNO )
+          DevPos( SCRNO, 28 ) ; DevOutPict( XRATNO, "9999" )
+          DevPos( SCRNO, 42 ) ; DevOutPict( XVUSE, "99.9" )
+          DevPos( SCRNO, 53 ) ; DevOutPict( XTANDO, "9999" )
+          SetColor( "&C7 +/ &C1" )
+          SetColor( "&C6 / &C1" )
+          DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-全畫面編輯  F9-插入 F10-刪除 ↑↓上下筆  Ctl-End結束        ∥" )
+          SetColor( "gr +/ &C1" )
+          DevPos( 24, 4 ) ; DevOut( "排程輸入" )
+          DevPos( 24, 15 ) ; DevOut( "F1" )
+          DevPos( 24, 30 ) ; DevOut( "F9" )
+          DevPos( 24, 38 ) ; DevOut( "F10" )
+          DevPos( 24, 47 ) ; DevOut( "↑↓" )
+          DevPos( 24, 59 ) ; DevOut( "Ctl-End" )
+          SetColor( "&C7 +/ &C1" )
+          SCRCC=0
+          STAR_X=2
+          STAR_Y=1
+          END_X=77
+          END_Y=21
+          T1=233
+          GETNO=10
+           INFUNC=0
+        ELSE
+          SCRCC=1
+          SCRNO=21
+          Y1=SCRNO
+          STAR_X=2
+          STAR_Y=21
+          END_X=77
+          END_Y=22
+          RestScreen( 0, 0, Maxrow(), Maxcol(), SCRRA1 )
+          SetColor( "&C6 / &C1" )
+          DevPos( 22, 0 ) ; DevOut( "∥                                                                            ∥" )
+          DevPos( 24, 0 ) ; DevOut( "∥<<排程輸入>> F1-全畫面編輯  F9-插入 F10-刪除 ↑↓上下筆  Ctl-End結束        ∥" )
+          SetColor( "gr +/ &C1" )
+          DevPos( 24, 4 ) ; DevOut( "排程輸入" )
+          DevPos( 24, 15 ) ; DevOut( "F1" )
+          DevPos( 24, 30 ) ; DevOut( "F9" )
+          DevPos( 24, 38 ) ; DevOut( "F10" )
+          DevPos( 24, 47 ) ; DevOut( "↑↓" )
+          DevPos( 24, 59 ) ; DevOut( "Ctl-End" )
+          SetColor( "&C7 +/ &C1" )
+          SCRNO=21
+          Y1=SCRNO
+          SetColor( "&C1 / &C7 +" )
+          DevPos( SCRNO, 6 ) ; DevOutPict( xSCANO, "9999" )
+          DevPos( SCRNO, 16 ) ; DevOut( XCARNO )
+          DevPos( SCRNO, 28 ) ; DevOutPict( XRATNO, "9999" )
+          DevPos( SCRNO, 42 ) ; DevOutPict( XVUSE, "99.9" )
+          DevPos( SCRNO, 53 ) ; DevOutPict( XTANDO, "9999" )
+          SetColor( "&C7 +/ &C1" )
+          T1=233
+          GETNO=10
+           INFUNC=0
+        ENDIF
+      ENDCASE
+       enddo
+SetColor( "&C1 / &C7 +" )
+       DO CASE
+       CASE GETNO=1
+        XSCANO=INT(VAL(CHRN))
+       DevPos( SCRNO, 6 ) ; DevOutPict( XSCANO, "9999" )
+       CASE GETNO=2
+       XCARNO=UPPER(CHRN)
+       DevPos( SCRNO, 16 ) ; DevOut( XCARNO )
+       CASE GETNO=3
+       XRATNO=INT(VAL(CHRN))
+       DevPos( SCRNO, 28 ) ; DevOutPict( XRATNO, "9999" )
+       CASE GETNO=4
+        Set( 3, 1 )
+       XVUSE=VAL(CHRN)
+         IF XVUSE>=100
+         XVUSE=0
+           FGETNO=4
+         ENDIF
+       DevPos( SCRNO, 42 ) ; DevOutPict( XVUSE, "99.9" )
+       CASE GETNO=5
+        XTANDO=INT(VAL(CHRN))
+       DevPos( SCRNO, 53 ) ; DevOutPict( XTANDO, "9999" )
+       ENDCASE
+
+SetColor( "&C7 +/ &C1" )
+       DO CASE
+      CASE FGETNO=1
+           CHRN=STR(XSCANO,4)
+           ph_xn=6
+           XP=0
+           FGETNO=0
+           GETNO=1
+      CASE FGETNO=2
+           GETNO=2
+           CHRN=XCARNO
+           ph_xn=16
+           XP=0
+           FGETNO=0
+      CASE FGETNO=3
+           GETNO=3
+           CHRN=STR(XRATNO,4)
+           ph_xn=28
+           XP=0
+           FGETNO=0
+      CASE FGETNO=4
+           GETNO=4
+           CHRN=STR(XVUSE,4,1)
+           ph_xn=42
+           XP=0
+           FGETNO=0
+      CASE FGETNO=5
+           GETNO=5
+           CHRN=STR(XTANDO,4)
+           ph_xn=53
+           XP=0
+           FGETNO=0
+      CASE FGETNO=6
+        dbSelectArea( "2" )
+        __dbLocate( {|| RATNO=XRATNO},,,, .F. )
+        IF ! EOF() .AND. XVUSE<>0
+          dbSelectArea( "3" )
+          _FIELD->SCANO := XSCANO; _FIELD->CARNO := XCARNO; _FIELD->RATNO := XRATNO; _FIELD->VUSE := XVUSE; _FIELD->TANDO := XTANDO
+        ENDIF
+        dbSelectArea( "3" )
+        FGETNO=0
+        GETNO=6
+        DevPos( SCRNO, 6 ) ; DevOutPict( SCANO, "9999" )
+        DevPos( SCRNO, 16 ) ; DevOut( CARNO )
+        DevPos( SCRNO, 28 ) ; DevOutPict( RATNO, "9999" )
+        DevPos( SCRNO, 42 ) ; DevOutPict( VUSE, "99.9" )
+        DevPos( SCRNO, 53 ) ; DevOutPict( TANDO, "9999" )
+      ENDCASE
+
+       enddo
+       DO CASE
+       CASE  T=13 .OR. T=24
+     XP=0
+       dbSkip(1)
+       IF EOF()
+         dbAppend()
+       ENDIF
+       SCRNO=SCRNO+1
+       Y1=SCRNO
+       IF SCRNO >END_Y
+         SCRNO = END_Y
+         SCROLL(STAR_Y,STAR_X,END_Y,END_X,1)
+       ENDIF
+       CASE T=3 .AND. SCRCC=0
+         SKPN=20
+         while ! EOF() .AND. SKPN>0
+         dbSkip(1)
+         SKPN=SKPN-1
+         XP=0
+         IF  ! EOF()
+         SCRNO=SCRNO+1
+Y1=SCRNO
+         IF SCRNO>END_Y
+          SCROLL(STAR_Y,STAR_X,END_Y,END_X,1)
+          SCRNO=END_Y
+Y1=SCRNO
+         ENDIF
+         ENDIF
+         DevPos( SCRNO, 6 ) ; DevOutPict( SCANO, "9999" )
+         DevPos( SCRNO, 16 ) ; DevOut( CARNO )
+         DevPos( SCRNO, 28 ) ; DevOutPict( RATNO, "9999" )
+         DevPos( SCRNO, 42 ) ; DevOutPict( VUSE, "99.9" )
+          DevPos( SCRNO, 53 ) ; DevOutPict( TANDO, "9999" )
+         ENDDO
+
+       CASE T=5
+     dbSkip( (-1) )
+     XP=0
+     IF  ! BOF()
+       SCRNO=SCRNO-1
+       Y1=SCRNO
+       IF SCRNO<STAR_Y
+         SCROLL(STAR_Y,STAR_X,END_Y,END_X,-1)
+         SCRNO=STAR_Y
+         Y1=SCRNO
+       ENDIF
+     ENDIF
+       CASE T=-8    
+     XX1=RECNO()
+     XX2=SCRNO
+     dbGoBottom()
+     dbAppend()
+     XX=RECNO()
+     while XX > XX1
+      dbSkip( -1 )
+      XSCANO=SCANO
+      XCARNO=CARNO
+      XRATNO=RATNO
+      XVUSE=VUSE
+      XTANDO=TANDO
+      _FIELD->SCANO := 0; _FIELD->CARNO := "       "; _FIELD->RATNO := 0; _FIELD->VUSE := 0; _FIELD->TANDO := 0
+      dbSkip(1)
+      _FIELD->SCANO := XSCANO; _FIELD->CARNO := XCARNO; _FIELD->RATNO := XRATNO; _FIELD->VUSE := XVUSE; _FIELD->TANDO := XTANDO
+      dbSkip( -1 )
+      XX=RECNO()
+     ENDDO
+     dbGoto(XX1)
+     XSCANO=SCANO
+     XCARNO=CARNO
+     XRATNO=RATNO
+     XVUSE=VUSE
+     XTANDO=TANDO
+     SCROLL(XX2,STAR_X,END_Y,END_X,-1)
+       CASE T=-9    
+     XX1=RECNO()
+     XX2=SCRNO
+     XX=XX2
+     dbDelete()
+     __dbPack()
+     SCROLL(XX2,STAR_X,END_Y,END_X,1)
+     dbGoto(XX1)
+     while ( ! EOF()  )   .AND. XX <= END_Y
+       DevPos( XX, 6 ) ; DevOutPict( SCANO, "9999" )
+       DevPos( XX, 16 ) ; DevOut( CARNO )
+       DevPos( XX, 28 ) ; DevOutPict( RATNO, "9999" )
+       DevPos( XX, 42 ) ; DevOutPict( VUSE, "99.9" )
+       DevPos( XX, 53 ) ; DevOutPict( TANDO, "9999" )
+       dbSkip(1)
+       XX=XX+1
+     ENDDO
+     dbGoto(XX1)
+       CASE T=18 .AND. SCRCC=0
+       SKPN=20
+       while ! BOF() .AND. SKPN>0
+       dbSkip( (-1) )
+       SKPN=SKPN-1
+       XP=0
+       IF  ! BOF()
+       SCRNO=SCRNO-1
+Y1=SCRNO
+       IF SCRNO<STAR_Y
+        SCROLL(STAR_Y,STAR_X,END_Y,END_X,-1)
+        SCRNO=STAR_Y
+Y1=SCRNO
+       ENDIF
+       ENDIF
+       DevPos( SCRNO, 6 ) ; DevOutPict( SCANO, "9999" )
+       DevPos( SCRNO, 16 ) ; DevOut( CARNO )
+       DevPos( SCRNO, 28 ) ; DevOutPict( RATNO, "9999" )
+       DevPos( SCRNO, 42 ) ; DevOutPict( VUSE, "99.9" )
+           DevPos( SCRNO, 53 ) ; DevOutPict( TANDO, "9999" )
+       ENDDO
+
+       CASE T=23
+       T=0
+       dbGoTop()
+       while ! eof()
+          IF VUSE=0
+          dbDelete()
+          ENDIF
+          dbSkip(1)
+       ENDDO
+       __dbPack()
+       if scrcc=0
+       scrcc=1
+              RestScreen( 0, 0, Maxrow(), Maxcol(), SCRRA1 )
+       endif
+       RETU
+       ENDCASE
+       DevPos( SCRNO, 6 ) ; DevOutPict( SCANO, "9999" )
+       DevPos( SCRNO, 16 ) ; DevOut( CARNO )
+       DevPos( SCRNO, 28 ) ; DevOutPict( RATNO, "9999" )
+       DevPos( SCRNO, 42 ) ; DevOutPict( VUSE, "99.9" )
+           DevPos( SCRNO, 53 ) ; DevOutPict( TANDO, "9999" )
+     ENDDO
+
+
+
+     T=0

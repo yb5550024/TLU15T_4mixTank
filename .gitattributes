@@ -1,0 +1,67 @@
+
+#TLU15A
+# Normalize text in repo
+# 1. 預設讓 Git 自動處理，但偏好 LF (對 GitHub 友好)
+* text=auto eol=crlf
+
+# 2. 現代化設定檔：強制使用 LF (避免在 Windows/Linux 混用時報錯)
+*.json          text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.gitattributes text eol=lf
+*.gitignore     text eol=lf
+*.md            text eol=lf
+*.txt           text eol=lf
+.env* text eol=lf
+Dockerfile      text eol=lf
+
+# Clipper / xBase source as text
+# 3. Clipper 5.2 / DOS 專屬：大小寫兼容設定
+*.prg  text eol=crlf
+*.ch   text eol=crlf
+*.h    text eol=crlf
+*.ini  text eol=crlf
+*.txt  text eol=crlf
+*.bat  text eol=crlf
+*.clp  text eol=crlf
+
+
+*.PRG  text eol=crlf
+*.CH   text eol=crlf
+*.H    text eol=crlf
+*.INI  text eol=crlf
+*.TXT  text eol=crlf
+*.BAT  text eol=crlf
+
+
+
+# Database/index files must be treated as binary (never merge/convert)
+*.dbf  binary
+*.fpt  binary
+*.cdx  binary
+*.ntx  binary
+*.idx  binary
+*.dbt  binary
+
+*.DBF  binary
+*.FTP  binary
+*.CDX  binary
+*.NTX  binary
+*.IDX  binary
+*.DBT  binary
+
+# Build artifacts
+*.exe  binary
+*.obj  binary
+*.lib  binary
+*.map  binary
+
+*.EXE  binary
+*.OBJ  binary
+*.LIB  binary
+*.MAP  binary
+
+*.zip  binary
+*.arj  binary
+*.ZIP  binary
+*.ARJ  binary

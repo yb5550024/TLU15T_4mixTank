@@ -1,0 +1,6 @@
+trans data to  rs40  1 ch
+` 1234L
+trans  123.4  bcc=76 ch=1 dec=1
+` 1234L
+
+

@@ -1,0 +1,65 @@
+dbSelectArea( "3" )
+Set( 17, "on" )
+Set( 11, "OFF" )
+DBEval( {|| dbRecall()},,,,, .F. )
+while ! EOF()
+  IF SCANO=0 .OR. VUSE=0
+      dbDelete()
+    ENDIF
+  dbSkip(1)
+ENDDO
+__dbPack()
+dbGoTop()
+dbDelete()
+LUDBF="3"
+pn_XX1=9
+SCRCC=1
+YY1=23
+SCRNO=23
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+SetColor( "&C6 / &C1" )
+DevPos( 24, 0 ) ; DevOut( "∥ <<出車>>           Esc-取消訂單   Ctl-End 結束 ↑上一筆  ↑↑插單  ↓下一筆∥" )
+SetColor( "gr +/ &C1" )
+DevPos( 24, 5 ) ; DevOut( "出車" )
+DevPos( 24, 22 ) ; DevOut( "Esc" )
+DevPos( 24, 37 ) ; DevOut( "Ctl-End" )
+DevPos( 24, 50 ) ; DevOut( "↑" )
+DevPos( 24, 60 ) ; DevOut( "↑↑" )
+DevPos( 24, 70 ) ; DevOut( "↓" )
+public    XSCANO, XCARNO ,XRATNO,XVUSE,XCALW_REP,CHRN,XTANDO,XPOSITION
+XSCANO=ASCANO
+XCARNO=ACARNO
+XRATNO=ARATNO
+ARATNO=space(9)
+XVUSE=AVUSE
+AVUSE=0
+XTANDO=ATANDO
+XCALW_REP=ACALW_REP
+XPOSITION=space(9)
+IF   XCALW_REP=0
+  XCALW_REP=1
+ENDIF
+SetColor( "&C1 / &C7 +" )
+NPAH1_DSP0(SCRNO,XSCANO,XCARNO,XRATNO,XVUSE,XTANDO,XCALW_REP)
+SetColor( "&C7 +/ &C1" )
+CHRN=substr(XSCANO,-9,9)
+ph_xn=9
+XP=0
+FGETNO=1
+Y1=SCRNO
+YY1=Y1
+GETNO=1
+LURECNO=RECNO()
+F3_N=1
+T1=0
+T2=0
+SetColor( "&C1  /  &C7 +" )
+DevPos( y1, ph_xn ) ; DevOut( substr(xscano,-9,9) )
+SetColor( "gr + * /bl" )
+DevPos( y1, ph_xn ) ; DevOut( substr(xscano,-9,9) )
+SetColor( "&c7 + /&c1" )
+T=INKEY()

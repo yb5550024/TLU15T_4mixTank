@@ -1,0 +1,19 @@
+
+
+
+FI LU10
+FI  LUPRN
+FI  LUTEST
+FI  LUPAR
+FI  LUPAH
+FI  LUDIS
+fi  PGM
+FI  setadj
+FI   \cl52\obj\gt
+LIB t
+LIB \cl52\lib\EXTEND
+LIB \cl52\lib\CLIPPER
+LIB \cl52\lib\pcbios
+LIB \cl52\lib\DBFNTX
+LIB \cl52\lib\TERMINAL
+

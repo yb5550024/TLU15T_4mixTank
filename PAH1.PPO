@@ -1,0 +1,489 @@
+#line 1 "alu16.h"
+#line 3 "PAH1.PRG"
+dbSelectArea( "3" )
+public    XSCANO, XCARNO ,XRATNO,XVUSE,XCALW_REP,CHRN,XTANDO,XPOSITION
+Set( 17, "on" )
+Set( 11, "OFF" )
+DBEval( {|| dbRecall()},,,,, .F. )
+while ! EOF()
+  IF SCANO=0 .OR. VUSE=0
+    dbDelete()
+  ENDIF
+  dbSkip(1)
+ENDDO
+D_LONG=4
+__dbPack()
+dbGoTop()
+dbDelete()
+LUDBF="3"
+pn_XX1=9
+SCRCC=1
+YY1=23
+SCRNO=23
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+SetColor( "&C6 / &C1" )
+DevPos( 24, 0 ) ; DevOut( "∥ <<出車>>           Esc-取消訂單   Ctl-End 結束 ↑上一筆  ↑↑插單  ↓下一筆∥" )
+SetColor( "gr +/ &C1" )
+DevPos( 24, 5 ) ; DevOut( "出車" )
+DevPos( 24, 22 ) ; DevOut( "Esc" )
+DevPos( 24, 37 ) ; DevOut( "Ctl-End" )
+DevPos( 24, 50 ) ; DevOut( "↑" )
+DevPos( 24, 60 ) ; DevOut( "↑↑" )
+DevPos( 24, 70 ) ; DevOut( "↓" )
+SetColor( "&C7 +/ &C1" )
+DevPos( SCRNO, 9 ) ; DevOutPict( ASCANO, "999999999" )
+DevPos( SCRNO, 24 ) ; DevOutPict( ACARNO, "XXXXXXX" )
+DevPos( SCRNO, 37 ) ; DevOutPict( ARATNO, "XXXXXXXXX" )
+DevPos( SCRNO, 52 ) ; DevOutPict( AVUSE, "99.9" )
+DevPos( SCRNO, 61 ) ; DevOutPict( ATANDO, "9999" )
+IF WASTE=1
+  DevPos( SCRNO, 71 ) ; DevOut( APOSITION )
+ELSE
+  DevPos( SCRNO, 75 ) ; DevOutPict( ACALW_REP, "99" )
+ENDIF
+
+T2=1
+T=0
+while T2<>0
+
+  IF T=5 .OR.  T=24
+    IF BOF()
+      IF EMPTY(XSCANO)
+    XSCANO=LAG_REPNO
+      ENDIF
+      IF EMPTY(XCARNO)
+    XCARNO="       "
+      ENDIF
+      IF EMPTY(XRATNO)
+    XRATNO=space(9)
+      ENDIF
+      IF EMPTY(XVUSE)
+    XVUSE=0
+      ENDIF
+      IF EMPTY(XTANDO)
+    XTANDO=0
+      ENDIF
+      IF EMPTY(XCALW_REP)
+    XCALW_REP=1
+      ENDIF
+      IF XCALW_REP=0
+    XCALW_REP=1
+      ENDIF
+    ELSE
+      XSCANO= SCANO
+      XCARNO= CARNO
+      XRATNO= RATNO
+      XVUSE= VUSE
+      XTANDO=TANDO
+      XCALW_REP=1
+    ENDIF
+  ELSE
+    XSCANO=ASCANO
+    XCARNO=ACARNO
+    XRATNO=ARATNO
+    XVUSE=AVUSE
+    XTANDO=ATANDO
+    XCALW_REP=ACALW_REP
+  ENDIF
+  XPOSITION=APOSITION
+  SetColor( "&C1 / &C7 +" )
+  DevPos( SCRNO, 9 ) ; DevOutPict( xSCANO, "999999999" )
+  DevPos( SCRNO, 24 ) ; DevOutPict( XCARNO, "XXXXXXX" )
+  DevPos( SCRNO, 37 ) ; DevOutPict( XRATNO, "XXXXXXXXX" )
+  DevPos( SCRNO, 52 ) ; DevOutPict( XVUSE, "99.9" )
+  DevPos( SCRNO, 61 ) ; DevOutPict( XTANDO, "9999" )
+  IF WASTE=1
+    DevPos( SCRNO, 71 ) ; DevOut( XPOSITION )
+  ELSE
+    DevPos( SCRNO, 75 ) ; DevOutPict( XCALW_REP, "99" )
+  ENDIF
+  SetColor( "&C7 +/ &C1" )
+  CHRN=SUBSTR(XSCANO,-9,9)
+  ph_xn=9
+  XP=0
+  FGETNO=1
+  Y1=SCRNO
+  YY1=Y1
+  GETNO=1
+  while GETNO<=6
+    t=0
+
+    SetColor( "&c1  /&c7 +" )
+    DevPos( y1, ph_xn ) ; DevOut( chrn )
+    SetColor( "gr + * /bl" )
+    DevPos( y1, ph_xn ) ; DevOut( substr(chrn,XP+1,1) )
+    SetColor( "&c7 + /&c1" )
+    ph_XX1=ph_xn+XP
+    YY1=Y1
+    T1=0
+    TN1=0
+    while T1<>233
+      T=0
+      LURECNO=RECNO()
+      while T=0
+    T=INKEY( )
+    DO DSP2
+    DO LUSTP
+      ENDDO
+      do  NPAH1_DSP1
+    ENDDO
+    do    NPAH1_DSP2
+  ENDDO
+  DO CASE
+  CASE    T=13
+    CASE  T=24
+      XP=0
+      dbRecall()
+      dbSkip(1)
+      IF EOF()
+        dbGoBottom()
+      ENDIF
+      dbDelete()
+    CASE T=5
+      dbRecall()
+      dbSkip( (-1) )
+      XP=0
+      IF  ! BOF()
+        dbGoTop()
+          dbDelete()
+        ELSE
+      ENDIF
+
+
+
+
+
+
+
+
+
+    ENDCASE
+    DevPos( SCRNO, 9 ) ; DevOut( ASCANO )
+
+    DevPos( SCRNO, 24 ) ; DevOutPict( ACARNO, "XXXXXXX" )
+    DevPos( SCRNO, 37 ) ; DevOutPict( ARATNO, "XXXXXXXXX" )
+    DevPos( SCRNO, 52 ) ; DevOutPict( AVUSE, "99.9" )
+    DevPos( SCRNO, 61 ) ; DevOutPict( ATANDO, "9999" )
+    IF  WASTE=1
+      DevPos( SCRNO, 71 ) ; DevOut( APOSITION )
+      ACALW_REP =1
+    ELSE
+      DevPos( SCRNO, 75 ) ; DevOutPict( ACALW_REP, "99" )
+    ENDIF
+ENDDO
+T=0
+
+PROCEDURE  NPAH1_DSP2
+PARAMETERS  P1,P2,P3
+SetColor( "&C7 +/ &C1" )
+SetColor( "&C1 / &C7 +" )
+    SetColor( "&C1 / &C7 +" )
+    DO CASE
+    CASE GETNO=1
+      XSCANO=CHRN
+      DevPos( SCRNO, 9 ) ; DevOut( XSCANO )
+    CASE GETNO=2
+      XCARNO=UPPER(CHRN)
+      DevPos( SCRNO, 24 ) ; DevOutPict( XCARNO, "XXXXXXX" )
+    CASE GETNO=3
+      XRATNO=ALLTRIM(UPPER(CHRN))
+      XN2=LEN(XRATNO)
+      IF (XN2<9)
+     XRATNO =XRATNO +SUBSTR("         ",1,9-XN2)
+      ENDIF
+      DevPos( SCRNO, 37 ) ; DevOutPict( XRATNO, "XXXXXXXXX" )
+    CASE GETNO=4
+      Set( 3, 1 )
+      XVUSE=VAL(CHRN)
+      IF XVUSE>15
+    XVUSE=0
+    FGETNO=4
+      ENDIF
+      DevPos( SCRNO, 52 ) ; DevOutPict( XVUSE, "99.9" )
+    CASE GETNO=5
+      XTANDO=INT(VAL(CHRN))
+      DevPos( SCRNO, 61 ) ; DevOutPict( XTANDO, "9999" )
+    CASE GETNO=6
+      Set( 3, 0 )
+      IF WASTE=1
+    XPOSITION =upper(CHRN)
+    DevPos( SCRNO, 71 ) ; DevOut( XPOSITION )
+      ELSE
+    XCALW_REP=VAL(CHRN)
+    DevPos( SCRNO, 75 ) ; DevOutPict( XCALW_REP, "99" )
+      ENDIF
+    ENDCASE
+
+    SetColor( "&C7 +/ &C1" )
+    DO CASE
+    CASE FGETNO=1
+      CHRN=SUBSTR(XSCANO,-9,9)
+      ph_xn=9
+      XP=0
+      FGETNO=0
+      GETNO=1
+    CASE FGETNO=2
+
+      GETNO=2
+      CHRN=XCARNO
+      ph_xn=24
+      XP=0
+      FGETNO=0
+    CASE FGETNO=3
+      GETNO=3
+      CHRN=SUBSTR(XRATNO,1,9)
+      ph_xn=37
+      XP=0
+      FGETNO=0
+    CASE FGETNO=4
+      GETNO=4
+      CHRN=STR(XVUSE,4,1)
+      ph_xn=52
+      XP=0
+      FGETNO=0
+    CASE FGETNO=5
+      GETNO=5
+      CHRN=STR(XTANDO,4)
+      ph_xn=61
+      XP=0
+      FGETNO=0
+    CASE FGETNO=6
+      GETNO=6
+      IF  WASTE=1
+    CHRN=XPOSITION
+    ph_xn=71
+      ELSE
+    CHRN=STR(XCALW_REP,2,0)
+    ph_xn=75
+      ENDIF
+      XP=0
+      FGETNO=0
+    CASE FGETNO=7
+      ASCANO =    XSCANO
+      ACARNO =    XCARNO
+      ARATNO =    XRATNO
+      AVUSE =    XVUSE
+      ATANDO=XTANDO
+      IF  WASTE=1
+     APOSITION=XPOSITION
+      ELSE
+    ACALW_REP=XCALW_REP
+      ENDIF
+      FGETNO=0
+      GETNO=7
+      DevPos( SCRNO, 9 ) ; DevOut( ASCANO )
+      DevPos( SCRNO, 24 ) ; DevOutPict( ACARNO, "XXXXXXX" )
+      DevPos( SCRNO, 37 ) ; DevOutPict( ARATNO, "XXXXXXXXX" )
+      DevPos( SCRNO, 52 ) ; DevOutPict( AVUSE, "99.9" )
+      DevPos( SCRNO, 61 ) ; DevOutPict( ATANDO, "9999" )
+      F3_N=0
+      F3_RUN=0
+      IF  WASTE=1
+    DevPos( SCRNO, 71 ) ; DevOut( APOSITION )
+      ELSE
+    DevPos( SCRNO, 75 ) ; DevOutPict( ACALW_REP, "99" )
+      ENDIF
+      IF T=13
+    T=23
+    T2=0
+      ENDIF
+    ENDCASE
+IF   GETNO<=6
+  t=0
+  SetColor( "&c1  /&c7 +" )
+  DevPos( y1, ph_xn ) ; DevOut( chrn )
+  SetColor( "gr + * /bl" )
+  DevPos( y1, ph_xn ) ; DevOut( substr(chrn,XP+1,1) )
+  SetColor( "&c7 + /&c1" )
+  ph_XX1=ph_xn+XP
+  YY1=Y1
+  T1=0
+  TN1=0
+  T=0
+ENDIF
+T1=0
+retu
+
+PROCEDURE  NPAH1_DSP1
+PARAMETERS  P1,P2,P3
+if t<>0
+      dbSelectArea( LUDBF )
+      dbGoto(LURECNO)
+      DO CASE
+      case  T=19
+    IF XP>=1
+      XP=XP-1
+
+
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      ph_XX1=ph_xn+XP
+      YY1=Y1
+    ENDIF
+      CASE  T=4
+    d_long=len(chrn)
+
+
+
+
+
+
+
+
+
+    IF XP<=D_LONG-2
+      XP=XP+1
+
+
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      ph_XX1=ph_xn+XP
+      YY1=Y1
+    ENDIF
+      CASE   (t>=45  .AND. T<=90 )  .OR. (T=32 )  .OR. (T>=97  .AND. T<=122 .AND. datatype[GETNO]="X")
+    XP=XP+1
+    d_long=len(chrn)
+    IF TN1=0 .AND. XP=1
+      TN1=1
+
+      CHRN=space(d_long)
+    ENDIF
+    IF XP<D_LONG
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,D_LONG-XP)
+      SetColor( "&C1 / &C7 +" )
+      DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+      SetColor( "&C7 +/ &C1" )
+
+
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      ph_XX1=ph_xn+XP
+      YY1=Y1
+    ELSE
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+      SetColor( "0/7" )
+      SetColor( "&C1 / &C7 +" )
+      DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+      SetColor( "&C7 +/ &C1" )
+
+      XP=d_long -1
+      ph_XX1=ph_xn+XP
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      YY1=Y1
+    ENDIF
+      CASE   T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+    XP=XP+1
+    d_long=len(chrn)
+    IF TN1=0 .AND. XP=1
+      TN1=1
+      CHRN=space(d_long)
+      IF GETNO=6
+        IF WASTE <>1
+          CHRN="1 "
+        ENDIF
+      ENDIF
+    ENDIF
+
+
+
+
+
+
+
+
+    IF XP<D_LONG
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,D_LONG-XP)
+      SetColor( "&C1 / &C7 +" )
+      DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+      SetColor( "&C7 +/ &C1" )
+
+
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      ph_XX1=ph_xn+XP
+      YY1=Y1
+    ELSE
+      CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+      SetColor( "&C1 / &C7 +" )
+      DevPos( SCRNO, ph_xn ) ; DevOut( CHRN )
+      SetColor( "&C7 +/ &C1" )
+      XP=XP-1
+
+      SetColor( "&c1  /&c7 +" )
+      DevPos( y1, ph_xn ) ; DevOut( chrn )
+      SetColor( "gr + * /bl" )
+      DevPos( y1, ph_xn+xp ) ; DevOut( substr(chrn,xp+1,1) )
+      SetColor( "&c7 + /&c1" )
+      XP=3
+      ph_XX1=ph_xn+XP
+      YY1=Y1
+      if getno=6
+        IF WASTE <>1
+          XP=1
+        ENDIF
+      endif
+    ENDIF
+      CASE T=13
+    FGETNO=GETNO+1
+    T1=233
+      CASE T=5
+    IF GETNO>1
+      FGETNO=GETNO-1
+      T1=233
+    ELSE
+      FGETNO=7
+      T1=233
+    ENDIF
+      CASE T=27
+    t=0
+    SCRMA=savescreen(15,0,22,39)
+    Scroll( 15, 11, 22, 39 ) ; SetPos( 15, 11 )
+    DevPos( 15, 13 ) ; DevOut( "   << 按任一鍵繼續 >>" )
+    DevPos( 16, 13 ) ; DevOut( "1. " +  LAGcno1 )
+    DevPos( 17, 13 ) ; DevOut( "2. " +  LAGcno2 )
+    DevPos( 18, 13 ) ; DevOut( "3. " +  LAGcno3 )
+    DevPos( 19, 13 ) ; DevOut( "4. " +  LAGcno4 )
+    DevPos( 20, 13 ) ; DevOut( "5. " +  LAGcno5 )
+    while T=0
+      T=INKEY( )
+      DO DSP2
+      DO LUSTP
+    ENDDO
+    t=0
+    restscreen(15,0,22,39,scrma)
+
+
+      CASE T=23
+    T1=233
+    T2=0
+    FGETNO=7
+      CASE T=24
+    T1=233
+    FGETNO=7
+      ENDCASE
+endif
+retu
+
+
+PROCEDURE  h_NPAH1_DSP1
+PARAMETERS  P1,P2,P3

@@ -1,0 +1,600 @@
+SELEC 2
+LUDBF="2"
+SET CURS OFF
+SET Cons Off
+GOTO TOP
+XX1=6
+SCRCC=1
+YY1=21
+DO WHILE .NOT. EOF()
+IF RATNO=0
+ DELE
+ENDIF
+SKIP
+ENDDO
+PACK
+* INDEX ON RATNO TO RATNODX
+appe blank
+@ 20,2 CLEA TO	22,77
+@ 24,2 CLEA TO	24,77
+SCRNO=21
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+      SET COLOR TO  &C5 +/ &C1
+ @ 20,0 SAY "∥ＮＯ. 石１　 石２    砂１   砂２   總重   水   水泥１  水泥２  水泥３  藥劑 ∥"
+      SET COLOR TO &C6 / &C1
+  @ 24,0 SAY "∥<<配比輸入>> F1-全畫面編輯  Esc-恢復原值    Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥"
+      SET COLOR TO  gr +/ &C1
+	@ 24,4	SAY "配比輸入"
+	@ 24,15 SAY "F1"
+	@ 24,30 SAY "Esc"
+	@ 24,46 SAY "Ctl-End"
+	@ 24,59 SAY "↑"
+	@ 24,68 SAY "↓"
+  SET COLOR TO &C7 +/ &C1
+
+ GOTO BOTT
+SKIP (-1)
+@ SCRNO,2   SAY RATNO	 PICT "9999"
+@ SCRNO,8   SAY ST1	 PICT "9999"
+@ SCRNO,16  SAY ST2	 PICT "9999"
+@ SCRNO,23  SAY SAD1	 PICT "9999"
+@ SCRNO,30  SAY SAD2	 PICT "9999"
+      SET COLOR TO  gr +/ &C1
+@ SCRNO,36  SAY (ST1+ST2+SAD1+SAD2+WA+CO1+CO2+co3+ME)	  PICT "9999.9"
+  SET COLOR TO &C7 +/ &C1
+@ SCRNO,44  SAY WA	 PICT "9999"
+@ SCRNO,51  SAY CO1	 PICT "9999"
+@ SCRNO,58  SAY CO2	 PICT "9999"
+@ SCRNO,66  SAY CO3	 PICT "9999"
+@ SCRNO,74  SAY ME	 PICT "99.9"
+SKIP
+T2=1
+IF EOF()
+APPE BLANK
+ENDIF
+SCRNO=SCRNO+1
+Y1=SCRNO
+IF SCRNO >END_Y
+SCRNO = END_Y
+SET Cons Off
+SCROLL(STAR_Y,STAR_X,END_Y,END_X,1)
+ENDIF
+DO WHILE  T2<>0
+XRATNO=RATNO
+XSAD1=SAD1
+XSAD2=SAD2
+XST1=ST1
+XST2=ST2
+XWA=WA
+XCO1=CO1
+XCO2=CO2
+XCO3=CO3
+XME=ME
+  SET COLOR TO &C1 / &C7 +
+@ SCRNO,2   SAY XRATNO	  PICT "9999"
+@ SCRNO,8   SAY XST1	  PICT "9999"
+@ SCRNO,16  SAY XST2	  PICT "9999"
+@ SCRNO,23  SAY XSAD1	  PICT "9999"
+@ SCRNO,30  SAY XSAD2	  PICT "9999"
+      SET COLOR TO  gr +/ &C1
+@ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	   PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+@ SCRNO,44  SAY XWA	  PICT "9999"
+@ SCRNO,51  SAY XCO1	  PICT "9999"
+@ SCRNO,58  SAY XCO2	  PICT "9999"
+@ SCRNO,66  SAY XCO3	  PICT "9999"
+@ SCRNO,74  SAY XME	  PICT "99.9"
+  SET COLOR TO &C7 +/ &C1
+     CHRN=STR(XRATNO,4)
+     X1=2
+     XP=0
+     FGETNO=1
+       Y1=SCRNO
+       YY1=Y1
+       GETNO=1
+   DO WHILE   GETNO<=10
+       t=0
+       *CURSER2(X1,Y1,XP)
+       set colo to &c1	/&c7 +
+       @ y1,x1 say  chrn
+       set colo to gr + * /bl
+       @ y1,x1 say  substr(chrn,1,1)
+	 set colo to &c7 + /&c1
+       SET Cons Off
+       XX1=X1+XP
+       YY1=Y1
+       T1=0
+       TN1=0
+       DO WHILE T1<>233
+       T=0
+       LURECNO=RECNO()
+       DO WHILE  T=0
+       T=INKEY( )
+       IF SCRCC=1
+       DO DSP2
+       ENDIF
+       DO LUSTP
+       ENDDO
+       sele &ludbf
+       goto lurecno
+       DO CASE
+       case  T=19
+	 IF XP>=1
+	   XP=XP-1
+	   *CURSER0(XX1,YY1)
+	   *CURSER2(X1,Y1,XP)
+	   SET Cons Off
+	   XX1=X1+XP
+	   set colo to &c1  /&c7 +
+	   @ y1,x1 say	chrn
+	   set colo to gr + * /bl
+	   @ y1,x1+xp say  substr(chrn,xp+1,1)
+	 set colo to &c7 + /&c1
+	   YY1=Y1
+	 ENDIF
+       CASE  T=4
+	 IF XP<=2
+	   XP=XP+1
+	   *CURSER0(XX1,YY1)
+	   *CURSER2(X1,Y1,XP)
+	   SET Cons Off
+	   set colo to &c1  /&c7 +
+	   @ y1,x1 say	chrn
+	   set colo to gr + * / bl
+	   @ y1,x1+xp say  substr(chrn,xp+1,1)
+	 set colo to &c7 + /&c1
+	   XX1=X1+XP
+	   YY1=Y1
+	 ENDIF
+       CASE   T=46 .OR.T=32 .OR. T=48 .OR.T=49 .OR.T=50 .OR.T=51 .OR.T=52 .OR.T=53 .OR.T=54 .OR.T=55 .OR.T=56 .OR.T=57
+	 XP=XP+1
+	 IF TN1=0 .AND. XP=1
+	   TN1=1
+	   CHRN="    "
+	 ENDIF
+	 IF XP<4
+	   CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)+SUBSTR(CHRN,XP+1,4-XP)
+	   SET COLOR TO &C1 / &C7 +
+	   @ SCRNO,X1  SAY CHRN
+	   SET COLOR TO &C7 +/ &C1
+	   *CURSER0(XX1,YY1)
+	   *CURSER2(X1,Y1,XP)
+	   set colo to gr + * /bl
+	   @ y1,x1+xp	say  substr(chrn,xp+1,1)
+	   set colo to &c7 + /&c1
+	   SET Cons Off
+	   XX1=X1+XP
+	   YY1=Y1
+	 ELSE
+	   CHRN=SUBSTR(CHRN,1,XP-1)+CHR(T)
+	   SET COLOR TO &C1 / &C7 +
+	   @ SCRNO,X1  SAY CHRN
+	   SET COLOR TO &C7 +/ &C1
+	   XP=XP-1
+	   *CURSER2(X1,Y1,XP)
+	   set colo to gr + * /bl
+	   @ y1,x1+xp say  substr(chrn,xp+1,1)
+	   set colo to &c7 + /&c1
+	   SET Cons Off
+	   XP=2
+	   XX1=X1+XP
+	   YY1=Y1
+	 ENDIF
+       CASE T=13
+	 FGETNO=GETNO+1
+	 T1=233
+       CASE T=5
+	 IF GETNO>1
+	   FGETNO=GETNO-1
+	   T1=233
+	 ELSE
+	   FGETNO=11
+	   T1=233
+	 ENDIF
+       CASE T=27
+	 T1=233
+	 GETNO=11
+       CASE T=23
+	 T1=233
+	 T2=0
+	 FGETNO=11
+       CASE T=27
+	 T1=233
+       CASE T=24
+	 T1=233
+	 FGETNO=11
+       case T=3 .AND. SCRCC=0
+	 T1=233
+	 FGETNO=11
+       case T=18 .AND. SCRCC=0
+	 T1=233
+	 FGETNO=11
+       CASE T=28  .AND. STAR=0
+	 IF SCRCC=1
+	   SAVE SCREE TO SCRRA1
+	   @ 1,0 CLEA TO 22,79
+	   SET COLOR TO  &C5 +/ &C1
+	   @ 0,0 SAY "∥ＮＯ. 石１　 石２    砂１   砂２   總重   水   水泥１  水泥２  水泥３  藥劑 ∥"
+	   SET COLO   TO &C7 +/ &C1
+	   XX1=RECNO()
+	   SKIP -10
+	   SCRNO=1
+	   XX=1
+	      DO WHILE (SCRNO <= END_Y ) .AND.	(.NOT.	EOF() )
+		SET COLOR TO &C7 +/ &C1
+		@ SCRNO,2   SAY RATNO	 PICT "9999"
+		@ SCRNO,8   SAY ST1	 PICT "9999"
+		@ SCRNO,16  SAY ST2	 PICT "9999"
+		@ SCRNO,23  SAY SAD1	 PICT "9999"
+		@ SCRNO,30  SAY SAD2	 PICT "9999"
+		SET COLOR TO  gr +/ &C1
+		@ SCRNO,36  SAY (ST1+ST2+SAD1+SAD2+WA+CO1+CO2+Co3+ME)	  PICT "9999.9"
+		SET COLOR TO &C7 +/ &C1
+		@ SCRNO,44  SAY WA	 PICT "9999"
+		@ SCRNO,51  SAY CO1	 PICT "9999"
+		@ SCRNO,58  SAY CO2	 PICT "9999"
+		@ SCRNO,66  SAY CO3	 PICT "9999"
+		@ SCRNO,74  SAY ME	 PICT "99.9"
+		IF  XX1=RECNO()
+		  XX=SCRNO
+		ENDIF
+		SKIP
+		SCRNO=SCRNO+1
+	      ENDDO
+	      SCRNO=XX
+	      GOTO XX1
+	      SET COLOR TO &C1 / &C7 +
+	      @ SCRNO,2   SAY XRATNO	PICT "9999"
+	      @ SCRNO,8   SAY XST1	PICT "9999"
+	      @ SCRNO,16  SAY XST2	PICT "9999"
+	      @ SCRNO,23  SAY XSAD1	PICT "9999"
+	      @ SCRNO,30  SAY XSAD2	PICT "9999"
+	      SET COLOR TO  gr +/ &C1
+	      @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	 PICT "9999.9"
+	      SET COLOR TO &C1 / &C7 +
+	      @ SCRNO,44  SAY XWA	PICT "9999"
+	      @ SCRNO,51  SAY XCO1	PICT "9999"
+	      @ SCRNO,58  SAY XCO2	PICT "9999"
+	      @ SCRNO,66  SAY XCO3	PICT "9999"
+	      @ SCRNO,74  SAY XME	PICT "99.9"
+	      SET COLOR TO &C6 / &C1
+	      @ 24,0 SAY "∥<<配比輸入>> F1-全畫面編輯  Esc-恢復原值    Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥"
+	      SET COLOR TO  gr +/ &C1
+	      @ 24,4  SAY "配比輸入"
+	      @ 24,15 SAY "F1"
+	      @ 24,30 SAY "Esc"
+	      @ 24,46 SAY "Ctl-End"
+	      @ 24,59 SAY "↑"
+	      @ 24,68 SAY "↓"
+	      SET COLOR TO &C7 +/ &C1
+	      SCRCC=0
+	      STAR_X=2
+	      STAR_Y=1
+	      END_X=77
+	      END_Y=22
+	      T1=233
+	      GETNO=11
+	      y1=scrno
+	      x1=2
+	    ELSE
+	      SCRCC=1
+	      SCRNO=21
+	      Y1=SCRNO
+	      STAR_X=2
+	      STAR_Y=21
+	      END_X=77
+	      END_Y=22
+	      REST SCRE FROM SCRRA1
+	      DO DSPREDRAW
+	      SET COLOR TO &C6 / &C1
+	      @ 22,0 SAY "∥                                                                            ∥"
+	      @ 24,0 SAY "∥<<配比輸入>> F1-全畫面編輯  Esc-恢復原值    Ctl-End 結束 ↑上一筆 ↓ 下一筆 ∥"
+	      SET COLOR TO  gr +/ &C1
+	      @ 24,4  SAY "配比輸入"
+	      @ 24,15 SAY "F1"
+	      @ 24,30 SAY "Esc"
+	      @ 24,46 SAY "Ctl-End"
+	      @ 24,59 SAY "↑"
+	      @ 24,68 SAY "↓"
+	      SET COLOR TO &C7 +/ &C1
+	      SCRNO=21
+	      Y1=SCRNO
+	      SET COLOR TO &C1 / &C7 +
+	      @ SCRNO,2   SAY XRATNO	PICT "9999"
+	      @ SCRNO,8   SAY XST1	PICT "9999"
+	      @ SCRNO,16  SAY XST2	PICT "9999"
+	      @ SCRNO,23  SAY XSAD1	PICT "9999"
+	      @ SCRNO,30  SAY XSAD2	PICT "9999"
+	      SET COLOR TO  gr +/ &C1
+	      @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	 PICT "9999.9"
+	      SET COLOR TO &C1 / &C7 +
+	      @ SCRNO,44  SAY XWA	PICT "9999"
+	      @ SCRNO,51  SAY XCO1	PICT "9999"
+	      @ SCRNO,58  SAY XCO2	PICT "9999"
+	      @ SCRNO,66  SAY XCO3	PICT "9999"
+	      @ SCRNO,74  SAY XME	PICT "99.9"
+	      SET COLOR TO &C7 +/ &C1
+	      T1=233
+	      GETNO=11
+	    ENDIF
+	  ENDCASE
+	ENDDO
+
+	      SET COLOR TO &C1 / &C7 +
+       DO CASE
+       CASE GETNO=1
+	    XRATNO=INT(VAL(CHRN))
+       @ SCRNO,2   SAY XRATNO	 PICT "9999"
+       CASE GETNO=2
+	    XST1=INT(VAL(CHRN))
+       @ SCRNO,8   SAY XST1	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=3
+	    XST2=INT(VAL(CHRN))
+       @ SCRNO,16  SAY XST2	 PICT "9999"
+	       SET COLOR TO  gr +/ &C1
+	 @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)     PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=4
+	    XSAD1=INT(VAL(CHRN))
+       @ SCRNO,23  SAY XSAD1	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=5
+	    XSAD2=INT(VAL(CHRN))
+       @ SCRNO,30  SAY XSAD2	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=6
+	    XWA=INT(VAL(CHRN))
+       @ SCRNO,44  SAY XWA	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=7
+	    XCO1=INT(VAL(CHRN))
+
+       @ SCRNO,51  SAY XCO1	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=8
+	    XCO2=INT(VAL(CHRN))
+       @ SCRNO,58  SAY XCO2	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=9
+	    XCO3=INT(VAL(CHRN))
+       @ SCRNO,66  SAY XCO3	 PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       CASE GETNO=10
+	    SET DECIM TO 1
+	     XME=(VAL(CHRN))
+	     IF XME>=100
+	       XME=0
+	       FGETNO=10
+	     ENDIF
+       @ SCRNO,74  SAY XME	 PICT "99.9"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (xST1+xST2+xSAD1+xSAD2+xWA+xCO1+xCO2+xco3+xME)	  PICT "9999.9"
+  SET COLOR TO &C1 / &C7 +
+       ENDCASE
+  SET COLOR TO &C7 +/ &C1
+       DO CASE
+	  CASE FGETNO=1
+	       CHRN=STR(XRATNO,4)
+	       X1=2
+	       XP=0
+	       FGETNO=0
+	       GETNO=1
+	  CASE FGETNO=2
+	       GETNO=2
+	       CHRN=STR(XST1,4)
+	       X1=8
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=3
+	       GETNO=3
+	       CHRN=STR(XST2,4)
+	       X1=16
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=4
+	       GETNO=4
+	       CHRN=STR(XSAD1,4)
+	       X1=23
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=5
+	       GETNO=5
+	       CHRN=STR(XSAD2,4)
+	       X1=30
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=6
+	       GETNO=6
+
+	       CHRN=STR(XWA,4)
+	       X1=44
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=7
+	       GETNO=7
+	       CHRN=STR(XCO1,4)
+	       X1=51
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=8
+	       GETNO=8
+	       CHRN=STR(XCO2,4)
+	       X1=58
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=9
+	       GETNO=9
+	       CHRN=STR(XCO3,4)
+	       X1=66
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=10
+	       GETNO=10
+	       CHRN=STR(XME,4,1)
+	       X1=74
+	       XP=0
+	       FGETNO=0
+	  CASE FGETNO=11
+	     REPL  CO3 WITH XCO3,RATNO	WITH XRATNO,SAD1 WITH XSAD1,SAD2 WITH XSAD2,ST1 WITH XST1,ST2 WITH XST2,WA WITH  XWA,CO1 WITH XCO1,CO2 WITH XCO2,ME WITH XME
+	       FGETNO=0
+	       GETNO=11
+	       @ SCRNO,2   SAY RATNO	PICT "9999"
+	       @ SCRNO,8   SAY ST1	PICT "9999"
+	       @ SCRNO,16  SAY ST2	PICT "9999"
+	       @ SCRNO,23  SAY SAD1	PICT "9999"
+	       @ SCRNO,30  SAY SAD2	PICT "9999"
+		     SET COLOR TO  gr +/ &C1
+	       @ SCRNO,36  SAY (ST1+ST2+SAD1+SAD2+WA+CO1+CO2+co3+ME)	 PICT "9999.9"
+		 SET COLOR TO &C7 +/ &C1
+	       @ SCRNO,44  SAY WA	PICT "9999"
+	       @ SCRNO,51  SAY CO1	PICT "9999"
+	       @ SCRNO,58  SAY CO2	PICT "9999"
+	       @ SCRNO,66  SAY CO3	PICT "9999"
+	       @ SCRNO,74  SAY ME	PICT "99.9"
+
+       ENDCASE
+
+       ENDDO
+       DO CASE
+       CASE  T=13 .OR. T=24
+	 XP=0
+	 SKIP
+	 IF EOF()
+	 APPE BLANK
+	 ENDIF
+	 SCRNO=SCRNO+1
+Y1=SCRNO
+	    IF SCRNO >END_Y
+	    SCRNO = END_Y
+       SET Cons Off
+	    SCROLL(STAR_Y,STAR_X,END_Y,END_X,1)
+	    ENDIF
+	 CASE T=3 .AND. SCRCC=0
+	   @ 1,0 CLEA TO 22,79
+	   scrno=1
+	   SKPN=22
+	   DO WHILE  .NOT. EOF() .AND. SKPN>0
+	     DO RATEN_DSP0
+	     SKIP
+	     SKPN=SKPN-1
+	     SCRNO=SCRNO +1
+	   ENDDO
+	   SCRNO=SCRNO -1
+	   SKIP -1
+       CASE T=5
+	   SKIP (-1)
+	   XP=0
+	   IF  .NOT. BOF()
+	   SCRNO=SCRNO-1
+Y1=SCRNO
+	   IF SCRNO<STAR_Y
+	     SET Cons Off
+	     SCROLL(STAR_Y,STAR_X,END_Y,END_X,-1)
+	     SCRNO=STAR_Y
+Y1=SCRNO
+	   ENDIF
+	   ENDIF
+       CASE T=18 .AND. SCRCC=0
+	 IF  RECNO() <>1
+	   scrno=1
+	   SKIP -20
+	   IF BOF()
+	     GOTO TOP
+	   ENDIF
+	   XX1=RECNO()
+	   @ 1,0 CLEA TO 22,79
+	   SKPN=22
+	   DO WHILE  .NOT. EOF() .AND. SKPN>0
+	     DO RATEN_DSP0
+	     SKIP
+	     SKPN=SKPN-1
+	     SCRNO=SCRNO +1
+	   ENDDO
+	   GOTO XX1
+	   SCRNO=1
+	 ENDIF
+       CASE T=23
+	   T=0
+	   if scrcc=0
+	   scrcc=1
+	   REST SCRE FROM SCRRA1
+	   DO DSPREDRAW
+	   endif
+	   DELE FOR  RATNO=0
+	   PACK
+	   dele FILE w2.dbf
+	   SORT  ON  RATNO   TO W2
+	   USE
+	   IF	ROM_N=1
+	     DELE FILE	C:\W1.DBF
+	     RENA  C:\W2.DBF TO   C:\W1.DBF
+	     USE  C:\W1
+	     TOTA ON RATNO   TO  W2
+	     USE
+	     DELE FILE	C:\W1.DBF
+	     RENA  C:\W2.DBF TO   C:\W1.DBF
+	   ELSE
+	     DELE FILE	W1.DBF
+	     RENA  W2.DBF TO   W1.DBF
+	     USE W1
+	     TOTA ON RATNO   TO  W2
+	     USE
+	     DELE FILE	W1.DBF
+	     RENA  W2.DBF TO   W1.DBF
+	   ENDIF
+	   USE W1
+	   RETU
+       ENDCASE
+       @ SCRNO,2   SAY RATNO	PICT "9999"
+       @ SCRNO,8   SAY ST1	PICT "9999"
+       @ SCRNO,16  SAY ST2	PICT "9999"
+       @ SCRNO,23  SAY SAD1	PICT "9999"
+       @ SCRNO,30  SAY SAD2	PICT "9999"
+	     SET COLOR TO  gr +/ &C1
+       @ SCRNO,36  SAY (ST1+ST2+SAD1+SAD2+WA+CO1+CO2+co3+ME)	 PICT "9999.9"
+	 SET COLOR TO &C7 +/ &C1
+       @ SCRNO,44  SAY WA	PICT "9999"
+       @ SCRNO,51  SAY CO1	PICT "9999"
+       @ SCRNO,58  SAY CO2	PICT "9999"
+       @ SCRNO,66  SAY CO3	PICT "9999"
+       @ SCRNO,74  SAY ME	PICT "99.9"
+     ENDDO
+     T=0
+&&-----------------------------------------------------------------------------
+PROCEDURE  RATEN_DSP0
+PARAMETERS  P1,P2,P3
+SET COLOR TO &C7 +/ &C1
+@ SCRNO,2   SAY RATNO	 PICT "9999"
+@ SCRNO,8   SAY ST1	 PICT "9999"
+@ SCRNO,16  SAY ST2	 PICT "9999"
+@ SCRNO,23  SAY SAD1	 PICT "9999"
+@ SCRNO,30  SAY SAD2	 PICT "9999"
+SET COLOR TO  gr +/ &C1
+@ SCRNO,36  SAY (ST1+ST2+SAD1+SAD2+WA+CO1+CO2+co3+ME)	  PICT "9999.9"
+SET COLOR TO &C7 +/ &C1
+@ SCRNO,44  SAY WA	 PICT "9999"
+@ SCRNO,51  SAY CO1	 PICT "9999"
+@ SCRNO,58  SAY CO2	 PICT "9999"
+@ SCRNO,66  SAY CO3	 PICT "9999"
+@ SCRNO,74  SAY ME	 PICT "99.9"
+RETU
+

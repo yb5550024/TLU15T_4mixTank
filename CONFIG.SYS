@@ -1,0 +1,12 @@
+DEVICE=C:\DOS\himem.sys
+dos=HIGH,UMB
+&&DEVICEHIGH =C:\DOS\EMM386.EXE    noems  i=CE00-EFFF
+&&DEVICEHIGH =C:\DOS\EMM386.EXE    noems  i=CE00-DFFf  m/b  normal
+&&DEVICEHIGH =C:\DOS\EMM386.EXE    noems  i=DC00-D3Ff
+DEVICEHIGH =C:\DOS\EMM386.EXE	 noems	i=CE00-EFFF
+BUFFERS=44,0
+fILES=45
+FCBS=4,0
+DEVICEHIGH =\DOS\RAMDRIVE.SYS 7048 /E
+&&shell   c:\command.com  c:\dos  /E:1024 /p
+

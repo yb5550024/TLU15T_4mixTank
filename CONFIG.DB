@@ -1,0 +1,7 @@
+STATUS = On
+BUCKET = 1
+GETS = 35
+HISTORY = 10
+tedit=c:\pe2\pe2
+TYPEAHEAD = 10
+

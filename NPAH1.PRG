@@ -1,0 +1,84 @@
+#INCLUDE "T15_COM.H"
+
+SELE 3
+set cons on
+SET DELE OFF
+RECALL	 ALL
+DO WHILE .NOT. EOF()
+  IF SCANO=0 .OR. VUSE=0
+      DELE
+    ENDIF
+  SKIP
+ENDDO
+PACK
+GOTO TOP
+DELE
+LUDBF="3"
+pn_XX1=9
+SCRCC=1
+YY1=23
+SCRNO=23
+Y1=SCRNO
+STAR_X=2
+STAR_Y=21
+END_X=77
+END_Y=22
+SET COLOR TO &C6 / &C1
+@ 24,0 SAY "∥ <<出車>>           Esc-取消訂單   Ctl-End 結束 ↑上一筆  ↑↑插單  ↓下一筆∥"
+SET COLOR TO  gr +/ &C1
+@ 24,5	SAY "出車"
+@ 24,22 SAY "Esc"
+@ 24,37 SAY "Ctl-End"
+@ 24,50 SAY "↑"
+@ 24,60 SAY "↑↑"
+@ 24,70 SAY "↓"
+public	XSCANO, XCARNO ,XRATNO,XVUSE,XCALW_REP,CHRN,XTANDO,XPOSITION
+XSCANO=ASCANO
+XCARNO=ACARNO
+XRATNO=ARATNO
+ARATNO=space(RATNO_WID)
+XVUSE=AVUSE
+AVUSE=0
+XTANDO=ATANDO
+XCALW_REP=ACALW_REP
+XPOSITION=space(9)
+IF   XCALW_REP=0
+  XCALW_REP=1
+ENDIF
+&&SET COLOR TO &C1 / &C7 +
+SET COLOR TO &C7 / &C1
+NPAH1_DSP0(SCRNO,XSCANO,XCARNO,XRATNO,XVUSE,XTANDO,XCALW_REP)
+
+GETNO=2
+do case
+case GETNO=1
+  FGETNO=1
+  CHRN=SUBSTR(XSCANO,-SCANO_LEN,SCANO_LEN)
+  ph_xn=PX_SCANO
+case GETNO=2
+  FGETNO=2
+  CHRN=XCARNO
+  ph_xn=PX_CARNO
+endcase
+
+
+SET COLOR TO &C7 +/ &C1
+XP=0
+Y1=SCRNO
+YY1=Y1
+LURECNO=RECNO()
+F3_N=1
+T1=0
+T2=0
+SET COLOR TO  &C1  /  &C7 +
+&&@ y1,ph_xn say  substr(xscano,-SCANO_LEN,SCANO_LEN)
+@ y1,ph_xn say	CHRN
+set colo to gr + * /bl
+&&@ y1,ph_xn  say  substr(xscano,-9,9)
+&&@ y1,ph_xn say  CHRN
+
+@ y1,ph_xn  say  substr(CHRN,1,1)
+set colo to &c7 + /&c1
+T=INKEY()
+&&-----------------------------------------------------------------------------
+

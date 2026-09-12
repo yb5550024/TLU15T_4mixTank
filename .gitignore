@@ -1,0 +1,29 @@
+# Build outputs
+*.obj
+*.map
+*.lst
+*.tmp
+
+# Runtime lock files
+*.lck
+
+Visual Basic/
+Visual Basic/
+Visual Basic2022/
+
+# Release folder (keep folder, ignore contents)
+release/*
+!release/.keep
+
+# Logs
+logs/*
+!logs/.keep
+Docs/
+
+# VS Code
+.vscode/
+
+# Build folders
+_User/
+_AI/
+

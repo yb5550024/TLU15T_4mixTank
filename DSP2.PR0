@@ -1,0 +1,758 @@
+sET COLO TO &C7 +/ &C1
+x=s_bcc("12")
+IF INFUNC =1
+  T0A=INKEY()
+  IF T0A <> 0
+    RETU
+  ENDIF
+ENDIF
+if ERROR_LINK=0
+
+  C_BUFF=SPACE(20)
+  N=SIO_READ(0,C_BUFF)
+  IF  N >0
+    *C_READ=C_READ+SUBSTR(C_BUFF,1,N)
+    *@ 20,0  SAY C_READ
+    ??	SUBSTR(C_BUFF,1,N)
+    IF	LEN(C_READ) > 70
+      C_READ=""
+    ENDIF
+  ENDIF
+ENDIF
+FOR  X=13 TO 12
+  MTANK_MARK(6,X,1)
+  CTANK_MARK(11,X,1)
+  INKEY(1)
+  MTANK_MARK(6,X,0)
+  CTANK_MARK(11,X,0)
+  INKEY(1)
+NEXT
+@ 0,71 SAY  TIME()
+IF DO0_DSP=1
+  FOR  x=1  TO (GS_TOT+UWC_TOT)
+    @ 1,A_M_NAME[x,2]  SAY  rd_do1(x-1)  pict  "9"
+    DO0_DSPF=1
+  NEXT
+  FOR  x=1  TO (KLCHN+KUCHN)
+    @ 12,(A_M_NAME[x,20]/8)  SAY  rd_do2(x-1)  pict  "9"
+    DO0_DSPF=1
+  NEXT
+  @ 14,UPTANK[5,1]    SAY   rd_do1(14)	pict  "9"
+  @ 19,58    SAY   rd_do1(15)  pict  "9"
+  @ 19,62    SAY   "Bee"
+  @ 19,66    SAY   rd_do1(12)  pict  "9"
+
+ELSEIF DO0_DSPF=1
+ @ 1,0 CLEA  TO 1,79
+  DO0_DSPF=0
+ENDIF
+IF  STAR=0 .AND. DOSIGN=1 .AND. DIN(15)=1
+  @ 1,0 SAY "      "
+  DOSIGN=0
+  SETMEM(HEXTODEC("284"),INT(PDROP1*INTNO))
+  SETMEM(HEXTODEC("286"),INT(PDRCL*INTNO))
+  SETMEM(HEXTODEC("288"),INT(PDROP2*INTNO))
+  SETMEM(HEXTODEC("28A"),INT(PMIXTM*INTNO))
+  SETMEM(HEXTODEC("28C"),INT(PMIXA*2048/POVKG9)+2048)
+  SETMEM(HEXTODEC("28E"),INT(PMIXOP*INTNO))
+ENDIF
+IF  STAR=0
+  if spacial=1
+    if spacial_0 <>  din(7)
+       spacial_0 =  din(7)
+       DO   DSP_SPACIAL
+    endif
+  endif
+endif
+IF STAR=1
+  DO CASE
+  CASE	 DOSIGN=1 .AND.   DIN(15)=1
+    DOSIGN=0
+    RESTOUT()
+    OFF_LONG=ABS(SECONDS()-OFF_TIME)
+    MIXSTM=MIXSTM + OFF_LONG
+    @ 1,0 SAY "      "
+    IF (KOT=0  ) .AND. (UPTKSTP=3)
+      SET COLOR TO W/ &C1
+      @  3,UPTANK[5,1]-6  SAY "┌┬──┐"
+      @  4,UPTANK[5,1]-6  SAY "││    │"
+      @  5,UPTANK[5,1]-6  SAY "│├──┘"
+      @  6,UPTANK[5,1]-6  SAY "�U�V"
+      @  7,UPTANK[5,1]-6  SAY "││"
+      @  8,UPTANK[5,1]-6  SAY "││"
+      @  9,UPTANK[5,1]-6  SAY "││"
+      @ 10,UPTANK[5,1]-6  SAY "││"
+      @ 11,UPTANK[5,1]-6  SAY "�U�V"
+      @ 12,UPTANK[5,1]-6  SAY "││"
+      @ 13,UPTANK[5,1]-6  SAY "    "
+      @ 13,UPTANK[5,1]-38  SAY "┌──�R───────�R────┼┤"
+      @ 14,UPTANK[5,1]-38  SAY "└──�Q───────�Q────┴┘"
+      SET COLOR TO &C2 / &C1
+    ENDIF
+
+    DO CASE
+    CASE  TANKSTP=2
+      *dout(8,1)
+      xx=ABS(INT((PDROP1-abs(SECONDS() -MIXSTM)) *INTNO))
+      SETMEM(HEXTODEC("284"),xx)
+      SETMEM(HEXTODEC("286"),INT(PDRCL*INTNO))
+      SETMEM(HEXTODEC("288"),INT(PDROP2*INTNO))
+      SETMEM(HEXTODEC("28A"),ABS(INT((PMIXTM-abs((SECONDS() -MIXSTM)) )*INTNO)))
+      SETMIX()
+      setdrop()
+    CASE  TANKSTP=4  .or. TANKSTP=3
+      *dout(8,1)
+      SETMEM(HEXTODEC("284"),0)
+      SETMEM(HEXTODEC("286"),0)
+      XX=ABS(INT((PDROP1+PDRCL+PDROP2-abs((SECONDS() -MIXSTM)) )*INTNO))
+      SETMEM(HEXTODEC("288"),XX)
+      XX=ABS(INT((PMIXTM-abs((SECONDS() -MIXSTM)) )*INTNO))
+      SETMEM(HEXTODEC("28A"),XX)
+      SETMIX()
+      setdrop()
+    ENDCASE
+  CASE	 DOSIGN=0  .AND.     DIN(15)=0
+    DOSIGN=1
+    WAITOUT()
+    SETMEM(HEXTODEC("284"),0)
+    SETMEM(HEXTODEC("286"),0)
+    SETMEM(HEXTODEC("288"),0)
+    OFF_TIME=SECONDS()
+    *SET COLOR TO &C5* +/ &C1
+    SET COLO TO R+ /&C1
+    @ 1,0 SAY " Wait "
+    SET COLOR TO &C2 +/ &C1
+  ENDCASE
+ELSEIF X_MONI=77
+  DO MONI
+ENDIF
+if ABS(seconds()-dsptime) >0.3
+  dsptime=seconds()
+  DO CASE
+  CASE	LCHTYPE=2
+    IF STAR=1
+      IF     ISDEMO=1	.and. dosign=0
+	DO DEMO_INP
+      ENDIF
+      IF W0DBF=1 .AND. DSPD_NOR=0
+	FOR I=1 TO GS_TOT
+	  IC_X=ALLTRIM(STR(I,2,0))
+	  IF (STP&IC_X >=1)  .OR. (I=4 .AND. STP5 >0)
+	    IF	A_PRESS_N0[2,1,I,1]>0
+	      A_M_NAME[I,10]=A_M_NAME[I,9] * A_PRESS_N0[2,STPN&IC_X,I,8]/A_PRESS_N0[2,STPN&IC_X,I,1]
+	    ENDIF
+	  ELSE
+	    A_M_NAME[I,10]=A_M_NAME[I,9]
+	  ENDIF
+	NEXT
+      ENDIF
+
+      DD1=INT((CHENDATA(0))*A_M_NAME[1,10]/PER/2048)
+      DD2=INT((CHENDATA(1))*A_M_NAME[2,10]/PER/2048)
+      DD3=INT((CHENDATA(2))*A_M_NAME[3,10]/PER/2048)-disc2_s3
+      DD4=INT((CHENDATA(3))*A_M_NAME[4,10]/PER/2048)
+      DD5=INT((CHENDATA(4))*A_M_NAME[5,10]/PER/2048)
+      @ 8,A_M_NAME[1,13]  SAY	 DD1   PICT "9999"
+      @ 8,A_M_NAME[2,13]  SAY	DD2   PICT "9999"
+      @ 8,A_M_NAME[3,13]  SAY	DD3   PICT "9999"
+      @ 8,A_M_NAME[4,13]  SAY	DD4   PICT "9999"
+      @ 8,A_M_NAME[5,13]  SAY	DD5   PICT "9999"
+      IF W0DBF=1  .AND. DSPD_NOR=0
+	FOR I=1 TO KLCHN
+	  IC_X=ALLTRIM(STR(I,2,0))
+	  IF (STP&IC_X >=1)
+	    IF	A_PRESS_N0[2,1,I,8]>0
+	      A_M_NAME[I,12]=A_M_NAME[I,6] * A_PRESS_N0[2,STPN&IC_X,I,8]/A_PRESS_N0[2,STPN&IC_X,I,1]
+	    ENDIF
+	  ENDIF
+	NEXT
+      ENDIF
+      A_M_NAME[4,12]=A_M_NAME[4,10]
+      IF  W0DBF=1
+	FOR I=	1  to GS_TOT
+	  *IC_X=ALLTRIM(STR(I,2,0))
+	  *IF (STP&IC_X >=1)
+	    A_M_NAME[I,10]=A_M_NAME[I,9]
+	  *ENDIF
+	NEXT
+      ENDIF
+    ENDIF
+    @ 10,A_M_NAME[1,16] SAY INT((WDATA(0)-2048)*A_M_NAME[1,12]/PER/2048)   PICT "9999"
+    @ 10,A_M_NAME[2,16]  SAY INT((WDATA(1)-2048)*A_M_NAME[2,12]/PER/2048)   PICT "9999"
+    @ 10,A_M_NAME[3,16]  SAY INT((WDATA(2)-2048)*A_M_NAME[3,12]/PER/2048)   PICT "9999"
+    IF	(DSPD_NOR=0) .AND. ((STP4>=1 .AND. STP4<=3) .OR. (STP5>=1 .AND. STP5<=6))
+      DD5_MY=INT((WDATA(3)-CHENDATA(3)-CHENDATA(4)-2048)*A_M_NAME[4,12]/PER/2048)
+      @ 10,A_M_NAME[4,16]  SAY INT(DD4 +DD5 +DD5_MY)   PICT "9999"
+    ELSE
+      @ 10,A_M_NAME[4,16]  SAY INT((WDATA(3)-2048)*A_M_NAME[4,12]/PER/2048)   PICT "9999"
+    ENDIF
+    IF W0DBF=1
+      FOR I=1 TO KLCHN
+	*IC_X=ALLTRIM(STR(I,2,0))
+	*IF (STP&IC_X >=1)
+	*  IF  A_PRESS_N0[2,1,I,8]>0
+	    A_M_NAME[I,12]=A_M_NAME[I,6]
+	*  ENDIF
+	*ENDIF
+      NEXT
+    ENDIF
+  CASE	 LCHTYPE=32
+  ENDCASE
+  DO  D_UPPER
+  mixamp=INT((MIXA()-2048)*MAIN_AMP/2048)
+  IF ((MIXAMP <= 10) .OR. (MIXAMP >= MIXMAX))
+     SET  COLO	TO  R+ / &C1
+     MIX_ERR=1
+     @ 14,58 SAY  " 混合"
+     @ 15,58 SAY  " 電流"
+  ELSE
+    IF MIX_ERR=1
+      SET COLOR TO &C5 +/ &C1
+      @ 14,58 SAY  " 混合"
+      @ 15,58 SAY  " 電流"
+    ENDIF
+     SET  COLO	TO  W+	/ &C1
+     MIX_ERR=0
+  ENDIF
+  X=0
+  IF PLOT_ACT=1
+    X=1
+  ENDIF
+  @ 17+X,57 SAY  mixamp   PICT	"999"
+  SET  COLO  TO  W+  / &C1
+  PWATER=INT((WDATA(15)-2048)*WATER_ADJ/2048)
+  IF  WATER_INPUT=0
+    @ 17,71 SAY  PWATER  PICT "9999"
+  ENDIF
+  IF PLOT_E=1
+    IF (TANKSTP >0 )   .AND.  (TANKSTP <5)
+      IF (SECONDS()-BMP_SN[2]) > PLOT_PN[7]
+	DO PLOT_MIXAS
+      ENDIF
+      DO PLOT_MIXA
+    ENDIF
+  ENDIF
+ENDIF
+*______________________________________________________________________________
+***SCALE_DSP(W0DBF,DSPD_NOR,STAR,0,
+FUNCTION  SCALE_DSP
+PARAMETERS  PW0DBF,PDSPD_NOR,PSTAR,WEITR,MAT_TOTW,MAT_STAR,MAT_END
+SCALE_DW=MAT_TOTW
+*IF (PW0DBF=1) .AND. (PDSPD_NOR=0) .AND. ( PSTAR=1) .AND.  (MAT_TOTW > 0)
+IF (PW0DBF=1) .AND. (PDSPD_NOR=0) .AND. ( PSTAR=1) .and. (a_press_n0[2,1,MAT_STAR,1] > 0  .or. a_press_n0[2,1,MAT_STAR,8] > 0 )   .and. (a_press_n0[2,1,MAT_STAR,1] <> a_press_n0[2,1,MAT_STAR,8] )
+  FSKIP=1
+  FOR I=MAT_STAR TO MAT_END
+    IC=NTOC(I)
+    IF	STP&IC > 0
+      FSKIP=0
+      EXIT
+    ENDIF
+  NEXT
+  IF  FSKIP=0
+    IC=NTOC(MAT_END)
+    *DO CASE
+    *CASE   (STP&IC > 0)
+      SCALE_X1=WDATA(WEITR)-2048
+      SCALE_X2=0
+      FOR I=MAT_STAR TO MAT_END
+	SCALE_X2=SCALE_X2 + CHENDATA(I-1)
+      NEXT
+      IF SCALE_X2 > 0
+	SCALE_DW=MAT_TOTW * SCALE_X1 /SCALE_X2
+      ENDIF
+    *ENDCASE
+  ENDIF
+ELSE
+  SCALE_DW= (WDATA(WEITR)-2048)*A_M_NAME[WEITR+1,12]/2048
+ENDIF
+RETU  SCALE_DW
+&&-----------------------------------------------------------------------------
+FUNCTION   LEDEACH_DSP
+PARAMETERS  PCB_N,CH_N,X_DATA,x_decdsp
+x_data1=INT(abs(x_data)  * (10 ^x_decdsp)  )
+d1_1=160
+d2_0=10
+d2_1=160
+pch=0
+if ch_n <=7
+  if X_data < 0
+    SIMBOUT[CH_N+1,1]=2 ^ CH_N
+  ELSE
+    SIMBOUT[CH_N+1,1]=0
+  endif
+endif
+do case
+case ch_n >=8
+  ch_n=ch_n -8
+  pch=64
+  if X_data < 0
+    SIMBOUT[CH_N+1,2] := 2 ^ CH_N
+  ELSE
+    SIMBOUT[CH_N+1,2] := 0
+  endif
+  IF CH_N=1
+    MM=SIMBOUT[1,2]+SIMBOUT[2,2]
+    _out(576 +2,MM)
+    MM=0
+    FOR  I=1 TO 8
+      MM=MM+SIMBOUT[I,1]
+    NEXT
+    _out(576,MM)
+  ENDIF
+case ch_n >=4
+  ch_n=ch_n  -4
+  pch=1
+endcase
+d1_0=mod(X_data1,10)
+if int(x_data1/10) >0
+  d1_1=mod(int(X_data1/10),10)*16
+  if int(x_data1/100) >0
+    d2_0=mod(int(X_data1/100),10)
+    if int(x_data1/1000) >0
+      d2_1=mod(int(X_data1/1000),10)*16
+    endif
+  endif
+endif
+mm=0
+d1=d1_0+d1_1
+d2=d2_0+d2_1
+_out(LED_IO,d1)
+xn=255-(2 ^(ch_n *2))
+_out(LED_IO +pch + 1,xn )
+_out(LED_IO +pch  + 1,255 )
+_out(LED_IO,d2)
+xn=255-(2 ^(ch_n *2+1))
+_out(LED_IO +pch  + 1,xn )
+_out(LED_IO +pch  + 1,255 )
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION   N_DIV
+PARAMETERS  NDX,NDIV,N_DEC
+XA=10 **N_DEC
+NDX *=XA
+IF (XA =100)  .AND. (NDIV <>1)
+  NDIV *=XA
+ENDIF
+NDX=INT((NDX +(0.49 * NDIV))/NDIV )  * NDIV
+NDX /=XA
+RETU  NDX
+&&-----------------------------------------------------------------------------
+PROCEDURE   D_UPPER
+PARAMETERS  P1,P2,P3
+DO CASE
+CASE  UCHTYPE=1
+CASE  UCHTYPE=2
+  IF STAR=1
+    IF W0DBF=1	.AND. DSPD_NOR=0
+      FOR I= GS_TOT + 1  to GS_TOT + UWC_TOT
+	IC_X=ALLTRIM(STR(I,2,0))
+	IF (STP&IC_X >=1)  .OR. (I=8 .AND. STP9 >0)
+	  IF  A_PRESS_N0[2,1,I,1]>0
+	    A_M_NAME[I,10]=A_M_NAME[I,9] * A_PRESS_N0[2,STPN&IC_X,I,8]/A_PRESS_N0[2,STPN&IC_X,I,1]
+	  ELSE
+	    A_M_NAME[I,10]=1
+	  ENDIF
+	ELSE
+	  A_M_NAME[I,10]=A_M_NAME[I,9]
+	ENDIF
+      NEXT
+    ENDIF
+    DD1=INT((CHENDATA(5))*A_M_NAME[6,10]/PER/2048)
+    DD2=INT((CHENDATA(6))*A_M_NAME[7,10]/PER/2048)
+    DD3=INT((CHENDATA(7))*A_M_NAME[8,10]/PER/2048)
+    DD4=INT((CHENDATA(8))*A_M_NAME[9,10]/PER/2048)
+    DD5=((CHENDATA(9))*A_M_NAME[10,10]/PER/2048)
+    DD6=INT((CHENDATA(10))*A_M_NAME[11,10]*100/PER/2048)/100
+    DD7=INT((CHENDATA(11))*A_M_NAME[12,10]*100/PER/2048)/100
+    @ 8,A_M_NAME[6,13]	  SAY	 DD1   PICT "9999"
+    @ 8,A_M_NAME[7,13]	   SAY	 DD2   PICT "9999"
+    @ 8,A_M_NAME[8,13]	   SAY	 DD3   PICT "9999"
+    ICS=A_M_NAME[9,3]
+    @ 8,A_M_NAME[9,13]	   SAY	 DD4   PICT "&ICS"
+    ICS=A_M_NAME[10,3]
+    @ 8,A_M_NAME[10,13]     SAY   DD5	PICT "&ICS"
+    IF A_M_NAME[11,13]	<>0
+      ICS=A_M_NAME[11,3]
+      @ 8,A_M_NAME[11,13]     SAY   DD6   PICT "&ICS"
+    ENDIF
+    IF A_M_NAME[12,13]	<>0
+      ICS=A_M_NAME[12,3]
+      @ 8,A_M_NAME[12,13]     SAY   DD7   PICT "&ICS"
+    ENDIF
+  ENDIF
+  IF W0DBF=1
+    A_M_NAME[KLCHN+1,12]=A_M_NAME[GS_TOT+1,10]
+    A_M_NAME[KLCHN+2,12]=A_M_NAME[GS_TOT+2,10]
+    A_M_NAME[KLCHN+3,12]=A_M_NAME[GS_TOT+3,10]
+    A_M_NAME[KLCHN+4,12]=A_M_NAME[GS_TOT+5,10]
+
+    FOR I= GS_TOT + 1  to GS_TOT + UWC_TOT
+      *IC_X=ALLTRIM(STR(I,2,0))
+      *IF (STP&IC_X >=1)
+	A_M_NAME[I,10]=A_M_NAME[I,9]
+      *ENDIF
+    NEXT
+  ENDIF
+
+  DD1=INT(((WDATA(KLCHN+0)-2048)*A_M_NAME[KLCHN+1,12])/PER/2048)
+  DD2=INT(((WDATA(KLCHN+1)-2048)*A_M_NAME[KLCHN+2,12])*PERCON/PER/2048)
+  IF (DSPD_NOR=0) .AND. ((STP8>=1 .AND. STP8<=3) .OR. (STP9>=1 .AND. STP9<=5))
+    DD3=DD3+DD4
+    DD3_MY=INT(((WDATA(KLCHN+2)-2048-CHENDATA(7)-CHENDATA(8))*A_M_NAME[KLCHN+3,12])/PER/2048)
+  ELSE
+    DD3=INT(((WDATA(KLCHN+2)-2048)*A_M_NAME[KLCHN+3,12])/PER/2048)
+    DD3_MY=0
+  ENDIF
+  DD4=(((WDATA(KLCHN+3)-2048)*A_M_NAME[KLCHN+4,12])/PER/2048)
+  DD5=(((WDATA(KLCHN+4)-2048)*A_M_NAME[KLCHN+5,12])/PER/2048)
+  W_1=DD2
+  W_2=DD3
+  XDSPC=ALLTRIM(A_M_NAME[KLCHN+1,5])
+  @ 10,A_M_NAME[KLCHN+1,16]   SAY DD1	PICT "&XDSPC"
+  XDSPC=ALLTRIM(A_M_NAME[KLCHN+2,5])
+  @ 10,A_M_NAME[KLCHN+2,16]   SAY DD2	PICT "&XDSPC"
+
+  XDSPC=ALLTRIM(A_M_NAME[KLCHN+3,5])
+  @ 10,A_M_NAME[KLCHN+3,16]   SAY (DD3 + DISC2_C2N)+DD3_MY   PICT "&XDSPC"
+  XDSPC=ALLTRIM(A_M_NAME[KLCHN+4,5])
+  @ 10,A_M_NAME[KLCHN+4,16]   SAY DD4	PICT "&XDSPC"
+  XDSPC=ALLTRIM(A_M_NAME[KLCHN+5,5])
+  IF A_M_NAME[KLCHN+5,16]  <>0
+    @ 10,A_M_NAME[KLCHN+5,16]	SAY DD5   PICT "&XDSPC"
+  ENDIF
+
+  DA726(int(IO_726+2),INT(2048+2048*(DD1/DA_MAX2)))
+  DA726(int(IO_726+4),INT(2048+2048*(DD2/DA_MAX3)))
+  x_x1=int(IO_726+6)
+  x_x2=INT(2048 + (2048*DD3/DA_MAX4))
+  DA726(x_x1,x_x2)
+  DA726(int(IO_726+8),INT(2048+2048*(DD4/DA_MAX5)))
+CASE  UCHTYPE=99
+   DO  DSP2_UP99
+ENDCASE
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE   DSP_SPACIAL
+PARAMETERS  P1,P2,P3
+if spacial_0=1
+  SET COLOR TO GR+ / &C1
+  @ 12,47			  SAY " 秒  優質水泥拌合流程"
+  SET COLOR TO W+ / &C1
+  @ 13,41 SAY "拌合１   "
+  @ 14,41 SAY "拌合２   "
+  @ 15,41 SAY "拌合３   "
+  @ 13,48  SAY	SPACMIXTM[1,1]	PICT  "99"
+  @ 14,48  SAY	SPACMIXTM[2,1]	PICT  "99"
+ *@ 16,52 SAY  SPACMIXTM[3,1] PICT "99"
+  SET COLOR TO &C2 / &C1
+else
+  if  lchtype <> 21
+    SET COLOR TO &C2 / &C1
+    @ 12,47 SAY "                     "
+    *@ 13,47 SAY "         "
+    @ 13,47			    SAY "───────────────┐"
+    *@ 13,51			      SAY "─────────────┐"
+    @ 14,41 SAY "         "
+    @ 15,41 SAY "         "
+    SET COLOR TO W+  / &C1
+    @ 16,52 SAY  PMIXTM PICT "99"
+    SET COLOR TO &C2 / &C1
+  endif
+endif
+RETU
+&&-----------------------------------------------------------------------------
+FUNCTION   LED_DSP
+PARAMETERS  PCB_N,CH_N,X_DATA,x_decdsp
+x_data1=abs(x_data)
+d1_1=160
+d2_0=10
+d2_1=160
+d1_0=mod(X_data1,10)
+if (int(x_data1/10) >0)  .or. (x_decdsp>0 )
+  d1_1=mod(int(X_data1/10),10)*16
+  if (int(x_data1/100) >0)   .or. (x_decdsp>1 )
+    d2_0=mod(int(X_data1/100),10)
+    if (int(x_data1/1000) >0)	.or. (x_decdsp>2 )
+      d2_1=mod(int(X_data1/1000),10)*16
+    endif
+  endif
+endif
+mm=0
+d1=d1_0+d1_1
+d2=d2_0+d2_1
+if X_data < 0
+  mm=128
+endif
+_out(LED_IO,d1)
+_out(LED_IO+2,d2)
+_out(LED_IO+4,(4*PCB_N)+CH_N+mm)
+_out(LED_IO+4,(4*PCB_N)+CH_N+mm+16)
+_Out(LED_IO+4,17)
+RETU
+&&-----------------------------------------------------------------------------
+**-----------------------------------------------------------------------------
+FUNCTION _SEND_RS40
+PARAMETERS  SLN,x_decn,sdn1
+IF SIO1_FAULT <> 0
+   RETU
+ENDIF
+txc=send_txt1 + chr(sln) + chr(x_decn)
+bccn=sln + x_decn
+IF (X_DECN >0)
+  SDN1=STR(SDN1,6,X_DECN)
+  SDNC=SDN1
+   SDN1=""
+   FOR X2=1 TO 5
+     XSDN=SUBSTR(SDNC,-X2,1)
+     IF XSDN <> "."
+       SDN1=XSDN + SDN1
+     ENDIF
+   NEXT
+ELSE
+SDN1=STR(SDN1,4,0)
+ENDIF
+FOR X2=1 TO 4
+  x1_tmp=SUBSTR(SDN1,X2,1)
+  bccn=BCCN + ASC(X1_TMP)
+  TXC=TXC + X1_TMP
+NEXT
+BCCN=MOD(BCCN,128)
+TXC=TXC +CHR(3) + CHR(BCCN) + CHR(4)
+*com_write(S_PORT-1,TXC)
+SIO_PUTB(S_PORT,TXC)
+RETU
+
+&&-----------------------------------------------------------------------------
+FUNCTION   SEND_ES2001
+PARAMETERS  x_decn,sdn1
+IF SIO2_FAULT <> 0
+   RETU
+ENDIF
+txc="ST,GS,"
+IF (SDN1 <0)
+  TXC =TXC +"-"
+  SDN1=-SDN1
+ELSE
+  TXC =TXC +"+"
+ENDIF
+IF (X_DECN >0)
+  SDNC=STR(SDN1,7,X_DECN)
+ELSE
+  SDNC=STR(SDN1,7,0)
+ENDIF
+TXC=TXC +SDNC
+TXC=TXC +CHR(13) +  CHR(10)
+SIO_PUTB(S2_PORT,TXC)
+RETU
+
+
+&&-----------------------------------------------------------------------------
+FUNCTION   GET_RND
+PARAMETERS  STDN
+IF STDN=0
+   STDN=2
+ENDIF
+XRAND=int(RAND() *  SECONDS())
+RETN =( -STDN + MOD(XRAND,2*STDN))
+RETU   RETN
+&&-----------------------------------------------------------------------------
+FUNCTION   GET_MCALW
+PARAMETERS  X_STP_FN
+if   A_M_NAME[X_STP_FN,10] >0
+  IF (VAL(A_M_NAME[X_STP_FN,3])  <100)
+    DDY1[X_STP_FN] =INT((CHENDATA(X_STP_FN-1))*A_M_NAME[X_STP_FN,10]*100/PER/2048)/100
+  ELSE
+    DDY1[X_STP_FN] =INT((CHENDATA(X_STP_FN-1))*A_M_NAME[X_STP_FN,10]/PER/2048)
+  ENDIF
+else
+    DDY1[X_STP_FN] =0
+endif
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE   DSP2_UP99
+PARAMETERS  P1,P2,P3
+IF STAR=1
+  IF	 ISDEMO=1   .and. dosign=0
+    DO DEMO_INP
+  ENDIF
+  DDY1 :=ARRAY(14)
+  IF W0DBF=1 .AND. DSPD_NOR=0
+    FOR I=1 TO (GS_TOT +UWC_TOT)
+      IC_X=ALLTRIM(STR(I,2,0))
+      STXC=IC_X
+      do case
+      case   WEIGHT_TYPE[I]=1
+	  STXC_B=ALLTRIM(STR(I+1,2,0))
+      case   WEIGHT_TYPE[I]=2
+	  STXC_2=ALLTRIM(STR(I-1,2,0))
+      ENDCASE
+      A_M_NAME[I,10]=A_M_NAME[I,9]
+      do case
+      case  WEIGHT_TYPE[I]=77
+	  IF (STP_a[I] >=1)
+	      x=A_PRESS_N0[2,STPN&IC_X,i,2]
+	      x1=A_PRESS_N0[2,STPN&IC_X,i,11]
+	      x3= (A_PRESS_N0[2,STPN&IC_X,I,1]+x)
+	      if x3 >0
+	      A_M_NAME[I,10]=A_M_NAME[I,9] * (A_PRESS_N0[2,STPN&IC_X,I,8]+x1)/x3
+	      else
+		   A_M_NAME[I,10]=0
+	      endif
+	      A_M_NAME[A_M_NAME[I,8]+1 ,12]=A_M_NAME[I,10]
+	  ENDIF
+	  GET_MCALW(I)
+      case  WEIGHT_TYPE[I]=1
+	  IF ((STP_a[I] >=1) .OR. (STP_a[I+1] >=1)  )
+	      x=A_PRESS_N0[2,STPN&IC_X,i,2]
+	      x1=A_PRESS_N0[2,STPN&IC_X,i,11]
+	      A_M_NAME[I,10]=A_M_NAME[I,9] * (A_PRESS_N0[2,STPN&IC_X,I,8]+x1)/(A_PRESS_N0[2,STPN&IC_X,I,1]+x)
+	  ENDIF
+	  GET_MCALW(I)
+	  I=I+1
+	  GET_MCALW(I)
+      case  WEIGHT_TYPE[I]=222222
+	  IF ((STP_a[I] >=1) .OR. (STP_a[I-1] >=1)  )
+	      x=A_PRESS_N0[2,STPN&IC_X,i,2]
+	      x1=A_PRESS_N0[2,STPN&IC_X,i,11]
+	      A_M_NAME[I,10]=A_M_NAME[I,9] * (A_PRESS_N0[2,STPN&IC_X,I,8]+x1)/(A_PRESS_N0[2,STPN&IC_X,I,1]+x)
+	  ENDIF
+	  GET_MCALW(I)
+      case  WEIGHT_TYPE[I]=3
+	  GET_MCALW(I)
+	  I=I+1
+	  GET_MCALW(I)
+	  I=I+1
+	  GET_MCALW(I)
+      endcase
+    NEXT
+  ELSE
+    FOR XN1=1  TO  (GS_TOT + UWC_TOT)
+	  GET_MCALW(I)
+    NEXT
+  ENDIF
+  FOR XN1=1  TO  (GS_TOT + UWC_TOT)
+      XN2=A_M_NAME[XN1,3]
+      @ 8,A_M_NAME[XN1,13]  SAY   DDY1[XN1]   PICT   "&XN2"
+      A_M_NAME[XN1,10]=A_M_NAME[XN1,9]
+  NEXT
+ENDIF
+DDY2 :=ARRAY(14)
+FOR XN1=1  TO  (KLCHN + KUCHN )
+    IF W0DBF=0	.OR. DSPD_NOR=1 .OR. STAR=0
+       DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,6]/PER/2048
+    ELSE
+       DO CASE
+       CASE  WSCALE_TYPE[xn1]=1
+	      if A_M_NAME[XN1,12] >0
+		DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,12]/PER/2048
+	      else
+		DDY2[XN1] = 0
+	      endif
+       CASE  WSCALE_TYPE[xn1]=1 .or. WSCALE_TYPE[xn1]=2
+	      DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,12]/PER/2048
+      && CASE  WSCALE_TYPE[xn1]=2
+      &&     IF ((STP_a[I] >0) .OR. ((STP_a[I-1] >0) .and. (STP_a[I-1] <6) ))
+      &&	 DDY2[XN1] = DDY1[xn1] + DDY1[XN1 +1]
+      &&	 d_my=((WDATA(XN1-1)-2048) -chendata(XN1-1)-chendata(XN1))*A_M_NAME[XN1,12]/2048
+      &&	 DDY2[XN1] =  DDY2[XN1] +d_my
+      &&     ELSE
+      &&	 DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,12]/PER/2048
+      &&     ENDIF
+       CASE  WSCALE_TYPE[xn1]=3
+	 DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,12]/PER/2048
+       CASE  WSCALE_TYPE[XN1]=5
+
+	 DDY2[XN1] = (WDATA(XN1-1)-2048)*A_M_NAME[XN1,12]/PER/2048
+       ENDCASE
+    ENDIF
+    IF (VAL(A_M_NAME[XN1,5])  <100)
+	DDY2[XN1] =INT(DDY2[XN1] *100)/100
+	XDIGIT=2
+    ELSE
+	DDY2[XN1] =INT(DDY2[XN1])
+	XDIGIT=0
+    ENDIF
+    DDY2[XN1] =DDY2[XN1] + REMOTE[XN1]
+    XN2=A_M_NAME[XN1,5]
+    XN3=N_DIV(DDY2[XN1] ,DSP_DIV[XN1],XDIGIT)
+    @ 10,A_M_NAME[XN1,16]  SAY	XN3  PICT "&XN2"
+    _SEND_RS40D(XN1-1,XDIGIT,XN3)
+NEXT
+RETU
+&&-----------------------------------------------------------------------------
+PROCEDURE   LAG_TYPE1_2
+PARAMETERS  X_STP_FN,X_STPN
+DO  CASE
+CASE	(A_PRESS_N0[2,X_STPN,X_STP_FN,8]=0)  .AND. (A_PRESS_N0[2,X_STPN,X_STP_FN,1]>0)	  .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1] =0)   .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,8]>0)
+       DD3=INT((CHENDATA(GS_TOT +2))*A_M_NAME[7,9]/PER/2048)
+       X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]
+       X1= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+A_PRESS_N0[2,STPN8,X_STP_FN +1,8]
+       X2= A_PRESS_N0[2,X_STPN,X_STP_FN,1]+A_PRESS_N0[2,STPN8,X_STP_FN +1,1]
+       DD4=DD3 *X1/X2
+       DD3=0
+       TEMP_CAL[4,7]=0
+       TEMP_CAL[4,8]=-1
+CASE	(A_PRESS_N0[2,X_STPN,X_STP_FN,8]>0)  .AND. (A_PRESS_N0[2,X_STPN,X_STP_FN,1]=0)	  .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1] >0)   .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,8]=0)
+       DD4=INT((CHENDATA(GS_TOT +3))*A_M_NAME[8,9]/PER/2048)
+       X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]
+       X1= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+A_PRESS_N0[2,STPN8,X_STP_FN +1,8]
+       X2= A_PRESS_N0[2,X_STPN,X_STP_FN,1]+A_PRESS_N0[2,STPN8,X_STP_FN +1,1]
+       DD3=DD4 *X1/X2
+       DD4=0
+       TEMP_CAL[4,7]=-1
+       TEMP_CAL[4,8]=0
+CASE	(A_PRESS_N0[2,X_STPN,X_STP_FN,8]>0)  .AND. (A_PRESS_N0[2,X_STPN,X_STP_FN,1]=0)	  .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1]>0)	   .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,8]>0)
+	 IF   (A_PRESS_N0[2,X_STPN,X_STP_FN,8]>0)  .AND. (A_PRESS_N0[2,X_STPN,X_STP_FN,1]=0)	.AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1]>0)
+	   DD4=INT((CHENDATA(GS_TOT +3))*A_M_NAME[8,9]/PER/2048)
+	   X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]-STANDW_ERR[7]
+	   X1= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+A_PRESS_N0[2,STPN8,X_STP_FN +1,8]
+	   X2= A_PRESS_N0[2,X_STPN,X_STP_FN,1]+A_PRESS_N0[2,STPN8,X_STP_FN +1,1]
+	   X3=DD4 *X1/X2
+	   IF (X3 <X)
+	     TEMP_CAL[3,7]=X3
+	     TEMP_CAL[4,7]=-1
+	     DD3=X3
+	     DD4=0
+	   ELSE
+	     IF (TEMP_CAL[4,7]<>1)
+	       X=GET_RND(STANDW_ERR[7])
+	       X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+X
+	       TEMP_CAL[3,7]=X
+	       TEMP_CAL[4,7]=1
+	       TEMP_CAL[4,8]=-1
+	     ENDIF
+	      DD3= TEMP_CAL[3,7]
+	      DD4=X3-DD3
+	   ENDIF
+	 ENDIF
+CASE	(A_PRESS_N0[2,X_STPN,X_STP_FN,8]>0)  .AND. (A_PRESS_N0[2,X_STPN,X_STP_FN,1]>0)	  .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1]=0)	   .AND.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,8]>0)
+	   DD3=INT((CHENDATA(GS_TOT +2))*A_M_NAME[7,9]/PER/2048)
+	   X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]-STANDW_ERR[7]
+	   X1= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+A_PRESS_N0[2,STPN8,X_STP_FN +1,8]
+	   X2= A_PRESS_N0[2,X_STPN,X_STP_FN,1]+A_PRESS_N0[2,STPN8,X_STP_FN +1,1]
+	   X3=DD3 *X1/X2
+	   IF (X3 <X)
+	     TEMP_CAL[3,7]=X3
+	     TEMP_CAL[4,7]=-1
+	     DD3=X3
+	     DD4=0
+	   ELSE
+	     IF (TEMP_CAL[4,7]<>1)
+	       X=GET_RND(STANDW_ERR[7])
+	       X= A_PRESS_N0[2,X_STPN,X_STP_FN,8]+X
+	       TEMP_CAL[3,7]=X
+	       TEMP_CAL[4,7]=1
+	       TEMP_CAL[4,8]=-1
+	     ENDIF
+	     TEMP_CAL[4,8]=-1
+	      DD3= TEMP_CAL[3,7]
+	      DD4=X3-DD3
+	   ENDIF
+CASE	(A_PRESS_N0[2,X_STPN,X_STP_FN,8]=0) .and.  (A_PRESS_N0[2,STPN8,X_STP_FN +1,1]=0)
+	     TEMP_CAL[4,7]=0
+	     TEMP_CAL[4,8]=0
+
+  ENDCASE
+RETU
+&&-----------------------------------------------------------------------------
+
