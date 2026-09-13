@@ -2859,7 +2859,8 @@ case t=-23  .and.  star=0
 CASE T=28
   SCRRA1=savescreen(19,0,22,79)
   t=0
-  IF WATER_INPUT=1
+  && IF WATER_INPUT=1
+  IF WATER_INPUT=991  &&含水率沒作用
     MODI_PAGE=.F.
     DO W_IN
     SELE 5
@@ -2931,7 +2932,7 @@ CASE T=28
    IF WASTE=1
      @ 23,72 SAY substr(space(10)+alltrim(APOSITION),-9,9)
    else
-     @ SCRNO,PX_REP  SAY ACALW_REP PICT "99"
+     @ SCRNO,PX_REP  SAY ACALW_REP PICT "999"
    endif
   ENDIF
   restscreen(19,0,22,79,scrRA1)
@@ -3015,9 +3016,11 @@ case t=-1
       IF WASTE=1
 	@ 23,72 SAY substr(space(10)+alltrim(APOSITION),-9,9)
       else
-	@ SCRNO,PX_REP	SAY ACALW_REP PICT "99"
+	@ SCRNO,PX_REP	SAY ACALW_REP PICT "999"
       endif
     endif
+    DO RST_FUNC
+
     sele &xd_wno
 
 #endif
@@ -3128,7 +3131,7 @@ case t=-2
    IF WASTE=1
      @ 23,72 SAY substr(space(10)+alltrim(APOSITION),-9,9)
    else
-     @ SCRNO,PX_REP  SAY ACALW_REP PICT "99"
+     @ SCRNO,PX_REP  SAY ACALW_REP PICT "999"
    endif
 
   ENDIF
@@ -3367,6 +3370,7 @@ case t=-4  .and.  star=0
   DO  LU12_DSP
 case t=-5
   MODI_PAGE=.F.
+  DO RST_FUNC
   SCRRA1=savescreen(19,0,22,79)
   DO DSP1  WITH 2,"零點"
   restscreen(19,0,22,79,scrRA1)
@@ -3556,7 +3560,7 @@ case t=-9 .AND. STAR=1
 IF WASTE=1
   @ 23,72 SAY substr(space(10)+alltrim(APOSITION),-9,9)
 else
-  @ SCRNO,PX_REP  SAY ACALW_REP PICT "99"
+  @ SCRNO,PX_REP  SAY ACALW_REP PICT "999"
 endif
 
 @ 8,2 clea to 8,79
@@ -6657,7 +6661,7 @@ PARAMETERS  P1,P2,P3
     IF WASTE=1
       @ 23,72 SAY substr(space(10)+alltrim(APOSITION),-9,9)
     else
-      @ SCRNO,PX_REP  SAY ACALW_REP PICT "99"
+      @ SCRNO,PX_REP  SAY ACALW_REP PICT "999"
     endif
 
   endif
@@ -8323,7 +8327,7 @@ if (waste=1)
 else
   ARR1 :={"  日期      ","   時間  ","  配比    ","  噸數","  車號 ","序號     "}
   ARR2 :={"LUDATE","LUTIME","RATNO","TOTVUSE","CARNO","SCANO"}
-  ARR3 :={"XXXXXXXXXX","XXXXXXXX","XXXXXXXXXX","99.9","XXXXXX",SUBSTR("XXXXXXXXXXXXXXXX",-SCANO_LEN,SCANO_LEN)}
+  ARR3 :={"XXXXXXXXXX","XXXXXXXX","XXXXXXXXXX","9999.9","XXXXXX",SUBSTR("XXXXXXXXXXXXXXXX",-SCANO_LEN,SCANO_LEN)}
   ARR4 :={0,0,0,1,0,0}
   ARR_PCS={" "," "," "," "," "," "}
   XN_TITL=6
@@ -9593,11 +9597,17 @@ PARAMETERS  xIndex,isRWall,isRead
   ENDIF
   FOR Iw=xs TO xend
     IX_C=ALLTRIM(STR(Iw,2,0))
+    && tlu15t.v1.1.1 不使用
+    WATER_INC[Iw] :=0
+
     if isRead=1
       WATER_INC[Iw] :=PA&IX_C
     else
       PA&IX_C=WATER_INC[Iw]
     endif
+    && tlu15t.v1.1.1 不使用
+    WATER_INC[Iw] :=0
+
   next
   IF isRead=0
      commit
@@ -10327,7 +10337,7 @@ ARR5 :=ARRAY(kind+3) && LONG_DASH
 ARR6 :=ARRAY(kind+3) &&  IF A_PRESS_N0[2,STPN1,I,1] =A_PRESS_N0[2,STPN1,I,8] SET 1
 ARR1 :={16,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2}
 ARR2[1] :=12
-ARR4[1] :=4
+ARR4[1] :=5
 ARR5[1] :=1
 FOR  I=1 TO GS_TOT +UWC_TOT
   ARR2[I+1]=A_M_NAME[I,13]
@@ -10340,7 +10350,7 @@ FOR  I=1 TO GS_TOT +UWC_TOT
 NEXT
 x=_Tot_d_a[20,4]+2
 @ 15,12 say _Tot_d_a[18,X]
-@ 16,12 say _Tot_d_a[10,X]  PICT  "99.9"
+@ 16,12 say _Tot_d_a[10,X]  PICT  "999.9"
 ARR3[1] :=_Tot_d_a[10,X]
 ARR3_O[1] :=ARR3[1]
 FOR  I=1 TO GS_TOT +UWC_TOT
@@ -10374,7 +10384,7 @@ DO WHILE  TNSTP <=GS_TOT +UWC_TOT + 1
 
        ENDIF
        SET COLOR TO w  / &C1
-       @ 16,12	SAY _Tot_d_a[10,xDataDimN]   PICT "99.9"
+       @ 16,12	SAY _Tot_d_a[10,xDataDimN]   PICT "999.9"
 
     ELSE
       ARR3[TNSTP_O]=VAL(CHRN)
@@ -10388,7 +10398,7 @@ if disc_totm >0  .AND.	 MODY_D1=1
 endif
 SET COLOR TO W	/ N
 x=_Tot_d_a[20,4]+2
-@ 16,12 say _Tot_d_a[10,X]  PICT  "99.9"
+@ 16,12 say _Tot_d_a[10,X]  PICT  "999.9"
 SET COLOR TO W+ / N
 FOR  I=1 TO GS_TOT +UWC_TOT
   XMC_F=A_M_NAME[I,3]

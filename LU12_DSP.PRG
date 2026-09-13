@@ -265,8 +265,8 @@ if ( _Tot_d_a[10,X] <>	NIL )
   if ( _Tot_d_a[10,X] > 0)  .and.  star=1
     set colo to  w+ /n
     @ 15,12 say _Tot_d_a[18,X]
-    @ 16,12 say _Tot_d_a[10,X]	PICT  "99.9"
-    @ 17,12 SAY  ACT_V	PICT  "99.9"
+    @ 16,12 say _Tot_d_a[10,X]	PICT  "999.9"
+    @ 17,12 SAY  ACT_V	PICT  "999.9"
   ENDIF
 ENDIF
 SET COLOR TO &C2 / &C1
